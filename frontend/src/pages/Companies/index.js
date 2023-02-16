@@ -1,280 +1,182 @@
-import React, { useState, useEffect, useReducer } from "react";
-import { toast } from "react-toastify";
-import openSocket from "../../services/socket-io";
+import React, { useState, useEffect } from "react";
 
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
+import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import IconButton from "@material-ui/core/IconButton";
-import SearchIcon from "@material-ui/icons/Search";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from '@material-ui/core/InputLabel';
 import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import Select from "@material-ui/core/Select"
+import MenuItem from "@material-ui/core/MenuItem"
+import StoreIcon from "@material-ui/icons/Store";
+import Grid from '@material-ui/core/Grid';
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
 
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import EditIcon from "@material-ui/icons/Edit";
-
-import MainContainer from "../../components/MainContainer";
-import MainHeader from "../../components/MainHeader";
-import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
-import Title from "../../components/Title";
-
-import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import CompanyModal from "../../components/CompaniesModal";
-import ConfirmationModal from "../../components/ConfirmationModal";
+import useCompanies from '../../hooks/useCompanies';
+import usePlans from '../../hooks/usePlans';
+import { toast } from "react-toastify";
 import toastError from "../../errors/toastError";
+import { isEqual } from 'lodash'
 
-const reducer = (state, action) => {
-  if (action.type === "LOAD_COMPANIES") {
-    const companies = action.payload;
-    const newCompanies = [];
-
-    companies.forEach((company) => {
-      const companyIndex = state.findIndex((u) => u.id === company.id);
-      if (companyIndex !== -1) {
-        state[companyIndex] = company;
-      } else {
-        newCompanies.push(company);
-      }
-    });
-
-    return [...state, ...newCompanies];
-  }
-
-  if (action.type === "UPDATE_COMPANIES") {
-    const company = action.payload;
-    const companyIndex = state.findIndex((u) => u.id === company.id);
-
-    if (companyIndex !== -1) {
-      state[companyIndex] = company;
-      return [...state];
-    } else {
-      return [company, ...state];
-    }
-  }
-
-  if (action.type === "DELETE_COMPANIES") {
-    const companyId = action.payload;
-
-    const companyIndex = state.findIndex((u) => u.id === companyId);
-    if (companyIndex !== -1) {
-      state.splice(companyIndex, 1);
-    }
-    return [...state];
-  }
-
-  if (action.type === "RESET") {
-    return [];
-  }
-};
-
-const useStyles = makeStyles((theme) => ({
-  mainPaper: {
-    flex: 1,
-    padding: theme.spacing(1),
-    overflowY: "scroll",
-    ...theme.scrollbarStyles,
-  },
+const useStyles = makeStyles(theme => ({
+	paper: {
+		marginTop: theme.spacing(8),
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+	},
+	avatar: {
+		margin: theme.spacing(1),
+		backgroundColor: theme.palette.secondary.main,
+	},
+	form: {
+		width: "100%", // Fix IE 11 issue.
+		marginTop: theme.spacing(2),
+	},
+	submit: {
+		margin: theme.spacing(3, 0, 2),
+	}
 }));
 
-const Companies = () => {
-  const classes = useStyles();
+const FormCompany = () => {
+	const classes = useStyles();
+	const { getPlanList } = usePlans()
+    const { save: saveCompany } = useCompanies()
+	const [company, setCompany] = useState({ name: "", planId: "", token: "" });
+	const [plans, setPlans] = useState([])
 
-  const [loading, setLoading] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState(null);
-  const [deletingCompany, setDeletingCompany] = useState(null);
-  const [companyModalOpen, setCompanyModalOpen] = useState(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [searchParam, setSearchParam] = useState("");
-  const [companies, dispatch] = useReducer(reducer, []);
+	useEffect(() => {
+		const fetchData = async () => {
+			const list = await getPlanList()
+			setPlans(list);
+		}
+		fetchData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
-  useEffect(() => {
-    dispatch({ type: "RESET" });
-    setPageNumber(1);
-  }, [searchParam]);
+	const handleChangeInput = e => {
+		setCompany({ ...company, [e.target.name]: e.target.value });
+	};
 
-  useEffect(() => {
-    setLoading(true);
-    const delayDebounceFn = setTimeout(() => {
-      const fetchCompanies = async () => {
-        try {
-          const { data } = await api.get("/company/", {
-            params: { searchParam, pageNumber },
-          });
-          dispatch({ type: "LOAD_COMPANIES", payload: data.company });
-          setHasMore(data.hasMore);
-          setLoading(false);
-        } catch (err) {
-          toastError(err);
-        }
-      };
-      fetchCompanies();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchParam, pageNumber]);
+	const handlSubmit = async e => {
+		e.preventDefault();
+		try {
+			await saveCompany(company)
+			setCompany({ name: "", planId: "", token: "" })
+			toast.success(i18n.t("companies.form.success"));
+		} catch (e) {
+			toastError(e)
+		}
+	};
 
-  useEffect(() => {
-    const socket = openSocket();
+	const renderPlanField = () => {
+		if (plans.length) {
+			return <>
+				<Grid item>
+					<FormControl fullWidth variant="outlined">
+						<InputLabel>Plano</InputLabel>
+						<Select 
+							required
+							id="planId"
+							label={i18n.t("companies.form.plan")}
+							name="planId"
+							value={company.planId}
+							onChange={handleChangeInput}
+							autoComplete="plan"
+						>
+							<MenuItem value={""}>&nbsp;</MenuItem>
+							{ plans.map((plan, index) => {
+								return <MenuItem value={plan.id} key={index}>{ plan.name }</MenuItem>
+							})}
+						</Select>
+					</FormControl>
+				</Grid>
+			</>
+		}
+	}
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+	const renderNameField = () => {
+		if (plans.length && !isEqual(company.planId, "")) {
+			return <>
+				<Grid item>
+					<TextField
+						variant="outlined"
+						required
+						fullWidth
+						id="name"
+						label={i18n.t("companies.form.name")}
+						name="name"
+						value={company.name}
+						onChange={handleChangeInput}
+						autoComplete="name"
+						autoFocus
+					/>
+				</Grid>
+			</>
+		}
+	}
 
-  const handleOpenCompanyModal = () => {
-    setSelectedCompany(null);
-    setCompanyModalOpen(true);
-  };
+	const renderTokenField = () => {
+		if (plans.length && !isEqual(company.planId, "")) {
+			return <>
+				<Grid item>
+					<TextField
+						variant="outlined"
+						required
+						fullWidth
+						id="token"
+						label={i18n.t("companies.form.token")}
+						name="token"
+						value={company.token}
+						onChange={handleChangeInput}
+						autoComplete="token"
+						autoFocus
+					/>
+				</Grid>
+			</>
+		}
+	}
 
-  const handleCloseCompanyModal = () => {
-    setSelectedCompany(null);
-    setCompanyModalOpen(false);
-  };
+	const renderSubmitButton = () => {
+		if (plans.length && !isEqual(company.planId, "")) {
+			return <>
+				<Button
+					type="submit"
+					fullWidth
+					variant="contained"
+					color="primary"
+					className={classes.submit}
+				>
+					{i18n.t("companies.form.submit")}
+				</Button>
+			</>
+		}
+	}
 
-  const handleSearch = (event) => {
-    setSearchParam(event.target.value.toLowerCase());
-  };
-
-  const handleEditCompany = (company) => {
-    setSelectedCompany(company);
-    setCompanyModalOpen(true);
-  };
-
-  const handleDeleteCompany = async (companyId) => {
-    try {
-      await api.delete(`/company/${companyId}`);
-      toast.success(i18n.t("compaies.toasts.deleted"));
-    } catch (err) {
-      toastError(err);
-    }
-    setDeletingCompany(null);
-    setSearchParam("");
-    setPageNumber(1);
-  };
-
-  const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
-  };
-
-  const handleScroll = (e) => {
-    if (!hasMore || loading) return;
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    if (scrollHeight - (scrollTop + 100) < clientHeight) {
-      loadMore();
-    }
-  };
-
-  return (
-    <MainContainer>
-      <ConfirmationModal
-        title={
-          deletingCompany &&
-          `${i18n.t("compaies.confirmationModal.deleteTitle")} ${deletingCompany.name
-          }?`
-        }
-        open={confirmModalOpen}
-        onClose={setConfirmModalOpen}
-        onConfirm={() => handleDeleteCompany(deletingCompany.id)}
-      >
-        {i18n.t("compaies.confirmationModal.deleteMessage")}
-      </ConfirmationModal>
-      <CompanyModal
-        open={companyModalOpen}
-        onClose={handleCloseCompanyModal}
-        aria-labelledby="form-dialog-title"
-        companyId={selectedCompany && selectedCompany.id}
-      />
-      <MainHeader>
-        <Title>{i18n.t("compaies.title")}</Title>
-        <MainHeaderButtonsWrapper>
-          <TextField
-            placeholder={i18n.t("contacts.searchPlaceholder")}
-            type="search"
-            value={searchParam}
-            onChange={handleSearch}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon style={{ color: "gray" }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleOpenCompanyModal}
-          >
-            {i18n.t("compaies.buttons.add")}
-          </Button>
-        </MainHeaderButtonsWrapper>
-      </MainHeader>
-      <Paper
-        className={classes.mainPaper}
-        variant="outlined"
-        onScroll={handleScroll}
-      >
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">{i18n.t("compaies.table.name")}</TableCell>
-              <TableCell align="center">
-                {i18n.t("compaies.table.email")}
-              </TableCell>
-              <TableCell align="center">
-                {i18n.t("compaies.table.numberAttendants")}
-              </TableCell>
-              <TableCell align="center">
-                {i18n.t("compaies.table.numberConections")}
-              </TableCell>
-              <TableCell align="center">
-                {i18n.t("compaies.table.actions")}
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <>
-              {companies.map((company) => (
-                <TableRow key={company.id}>
-                  <TableCell align="center">{company.name}</TableCell>
-                  <TableCell align="center">{company.email}</TableCell>
-                  <TableCell align="center">{company.numberAttendants}</TableCell>
-                  <TableCell align="center">{company.numberConections}</TableCell>
-                  <TableCell align="center">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleEditCompany(company)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        setConfirmModalOpen(true);
-                        setDeletingCompany(company);
-                      }}
-                    >
-                      <DeleteOutlineIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {loading && <TableRowSkeleton columns={4} />}
-            </>
-          </TableBody>
-        </Table>
-      </Paper>
-    </MainContainer>
-  );
+	return (
+		<Container component="main" maxWidth="xs">
+			<CssBaseline />
+			<div className={classes.paper}>
+				<Avatar className={classes.avatar}>
+					<StoreIcon />
+				</Avatar>
+				<Typography component="h1" variant="h5">
+					{i18n.t("companies.title")}
+				</Typography>
+				<form className={classes.form} noValidate onSubmit={handlSubmit}>
+					<Grid container direction="column" spacing={2}>
+						{ renderPlanField() }
+						{ renderNameField() }
+						{ renderTokenField() }
+					</Grid>
+					{ renderSubmitButton() }
+				</form>
+			</div>
+		</Container>
+	);
 };
 
-export default Companies;
+export default FormCompany;

@@ -25,10 +25,7 @@ const UpdateUserService = async ({
     name: Yup.string().min(3)
   });
 
-  const {
-    name,
-    color
-  } = tagData;
+  const { name, color } = tagData;
 
   try {
     await schema.validate({ name });
@@ -38,7 +35,7 @@ const UpdateUserService = async ({
 
   await tag.update({
     name,
-    color,
+    color
   });
 
   await tag.reload();

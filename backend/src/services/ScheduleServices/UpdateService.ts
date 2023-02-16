@@ -10,6 +10,7 @@ interface ScheduleData {
   sendAt?: string;
   sentAt?: string;
   contactId?: number;
+  companyId?: number;
   ticketId?: number;
   userId?: number;
 }
@@ -17,13 +18,19 @@ interface ScheduleData {
 interface Request {
   scheduleData: ScheduleData;
   id: string | number;
+  companyId: number;
 }
 
 const UpdateUserService = async ({
   scheduleData,
-  id
+  id,
+  companyId
 }: Request): Promise<Schedule | undefined> => {
-  const schedule = await ShowService(id);
+  const schedule = await ShowService(id, companyId);
+
+  if (schedule?.companyId !== companyId) {
+    throw new AppError("Não é possível alterar registros de outra empresa");
+  }
 
   const schema = Yup.object().shape({
     body: Yup.string().min(5)

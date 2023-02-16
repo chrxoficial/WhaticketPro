@@ -1,5 +1,5 @@
 import { WAMessage, AnyMessageContent } from "@adiwajshing/baileys";
-
+import * as Sentry from "@sentry/node";
 import fs from "fs";
 import { exec } from "child_process";
 import path from "path";
@@ -7,6 +7,7 @@ import ffmpegPath from "@ffmpeg-installer/ffmpeg";
 import AppError from "../../errors/AppError";
 import GetTicketWbot from "../../helpers/GetTicketWbot";
 import Ticket from "../../models/Ticket";
+import mime from "mime-types";
 
 interface Request {
   media: Express.Multer.File;
@@ -16,7 +17,7 @@ interface Request {
 
 const publicFolder = path.resolve(__dirname, "..", "..", "..", "public");
 
-export const processAudio = async (audio: string): Promise<string> => {
+const processAudio = async (audio: string): Promise<string> => {
   const outputAudio = `${publicFolder}/${new Date().getTime()}.mp3`;
   return new Promise((resolve, reject) => {
     exec(
@@ -30,7 +31,7 @@ export const processAudio = async (audio: string): Promise<string> => {
   });
 };
 
-export const processAudioFile = async (audio: string): Promise<string> => {
+const processAudioFile = async (audio: string): Promise<string> => {
   const outputAudio = `${publicFolder}/${new Date().getTime()}.mp3`;
   return new Promise((resolve, reject) => {
     exec(
@@ -42,6 +43,71 @@ export const processAudioFile = async (audio: string): Promise<string> => {
       }
     );
   });
+};
+
+export const getMessageOptions = async (
+  fileName: string,
+  pathMedia: string
+): Promise<any> => {
+  const mimeType = mime.lookup(pathMedia);
+  const typeMessage = mimeType.split("/")[0];
+
+  try {
+    if (!mimeType) {
+      throw new Error("Invalid mimetype");
+    }
+    let options: AnyMessageContent;
+
+    if (typeMessage === "video") {
+      options = {
+        video: fs.readFileSync(pathMedia),
+        // caption: fileName,
+        fileName: fileName
+        // gifPlayback: true
+      };
+    } else if (typeMessage === "audio") {
+      const typeAudio = fileName.includes("audio-record-site");
+      const convert = await processAudio(pathMedia);
+      if (typeAudio) {
+        options = {
+          audio: fs.readFileSync(convert),
+          mimetype: typeAudio ? "audio/mp4" : mimeType,
+          ptt: true
+        };
+      } else {
+        options = {
+          audio: fs.readFileSync(convert),
+          mimetype: typeAudio ? "audio/mp4" : mimeType,
+          ptt: true
+        };
+      }
+    } else if (typeMessage === "document") {
+      options = {
+        document: fs.readFileSync(pathMedia),
+        caption: fileName,
+        fileName: fileName,
+        mimetype: mimeType
+      };
+    } else if (typeMessage === "application") {
+      options = {
+        document: fs.readFileSync(pathMedia),
+        caption: fileName,
+        fileName: fileName,
+        mimetype: mimeType
+      };
+    } else {
+      options = {
+        image: fs.readFileSync(pathMedia),
+        caption: fileName
+      };
+    }
+
+    return options;
+  } catch (e) {
+    Sentry.captureException(e);
+    console.log(e);
+    return null;
+  }
 };
 
 const SendWhatsAppMedia = async ({
@@ -79,14 +145,14 @@ const SendWhatsAppMedia = async ({
           mimetype: typeAudio ? "audio/mp4" : media.mimetype
         };
       }
-    } else if (typeMessage === "document") {
+    } else if (typeMessage === "document" || typeMessage === "text") {
       options = {
         document: fs.readFileSync(pathMedia),
         caption: body,
         fileName: media.originalname,
         mimetype: media.mimetype
       };
-    } else if (typeMessage === "application") {
+     } else if (typeMessage === "application") {
       options = {
         document: fs.readFileSync(pathMedia),
         caption: body,
@@ -111,6 +177,7 @@ const SendWhatsAppMedia = async ({
 
     return sentMessage;
   } catch (err) {
+    Sentry.captureException(err);
     console.log(err);
     throw new AppError("ERR_SENDING_WAPP_MSG");
   }

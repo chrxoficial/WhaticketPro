@@ -63,7 +63,7 @@ const ScheduleSchema = Yup.object().shape({
 	sendAt: Yup.string().required("Obrigatório")
 });
 
-const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload, setContactId }) => {
+const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload }) => {
 	const classes = useStyles();
 	const history = useHistory();
 	const { user } = useContext(AuthContext);
@@ -94,31 +94,34 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 	}, [contactId, contacts]);
 
 	useEffect(() => {
-		try {
-			(async () => {
-				const { data: contactList } = await api.get('/contacts/list');
-				let customList = contactList.map((c) => ({id: c.id, name: c.name}));
-				if (isArray(customList)) {
-					setContacts([{id: "", name: ""}, ...customList]);
-				}
-				if (contactId) {
+		const { companyId } = user;
+		if (open) {
+			try {
+				(async () => {
+					const { data: contactList } = await api.get('/contacts/list', { params: { companyId: companyId } });
+					let customList = contactList.map((c) => ({id: c.id, name: c.name}));
+					if (isArray(customList)) {
+						setContacts([{id: "", name: ""}, ...customList]);
+					}
+					if (contactId) {
+						setSchedule(prevState => {
+							return { ...prevState, contactId }
+						});
+					}
+
+					if (!scheduleId) return;
+
+					const { data } = await api.get(`/schedules/${scheduleId}`);
 					setSchedule(prevState => {
-						return { ...prevState, contactId }
+						return { ...prevState, ...data, sendAt: moment(data.sendAt).format('YYYY-MM-DDTHH:mm') };
 					});
-				}
-
-				if (!scheduleId) return;
-
-				const { data } = await api.get(`/schedules/${scheduleId}`);
-				setSchedule(prevState => {
-					return { ...prevState, ...data, sendAt: moment(data.sendAt).format('YYYY-MM-DDTHH:mm') };
-				});
-				setCurrentContact(data.contact);
-			})()
-		} catch (err) {
-			toastError(err);
+					setCurrentContact(data.contact);
+				})()
+			} catch (err) {
+				toastError(err);
+			}
 		}
-	}, [scheduleId, contactId, open]);
+	}, [scheduleId, contactId, open, user]);
 
 	const handleClose = () => {
 		onClose();
@@ -137,13 +140,17 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 			if (typeof reload == 'function') {
 				reload();
 			}
-			setCurrentContact(initialContact);
-			setSchedule(initialState);
-			history.push('/schedules')
-
+			if (contactId) {
+				if (typeof cleanContact === 'function') {
+					cleanContact();
+					history.push('/schedules');
+				}
+			}
 		} catch (err) {
 			toastError(err);
 		}
+		setCurrentContact(initialContact);
+		setSchedule(initialState);
 		handleClose();
 	};
 

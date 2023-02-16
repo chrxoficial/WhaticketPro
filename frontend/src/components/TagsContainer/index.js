@@ -1,6 +1,6 @@
 import { Chip, Paper, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { isArray, isString } from "lodash";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
@@ -9,16 +9,23 @@ export function TagsContainer ({ ticket }) {
 
     const [tags, setTags] = useState([]);
     const [selecteds, setSelecteds] = useState([]);
+    const isMounted = useRef(true);
 
     useEffect(() => {
-        if (ticket) {
-            async function fetchData () {
-                await loadTags();
+        return () => {
+            isMounted.current = false
+        }
+    }, [])
+
+    useEffect(() => {
+        if (isMounted.current) {
+            loadTags().then(() => {
                 if (Array.isArray(ticket.tags)) {
                     setSelecteds(ticket.tags);
+                } else {
+                    setSelecteds([]);
                 }
-            }
-            fetchData();
+            });
         }
     }, [ticket]);
 

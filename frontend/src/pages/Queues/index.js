@@ -1,7 +1,5 @@
 import React, { useEffect, useReducer, useState } from "react";
 
-import openSocket from "socket.io-client";
-
 import {
   Button,
   IconButton,
@@ -23,16 +21,18 @@ import Title from "../../components/Title";
 import { i18n } from "../../translate/i18n";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
-import { DeleteOutline, Edit, AddCircleOutline, Search,} from "@material-ui/icons";
+import { DeleteOutline, Edit } from "@material-ui/icons";
 import QueueModal from "../../components/QueueModal";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import { socketConnection } from "../../services/socket";
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
+    ...theme.scrollbarStyles,
   },
   customTableCell: {
     display: "flex",
@@ -110,14 +110,10 @@ const Queues = () => {
   }, []);
 
   useEffect(() => {
-    const token = JSON.parse(localStorage.getItem("token"));
+    const companyId = localStorage.getItem("companyId");
+    const socket = socketConnection({ companyId });
 
-    const socket = openSocket(process.env.REACT_APP_BACKEND_URL, {query: {token}});
-    socket.on("connect", () => {
-      socket.emit("joinCompany")
-    });
-
-    socket.on("queue", (data) => {
+    socket.on(`company-${companyId}-queue`, (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_QUEUES", payload: data.queue });
       }
@@ -137,9 +133,7 @@ const Queues = () => {
     setSelectedQueue(null);
   };
 
-
   const handleCloseQueueModal = () => {
-    console.log('fechou modal')
     setQueueModalOpen(false);
     setSelectedQueue(null);
   };
@@ -183,26 +177,16 @@ const Queues = () => {
         open={queueModalOpen}
         onClose={handleCloseQueueModal}
         queueId={selectedQueue?.id}
-        onEdit={(res) => {
-          if(res) {
-              setTimeout(() => {
-                // setQueueModalOpen(true)
-                // setSelectedQueue(res.id)
-                handleEditQueue(res)
-                // handleOpenQueueModalChatbot(res.id)
-              }, 200)
-          }
-        }}
       />
       <MainHeader>
         <Title>{i18n.t("queues.title")}</Title>
         <MainHeaderButtonsWrapper>
-        <Button
-              variant="contained"
-              color="primary"
-              onClick={handleOpenQueueModal}
-            >
-              <AddCircleOutline />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenQueueModal}
+          >
+            {i18n.t("queues.buttons.add")}
           </Button>
         </MainHeaderButtonsWrapper>
       </MainHeader>

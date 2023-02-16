@@ -1,7 +1,6 @@
 import { Op } from "sequelize";
 import * as Yup from "yup";
 import AppError from "../../errors/AppError";
-import Chatbot from "../../models/Chatbot";
 import Queue from "../../models/Queue";
 import ShowQueueService from "./ShowQueueService";
 
@@ -9,14 +8,17 @@ interface QueueData {
   name?: string;
   color?: string;
   greetingMessage?: string;
-  chatbots?: Chatbot[];
+  outOfHoursMessage?: string;
+  schedules?: any[];
 }
 
 const UpdateQueueService = async (
   queueId: number | string,
   queueData: QueueData,
+  companyId: number
 ): Promise<Queue> => {
-  const { color, name, chatbots } = queueData;
+  const { color, name } = queueData;
+
   const queueSchema = Yup.object().shape({
     name: Yup.string()
       .min(2, "ERR_QUEUE_INVALID_NAME")
@@ -26,7 +28,7 @@ const UpdateQueueService = async (
         async value => {
           if (value) {
             const queueWithSameName = await Queue.findOne({
-              where: { name: value, id: { [Op.not]: queueId } }
+              where: { name: value, id: { [Op.ne]: queueId }, companyId }
             });
 
             return !queueWithSameName;
@@ -49,7 +51,7 @@ const UpdateQueueService = async (
         async value => {
           if (value) {
             const queueWithSameColor = await Queue.findOne({
-              where: { color: value, id: { [Op.not]: queueId }}
+              where: { color: value, id: { [Op.ne]: queueId }, companyId }
             });
             return !queueWithSameColor;
           }
@@ -59,44 +61,18 @@ const UpdateQueueService = async (
   });
 
   try {
-    await queueSchema.validate({ color, name});
-  } catch (err) {
+    await queueSchema.validate({ color, name });
+  } catch (err: any) {
     throw new AppError(err.message);
   }
 
-  const queue = await ShowQueueService(queueId);
+  const queue = await ShowQueueService(queueId, companyId);
 
-  if (chatbots) {
-    await Promise.all(
-      chatbots.map(async bot => {
-        await Chatbot.upsert({ ...bot, queueId: queue.id });
-      })
-    );
-
-    await Promise.all(
-      queue.chatbots.map(async oldBot => {
-        const stillExists = chatbots.findIndex(bot => bot.id === oldBot.id);
-
-        if (stillExists === -1) {
-          await Chatbot.destroy({ where: { id: oldBot.id } });
-        }
-      })
-    );
+  if (queue.companyId !== companyId) {
+    throw new AppError("Não é permitido alterar registros de outra empresa");
   }
-  await queue.update(queueData);
 
-  await queue.reload({
-    attributes: ["id", "color", "name", "greetingMessage"],
-    include: [
-      {
-        model: Chatbot,
-        as: "chatbots",
-        attributes: ["id", "name", "greetingMessage"],
-        order: [[{ model: Chatbot, as: "chatbots" }, "id", "asc"], ["id", "ASC"]]
-      }
-    ],
-    order: [[{ model: Chatbot, as: "chatbots" }, "id", "asc"], ["id", "ASC"]]
-  });
+  await queue.update(queueData);
 
   return queue;
 };

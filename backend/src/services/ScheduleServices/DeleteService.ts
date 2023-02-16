@@ -1,9 +1,9 @@
 import Schedule from "../../models/Schedule";
 import AppError from "../../errors/AppError";
 
-const DeleteService = async (id: string | number): Promise<void> => {
+const DeleteService = async (id: string | number, companyId: number): Promise<void> => {
   const schedule = await Schedule.findOne({
-    where: { id }
+    where: { id, companyId }
   });
 
   if (!schedule) {

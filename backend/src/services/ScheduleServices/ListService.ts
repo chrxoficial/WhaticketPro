@@ -7,6 +7,7 @@ interface Request {
   searchParam?: string;
   contactId?: number | string;
   userId?: number | string;
+  companyId?: number;
   pageNumber?: string | number;
 }
 
@@ -20,7 +21,8 @@ const ListService = async ({
   searchParam,
   contactId = "",
   userId = "",
-  pageNumber = "1"
+  pageNumber = "1",
+  companyId
 }: Request): Promise<Response> => {
   let whereCondition = {};
   const limit = 20;
@@ -58,6 +60,13 @@ const ListService = async ({
     whereCondition = {
       ...whereCondition,
       userId
+    }
+  }
+
+  whereCondition = {
+    ...whereCondition,
+    companyId: {
+      [Op.eq]: companyId
     }
   }
 

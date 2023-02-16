@@ -1,2 +1,0 @@
-# infotech
- Projeto Whaticket

@@ -1,17 +1,39 @@
 import * as Yup from "yup";
 import AppError from "../../errors/AppError";
 import Queue from "../../models/Queue";
-import Chatbot from "../../models/Chatbot";
+import Company from "../../models/Company";
+import Plan from "../../models/Plan";
 
 interface QueueData {
   name: string;
   color: string;
+  companyId: number;
   greetingMessage?: string;
-  chatbots?: Chatbot[];
+  outOfHoursMessage?: string;
+  schedules?: any[];
 }
 
 const CreateQueueService = async (queueData: QueueData): Promise<Queue> => {
-  const { color, name } = queueData;
+  const { color, name, companyId } = queueData;
+
+  const company = await Company.findOne({
+    where: {
+      id: companyId
+    },
+    include: [{ model: Plan, as: "plan" }]
+  });
+
+  if (company !== null) {
+    const queuesCount = await Queue.count({
+      where: {
+        companyId
+      }
+    });
+
+    if (queuesCount >= company.plan.queues) {
+      throw new AppError(`Número máximo de filas já alcançado: ${queuesCount}`);
+    }
+  }
 
   const queueSchema = Yup.object().shape({
     name: Yup.string()
@@ -23,7 +45,7 @@ const CreateQueueService = async (queueData: QueueData): Promise<Queue> => {
         async value => {
           if (value) {
             const queueWithSameName = await Queue.findOne({
-              where: { name: value }
+              where: { name: value, companyId }
             });
 
             return !queueWithSameName;
@@ -46,7 +68,7 @@ const CreateQueueService = async (queueData: QueueData): Promise<Queue> => {
         async value => {
           if (value) {
             const queueWithSameColor = await Queue.findOne({
-              where: { color: value }
+              where: { color: value, companyId }
             });
             return !queueWithSameColor;
           }
@@ -57,25 +79,13 @@ const CreateQueueService = async (queueData: QueueData): Promise<Queue> => {
 
   try {
     await queueSchema.validate({ color, name });
-  } catch (err) {
+  } catch (err: any) {
     throw new AppError(err.message);
   }
 
-  try {
-    const queue = await Queue.create(queueData, {
-      include: [
-        {
-          model: Chatbot,
-          as: "chatbots",
-          attributes: ["id", "name", "greetingMessage", "isAgent"],
-          order: [[{ model: Chatbot, as: "chatbots" }, "id", "asc"]]
-        }
-      ]
-    });
-    return queue;
-  } catch (err) {
-    throw new AppError("ERR_QUEUE_CREATE_FAILED");
-  }
+  const queue = await Queue.create(queueData);
+
+  return queue;
 };
 
 export default CreateQueueService;

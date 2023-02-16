@@ -9,7 +9,7 @@ module.exports = {
 
   down: (queryInterface: QueryInterface) => {
     return queryInterface.changeColumn("Tickets", "lastMessage", {
-      type: DataTypes.TEXT
+      type: DataTypes.STRING
     });
   }
 };

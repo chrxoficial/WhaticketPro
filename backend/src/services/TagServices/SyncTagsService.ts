@@ -13,7 +13,7 @@ const SyncTags = async ({
 }: Request): Promise<Ticket | null> => {
   const ticket = await Ticket.findByPk(ticketId, { include: [Tag] });
 
-  const tagList = tags.map((t) => ({ tagId: t.id, ticketId }));
+  const tagList = tags.map(t => ({ tagId: t.id, ticketId }));
 
   await TicketTag.destroy({ where: { ticketId } });
   await TicketTag.bulkCreate(tagList);

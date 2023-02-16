@@ -16,25 +16,13 @@ import {
   TextField,
   Switch,
   FormControlLabel,
-  FormControl,
-  FormGroup,
-  Tooltip,
-  Paper,
   Grid,
-  Checkbox,
 } from "@material-ui/core";
 
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
 import toastError from "../../errors/toastError";
 import QueueSelect from "../QueueSelect";
-
-const longText = `
-Desmarque esta opção para definir um horário de expediente para os atendimentos.
-Quando um usuário escolher ser direcionado a um atendente, o sistema irá
-verificar o horário e o dia, se estiver fora do expediente, envia um aviso
-ao usuário e não direciona ao atendente escolhido.
-`;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,45 +49,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -12,
     marginLeft: -12,
   },
-
-  expediente: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-  tituloReceberMsg: {
-    fontSize: 12,
-    marginLeft: theme.spacing(1),
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-  reabrirTicket: {
-    fontSize: 12,
-    display: "flex",
-    marginLeft: theme.spacing(2),
-  },
-  textSize: {
-    fontSize: 12,
-  },
-  paperReceberMsg: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-  diasSemana: {
-    marginLeft: theme.spacing(1),
-  },
-  hora: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    width: 250,
-  },
-  textoExpediente: {
-    marginTop: theme.spacing(2),
-    marginLeft: theme.spacing(1),
-    marginBottom: theme.spacing(3),
-    width: "100%",
-  },
 }));
 
 const SessionSchema = Yup.object().shape({
@@ -114,48 +63,24 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
   const initialState = {
     name: "",
     greetingMessage: "",
-    farewellMessage: "",
+    complationMessage: "",
+    outOfHoursMessage: "",
+    ratingMessage: "",
     isDefault: false,
-    isMultidevice: false,
-    		transferTicketMessage: "",
-
+    token: "",
+    provider: "beta",
   };
   const [whatsApp, setWhatsApp] = useState(initialState);
   const [selectedQueueIds, setSelectedQueueIds] = useState([]);
-  const [defineWorkHours, SetDefineWorkHours] = useState(false);
-  const [outOfWorkMessage, setOutOfWorkMessage] = useState("");
-  const [startWorkHour, setStartWorkHour] = useState("08:00");
-  const [endWorkHour, setEndWorkHour] = useState("17:30");
-  const [startWorkHourWeekend, setStartWorkHourWeekend] = useState("08:00");
-  const [endWorkHourWeekend, setEndWorkHourWeekend] = useState("17:30");
-  const [seg, setSeg] = useState(true);
-  const [ter, setTer] = useState(true);
-  const [quar, setQuar] = useState(true);
-  const [quin, setQuin] = useState(true);
-  const [sex, setSex] = useState(true);
-  const [sab, setSab] = useState(false);
-  const [dom, setDom] = useState(false);
 
   useEffect(() => {
     const fetchSession = async () => {
       if (!whatsAppId) return;
 
       try {
-        const { data } = await api.get(`whatsapp/${whatsAppId}`);
+        const { data } = await api.get(`whatsapp/${whatsAppId}?session=0`);
         setWhatsApp(data);
-        setSeg(data.monday);
-        setTer(data.tuesday);
-        setQuar(data.wednesday);
-        setQuin(data.thursday);
-        setSex(data.friday);
-        setSab(data.saturday);
-        setDom(data.sunday);
-        SetDefineWorkHours(data.defineWorkHours);
-        setOutOfWorkMessage(data.outOfWorkMessage);
-        setStartWorkHour(data.startWorkHour);
-        setEndWorkHour(data.endWorkHour);
-        setStartWorkHourWeekend(data.startWorkHourWeekend);
-        setEndWorkHourWeekend(data.endWorkHourWeekend);
+
         const whatsQueueIds = data.queues?.map((queue) => queue.id);
         setSelectedQueueIds(whatsQueueIds);
       } catch (err) {
@@ -165,49 +90,10 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
     fetchSession();
   }, [whatsAppId]);
 
-  const handleChange = (e) => {
-    if (e.target.value === "MON") {
-      setSeg(e.target.checked);
-    }
-    if (e.target.value === "TUE") {
-      setTer(e.target.checked);
-    }
-    if (e.target.value === "WED") {
-      setQuar(e.target.checked);
-    }
-    if (e.target.value === "THU") {
-      setQuin(e.target.checked);
-    }
-    if (e.target.value === "FRI") {
-      setSex(e.target.checked);
-    }
-    if (e.target.value === "SAT") {
-      setSab(e.target.checked);
-    }
-    if (e.target.value === "SUN") {
-      setDom(e.target.checked);
-    }
-
-    if (e.target.value === "defineWorkHours") {
-      SetDefineWorkHours(e.target.checked);
-    }
-  };
-
   const handleSaveWhatsApp = async (values) => {
-    const whatsappData = { ...values, queueIds: selectedQueueIds, 	startWorkHour: startWorkHour,
-			endWorkHour: endWorkHour,
-			defineWorkHours: defineWorkHours,
-			outOfWorkMessage: outOfWorkMessage,
-			startWorkHourWeekend: startWorkHourWeekend,
-			endWorkHourWeekend: endWorkHourWeekend,
-			monday: seg,
-			tuesday: ter,
-			wednesday: quar,
-			thursday: quin,
-			friday: sex,
-			saturday: sab,
-			sunday: dom, 
-     };
+    const whatsappData = { ...values, queueIds: selectedQueueIds };
+    delete whatsappData["queues"];
+    delete whatsappData["session"];
 
     try {
       if (whatsAppId) {
@@ -256,40 +142,34 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
             <Form>
               <DialogContent dividers>
                 <div className={classes.multFieldLine}>
-                  <Field
-                    as={TextField}
-                    label={i18n.t("whatsappModal.form.name")}
-                    autoFocus
-                    name="name"
-                    error={touched.name && Boolean(errors.name)}
-                    helperText={touched.name && errors.name}
-                    variant="outlined"
-                    margin="dense"
-                    className={classes.textField}
-                  />
-                  <FormControlLabel
-                    control={
+                  <Grid spacing={2} container>
+                    <Grid item>
                       <Field
-                        as={Switch}
-                        color="primary"
-                        name="isDefault"
-                        checked={values.isDefault}
+                        as={TextField}
+                        label={i18n.t("whatsappModal.form.name")}
+                        autoFocus
+                        name="name"
+                        error={touched.name && Boolean(errors.name)}
+                        helperText={touched.name && errors.name}
+                        variant="outlined"
+                        margin="dense"
+                        className={classes.textField}
                       />
-                    }
-                    label={i18n.t("whatsappModal.form.default")}
-                  />
-
-                  <FormControlLabel
-                    control={
-                      <Field
-                        as={Switch}
-                        color="primary"
-                        name="isMultidevice"
-                        checked={values.isMultidevice}
+                    </Grid>
+                    <Grid style={{ paddingTop: 15 }} item>
+                      <FormControlLabel
+                        control={
+                          <Field
+                            as={Switch}
+                            color="primary"
+                            name="isDefault"
+                            checked={values.isDefault}
+                          />
+                        }
+                        label={i18n.t("whatsappModal.form.default")}
                       />
-                    }
-                    label={i18n.t("whatsappModal.form.isMultidevice")}
-                  />
+                    </Grid>
+                  </Grid>
                 </div>
                 <div>
                   <Field
@@ -297,7 +177,7 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
                     label={i18n.t("queueModal.form.greetingMessage")}
                     type="greetingMessage"
                     multiline
-                    rows={5}
+                    rows={4}
                     fullWidth
                     name="greetingMessage"
                     error={
@@ -313,303 +193,71 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
                 <div>
                   <Field
                     as={TextField}
-                    label={i18n.t("whatsappModal.form.farewellMessage")}
-                    type="farewellMessage"
+                    label={i18n.t("queueModal.form.complationMessage")}
+                    type="complationMessage"
                     multiline
-                    rows={5}
+                    rows={4}
                     fullWidth
-                    name="farewellMessage"
+                    name="complationMessage"
                     error={
-                      touched.farewellMessage && Boolean(errors.farewellMessage)
+                      touched.complationMessage &&
+                      Boolean(errors.complationMessage)
                     }
                     helperText={
-                      touched.farewellMessage && errors.farewellMessage
+                      touched.complationMessage && errors.complationMessage
                     }
                     variant="outlined"
                     margin="dense"
                   />
                 </div>
-
                 <div>
                   <Field
                     as={TextField}
-                    label="Mensagem de transferencia de atendimento"
-                    type="transferTicketMessage"
+                    label={i18n.t("queueModal.form.outOfHoursMessage")}
+                    type="outOfHoursMessage"
                     multiline
-                    rows={5}
+                    rows={4}
                     fullWidth
-                    name="transferTicketMessage"
+                    name="outOfHoursMessage"
                     error={
-                      touched.transferTicketMessage &&
-                      Boolean(errors.transferTicketMessage)
+                      touched.outOfHoursMessage &&
+                      Boolean(errors.outOfHoursMessage)
                     }
                     helperText={
-                      touched.transferTicketMessage &&
-                      errors.transferTicketMessage
+                      touched.outOfHoursMessage && errors.outOfHoursMessage
                     }
                     variant="outlined"
                     margin="dense"
                   />
                 </div>
-
                 <div>
-                  {/* Expediente */}
-
-                  {defineWorkHours === true ? (
-                    <div
-                    // className={classes.textoExpediente}
-                    >
-                      <TextField
-                        label={i18n.t("queueModal.form.outOfWorkMessage")}
-                        rows={4}
-                        multiline
-                        fullWidth
-                        name="outOfWorkMessage"
-                        value={outOfWorkMessage}
-                        error={
-                          touched.outOfWorkMessage &&
-                          Boolean(errors.outOfWorkMessage)
-                        }
-                        helperText={
-                          touched.outOfWorkMessage &&
-                          errors.outOfWorkMessage
-                        }
-                        variant="outlined"
-                        margin="dense"                       
-                        
-                        onChange={(e) => setOutOfWorkMessage(e.target.value)}
-                      />
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={12} className={classes.diasSemana}>
-                      <FormControl component="fieldset">
-                        <FormGroup
-                          aria-label="position"
-                          row
-                          sx={{
-                            width: {
-                              xs: 100,
-                              sm: 200,
-                              md: 300,
-                              lg: 600,
-                              xl: 700,
-                            },
-                          }}
-                        >
-                          <Tooltip title={longText} placement="top">
-                            <FormControlLabel
-                              value="defineWorkHours"
-                              control={
-                                <Checkbox
-                                  size="small"
-                                  checked={defineWorkHours}
-                                  onChange={handleChange}
-                                />
-                              }
-                              label="Definir horário de expediente"
-                              labelPlacement="end"
-                            />
-                          </Tooltip>
-                        </FormGroup>
-                      </FormControl>
-                    </Grid>
-                    {defineWorkHours === true ? (
-                      <>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            className={classes.hora}
-                            type="time"
-                            label={i18n.t("queueModal.form.startWorkHour")}
-                            name="startWorkHour"
-                            value={startWorkHour}
-                            onChange={(e) => setStartWorkHour(e.target.value)}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            className={classes.hora}
-                            type="time"
-                            label={i18n.t("queueModal.form.endWorkHour")}
-                            name="endWorkHour"
-                            value={endWorkHour}
-                            onChange={(e) => setEndWorkHour(e.target.value)}
-                          />
-                        </Grid>
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </Grid>
-                  {defineWorkHours === true ? (
-                    <>
-                      <Grid item xs={12} sm={12} className={classes.diasSemana}>
-                        <FormControl component="fieldset">
-                          <FormGroup
-                            aria-label="position"
-                            row
-                            sx={{
-                              width: {
-                                xs: 100,
-                                sm: 200,
-                                md: 300,
-                                lg: 600,
-                                xl: 700,
-                              },
-                            }}
-                          >
-                            <FormControlLabel
-                              value="MON"
-                              control={
-                                <Checkbox
-                                  size="small"
-                                  checked={seg}
-                                  onChange={handleChange}
-                                />
-                              }
-                              label={i18n.t("queueModal.form.monday")}
-                              labelPlacement="end"
-                            />
-                            <FormControlLabel
-                              value="TUE"
-                              control={
-                                <Checkbox
-                                  size="small"
-                                  checked={ter}
-                                  onChange={handleChange}
-                                />
-                              }
-                              label={i18n.t("queueModal.form.tuesday")}
-                              labelPlacement="end"
-                            />
-                            <FormControlLabel
-                              value="WED"
-                              control={
-                                <Checkbox
-                                  size="small"
-                                  checked={quar}
-                                  onChange={handleChange}
-                                />
-                              }
-                              label={i18n.t("queueModal.form.wednesday")}
-                              labelPlacement="end"
-                            />
-                            <FormControlLabel
-                              value="THU"
-                              control={
-                                <Checkbox
-                                  size="small"
-                                  checked={quin}
-                                  onChange={handleChange}
-                                />
-                              }
-                              label={i18n.t("queueModal.form.thursday")}
-                              labelPlacement="end"
-                            />
-                            <FormControlLabel
-                              value="FRI"
-                              control={
-                                <Checkbox
-                                  size="small"
-                                  checked={sex}
-                                  onChange={handleChange}
-                                />
-                              }
-                              label={i18n.t("queueModal.form.friday")}
-                              labelPlacement="end"
-                            />
-                          </FormGroup>
-                        </FormControl>
-                      </Grid>
-                    </>
-                  ) : (
-                    ""
-                  )}
-                  {defineWorkHours === true ? (
-                    <>
-                      <Paper>
-                        <Grid container spacing={2} style={{ marginTop: 10 }}>
-                          <Grid item xs={12} sm={6}>
-                            <TextField
-                              className={classes.hora}
-                              type="time"
-                              label={i18n.t("queueModal.form.startWorkHour")}
-                              name="StartWorkHourWeekend"
-                              value={startWorkHourWeekend}
-                              onChange={(e) =>
-                                setStartWorkHourWeekend(e.target.value)
-                              }
-                            />
-                          </Grid>
-                          <Grid item xs={12} sm={6}>
-                            <TextField
-                              className={classes.hora}
-                              type="time"
-                              label={i18n.t("queueModal.form.endWorkHour")}
-                              name="EndWorkHourWeekend"
-                              value={endWorkHourWeekend}
-                              onChange={(e) =>
-                                setEndWorkHourWeekend(e.target.value)
-                              }
-                            />
-                          </Grid>
-                        </Grid>
-                        <Grid
-                          item
-                          xs={12}
-                          sm={12}
-                          className={classes.diasSemana}
-                        >
-                          <FormControl component="fieldset">
-                            <FormGroup
-                              aria-label="position"
-                              row
-                              sx={{
-                                width: {
-                                  xs: 100,
-                                  sm: 200,
-                                  md: 300,
-                                  lg: 600,
-                                  xl: 700,
-                                },
-                              }}
-                            >
-                              <FormControlLabel
-                                value="SAT"
-                                control={
-                                  <Checkbox
-                                    size="small"
-                                    checked={sab}
-                                    onChange={handleChange}
-                                  />
-                                }
-                                label={i18n.t("queueModal.form.saturday")}
-                                labelPlacement="end"
-                              />
-                              <FormControlLabel
-                                value="SUN"
-                                control={
-                                  <Checkbox
-                                    size="small"
-                                    checked={dom}
-                                    onChange={handleChange}
-                                  />
-                                }
-                                label={i18n.t("queueModal.form.sunday")}
-                                labelPlacement="end"
-                              />
-                            </FormGroup>
-                          </FormControl>
-                        </Grid>
-                      </Paper>
-                    </>
-                  ) : (
-                    ""
-                  )}
+                  <Field
+                    as={TextField}
+                    label={i18n.t("queueModal.form.ratingMessage")}
+                    type="ratingMessage"
+                    multiline
+                    rows={4}
+                    fullWidth
+                    name="ratingMessage"
+                    error={
+                      touched.ratingMessage && Boolean(errors.ratingMessage)
+                    }
+                    helperText={touched.ratingMessage && errors.ratingMessage}
+                    variant="outlined"
+                    margin="dense"
+                  />
                 </div>
-
+                <div>
+                  <Field
+                    as={TextField}
+                    label={i18n.t("queueModal.form.token")}
+                    type="token"
+                    fullWidth
+                    name="token"
+                    variant="outlined"
+                    margin="dense"
+                  />
+                </div>
                 <QueueSelect
                   selectedQueueIds={selectedQueueIds}
                   onChange={(selectedIds) => setSelectedQueueIds(selectedIds)}

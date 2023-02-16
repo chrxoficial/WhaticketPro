@@ -1,5 +1,6 @@
 import { Chat, Contact } from "@adiwajshing/baileys";
 import Baileys from "../../models/Baileys";
+import { isArray } from "lodash";
 
 interface Request {
   whatsappId: number;
@@ -24,18 +25,16 @@ const createOrUpdateBaileysService = async ({
       ? JSON.parse(JSON.stringify(baileysExists.contacts))
       : [];
 
-    if (chats) {
+    if (chats && isArray(getChats)) {
       getChats.push(...chats);
       getChats.sort();
-      getChats.filter((v: string, i: number, a: string) => a.indexOf(v) === i);
+      getChats.filter((v, i, a) => a.indexOf(v) === i);
     }
 
-    if (contacts) {
+    if (contacts && isArray(getContacts)) {
       getContacts.push(...contacts);
       getContacts.sort();
-      getContacts.filter(
-        (v: string, i: number, a: string) => a.indexOf(v) === i
-      );
+      getContacts.filter((v, i, a) => a.indexOf(v) === i);
     }
 
     const newBaileys = await baileysExists.update({

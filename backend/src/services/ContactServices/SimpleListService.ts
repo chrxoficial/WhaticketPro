@@ -3,16 +3,16 @@ import AppError from "../../errors/AppError";
 import { FindOptions, Op } from "sequelize";
 
 export interface SearchContactParams {
+  companyId: string | number;
   name?: string;
 }
 
-const SimpleListService = async (params: SearchContactParams): Promise<Contact[]> => {
+const SimpleListService = async ({ name, companyId }: SearchContactParams): Promise<Contact[]> => {
   let options: FindOptions = {
     order: [
       ['name', 'ASC']
     ]
   }
-  const { name } = params
 
   if (name) {
     options.where = {
@@ -20,6 +20,11 @@ const SimpleListService = async (params: SearchContactParams): Promise<Contact[]
         [Op.like]: `%${name}%`
       }
     }
+  }
+
+  options.where = {
+    ...options.where,
+    companyId
   }
 
   const contacts = await Contact.findAll(options);

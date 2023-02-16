@@ -6,30 +6,24 @@ interface IOnWhatsapp {
   exists: boolean;
 }
 
+const checker = async (number: string, wbot: any) => {
+  const [validNumber] = await wbot.onWhatsApp(`${number}@s.whatsapp.net`);
+  return validNumber;
+};
 
-const CheckContactNumber = async (number: string): Promise<string> => {
-  const defaultWhatsapp = await GetDefaultWhatsApp();
+const CheckContactNumber = async (
+  number: string,
+  companyId: number
+): Promise<IOnWhatsapp> => {
+  const defaultWhatsapp = await GetDefaultWhatsApp(companyId);
 
   const wbot = getWbot(defaultWhatsapp.id);
-  let isGroup = number.endsWith("@g.us")
-  let numberArray
-  if (isGroup) {
-    const grupoMeta = await wbot.groupMetadata(number, false);
-    numberArray = [{
-      jid: grupoMeta.id,
-      exists: true
-    }]
-  } else {
-    numberArray = await wbot.onWhatsApp(`${number}@s.whatsapp.net`);
-  }
+  const isNumberExit = await checker(number, wbot);
 
-  const isNumberExit = numberArray
-
-  if (!isNumberExit[0]?.exists) {
+  if (!isNumberExit.exists) {
     throw new Error("ERR_CHECK_NUMBER");
   }
-
-  return isGroup ? number.split('@')[0] : isNumberExit[0].jid.replace(/[^\d]/g, "");
+  return isNumberExit;
 };
 
 export default CheckContactNumber;
