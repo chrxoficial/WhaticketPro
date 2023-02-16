@@ -40,6 +40,7 @@ import { socketConnection } from "../../services/socket";
 /**/ 
 import { Tooltip } from "@material-ui/core";
 import { CSVLink } from "react-csv";
+import { Archive } from "@material-ui/icons";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_CONTACTS") {
