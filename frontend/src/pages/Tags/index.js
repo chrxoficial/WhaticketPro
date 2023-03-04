@@ -37,6 +37,8 @@ import toastError from "../../errors/toastError";
 import { Chip } from "@material-ui/core";
 import { socketConnection } from "../../services/socket";
 import { AuthContext } from "../../context/Auth/AuthContext";
+import { Can } from "../../components/Can";
+
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_TAGS") {
@@ -274,19 +276,25 @@ const Tags = () => {
                   </TableCell>
                   <TableCell align="center">{tag.ticketsCount}</TableCell>
                   <TableCell align="center">
+
                     <IconButton size="small" onClick={() => handleEditTag(tag)}>
                       <EditIcon />
                     </IconButton>
 
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        setConfirmModalOpen(true);
-                        setDeletingTag(tag);
-                      }}
-                    >
-                      <DeleteOutlineIcon />
-                    </IconButton>
+                    <Can
+                      role={user.profile}
+                      perform="drawer-admin-items:view"
+                      yes={() => (
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            setConfirmModalOpen(true);
+                            setDeletingTag(tag);
+                          }}
+                        >
+                          <DeleteOutlineIcon />
+                        </IconButton>
+                      )} />
                   </TableCell>
                 </TableRow>
               ))}

@@ -18,7 +18,7 @@ import {
 
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import AccountCircle from "@material-ui/icons/AccountCircle";
+//import AccountCircle from "@material-ui/icons/AccountCircle";
 
 import MainListItems from "./MainListItems";
 import NotificationsPopOver from "../components/NotificationsPopOver";
@@ -32,6 +32,7 @@ import AnnouncementsPopover from "../components/AnnouncementsPopover";
 import logo from "../assets/zapsimples.png";
 import { socketConnection } from "../services/socket";
 import ChatPopover from "../pages/Chat/ChatPopover";
+import notificationIcon from "./../assets/icons/profile.png"
 
 const drawerWidth = 300;
 
@@ -44,8 +45,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
-  toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
+  toolbar: { 
+    paddingRight: 24, // keep right padding when drawer close
   },
   toolbarIcon: {
     display: "flex",
@@ -71,6 +72,7 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButton: {
     marginRight: 36,
+    
   },
   menuButtonHidden: {
     display: "none",
@@ -123,6 +125,9 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
     ...theme.scrollbarStyles,
   },
+  icon: {
+    width: "20px"
+  }
 }));
 
 const LoggedInLayout = ({ children }) => {
@@ -267,7 +272,7 @@ const LoggedInLayout = ({ children }) => {
           >
             {greaterThenSm ? (
               <>
-                Olá <b>{user.name}</b>, Seja bem-vindo.
+                <p style={{color:"#FDFDFD"}}>Olá <b>{user.name}</b>, Seja bem-vindo.</p>
               </>
             ) : (
               user.name
@@ -288,7 +293,7 @@ const LoggedInLayout = ({ children }) => {
               variant="contained"
 
             >
-              <AccountCircle />
+              <img src={notificationIcon} className={classes.icon} alt="icon"/>
             </IconButton>
             <Menu
               id="menu-appbar"

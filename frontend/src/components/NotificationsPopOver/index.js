@@ -10,8 +10,9 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { makeStyles } from "@material-ui/core/styles";
-import Badge from "@material-ui/core/Badge";
-import ChatIcon from "@material-ui/icons/Chat";
+//import Badge from "@material-ui/core/Badge";
+//import ChatIcon from "@material-ui/icons/Chat";
+import notificationIcon from "./../../assets/icons/mensagens.png"
 
 import TicketListItem from "../TicketListItem";
 import { i18n } from "../../translate/i18n";
@@ -38,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
   noShadow: {
     boxShadow: "none !important",
   },
+  icon: {
+    width: "20px"
+  }
 }));
 
 const NotificationsPopOver = () => {
@@ -82,7 +86,7 @@ const NotificationsPopOver = () => {
     const companyId = localStorage.getItem("companyId");
     const socket = socketConnection({ companyId });
 
-    const queueIds = queues.map((q) => q.id);
+    //const queueIds = queues.map((q) => q.id);
 
     socket.on("connect", () => socket.emit("joinNotification"));
 
@@ -199,7 +203,7 @@ const NotificationsPopOver = () => {
         variant="contained"
 
       >
-          <ChatIcon />
+        <img src={notificationIcon} className={classes.icon} alt="icon"/>
         {/* <Badge badgeContent={notifications.length} color="secondary">
         </Badge> */}
       </IconButton>

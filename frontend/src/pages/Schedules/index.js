@@ -113,6 +113,9 @@ const Schedules = () => {
   const [schedules, dispatch] = useReducer(reducer, []);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [contactId, setContactId] = useState(+getUrlParam("contactId"));
+  //added
+  const [ recorrency, setRecorrency ] = useState(false)
+
 
   const fetchSchedules = useCallback(async () => {
     try {
@@ -175,6 +178,12 @@ const Schedules = () => {
     setContactId("");
   };
 
+  const handleOpenScheduleModalRec = () => {
+    setRecorrency(true)
+    setSelectedSchedule(null);
+    setScheduleModalOpen(true);
+  };
+
   const handleOpenScheduleModal = () => {
     setSelectedSchedule(null);
     setScheduleModalOpen(true);
@@ -183,6 +192,7 @@ const Schedules = () => {
   const handleCloseScheduleModal = () => {
     setSelectedSchedule(null);
     setScheduleModalOpen(false);
+    setRecorrency(false)
   };
 
   const handleSearch = (event) => {
@@ -250,6 +260,7 @@ const Schedules = () => {
         scheduleId={selectedSchedule && selectedSchedule.id}
         contactId={contactId}
         cleanContact={cleanContact}
+        recorrency={recorrency}
       />
       <MainHeader>
         <Title>{i18n.t("schedules.title")}</Title>
@@ -273,6 +284,13 @@ const Schedules = () => {
             onClick={handleOpenScheduleModal}
           >
             {i18n.t("schedules.buttons.add")}
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenScheduleModalRec}
+          >
+            AGENDAMENTO POR RECORRENCIA
           </Button>
         </MainHeaderButtonsWrapper>
       </MainHeader>
@@ -313,7 +331,11 @@ const Schedules = () => {
                     {moment(schedule.sendAt).format("DD/MM/YYYY HH:mm:ss")}
                   </TableCell>
                   <TableCell align="center">
-                    {capitalize(schedule.status)}
+                    {capitalize(
+                      schedule.recorrency
+                        ?`${schedule.status} - RECORRENTE`
+                        :schedule.status
+                    )}
                   </TableCell>
                   <TableCell align="center">
                     <IconButton

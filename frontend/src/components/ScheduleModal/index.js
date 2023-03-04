@@ -63,7 +63,7 @@ const ScheduleSchema = Yup.object().shape({
 	sendAt: Yup.string().required("Obrigatório")
 });
 
-const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload }) => {
+const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload, recorrency }) => {
 	const classes = useStyles();
 	const history = useHistory();
 	const { user } = useContext(AuthContext);
@@ -72,7 +72,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		body: "",
 		contactId: "",
 		sendAt: moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm'),
-		sentAt: ""
+		sentAt: "",
 	};
 
 	const initialContact = {
@@ -130,11 +130,13 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 
 	const handleSaveSchedule = async values => {
 		const scheduleData = { ...values, userId: user.id };
+		//added
+		console.log(values)
 		try {
 			if (scheduleId) {
 				await api.put(`/schedules/${scheduleId}`, scheduleData);
 			} else {
-				await api.post("/schedules", scheduleData);
+				await api.post("/schedules", { ...scheduleData, recorrency});
 			}
 			toast.success(i18n.t("scheduleModal.success"));
 			if (typeof reload == 'function') {
@@ -164,7 +166,9 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 				scroll="paper"
 			>
 				<DialogTitle id="form-dialog-title">
-					{schedule.status === 'ERRO' ? 'Erro de Envio' : `Mensagem ${capitalize(schedule.status)}`}
+					{schedule.status === 'ERRO' ? 'Erro de Envio' :
+					recorrency? `Mensagem por recorrencia`:
+					`Mensagem ${capitalize(schedule.status)}`}
 				</DialogTitle>
 				<Formik
 					initialValues={schedule}

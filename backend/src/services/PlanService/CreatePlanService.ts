@@ -35,6 +35,7 @@ const CreatePlanService = async (planData: PlanData): Promise<Plan> => {
 
   try {
     await planSchema.validate({ name });
+    
   } catch (err) {
     throw new AppError(err.message);
   }

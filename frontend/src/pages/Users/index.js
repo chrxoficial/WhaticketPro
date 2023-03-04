@@ -259,6 +259,7 @@ const Users = () => {
                   <TableCell align="center">
                     <IconButton
                       size="small"
+                      disabled
                       onClick={() => handleEditUser(user)}
                     >
                       <EditIcon />
@@ -266,6 +267,7 @@ const Users = () => {
 
                     <IconButton
                       size="small"
+                      disabled
                       onClick={(e) => {
                         setConfirmModalOpen(true);
                         setDeletingUser(user);

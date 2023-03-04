@@ -139,13 +139,21 @@ async function handleSendScheduledMessage(job) {
       body: schedule.body
     });
 
-    await scheduleRecord?.update({
-      sentAt: moment().format("YYYY-MM-DD HH:mm"),
-      status: "ENVIADA"
-    });
-
-    logger.info(`Mensagem agendada enviada para: ${schedule.contact.name}`);
-    sendScheduledMessages.clean(15000, "completed");
+    //modify
+    if (schedule.recorrency == true) {
+      await scheduleRecord?.update({
+        sentAt: schedule.sendAt,
+        status: "AGENDADA"
+      });
+      logger.info(`Mensagem agendada enviada para: ${schedule.contact.name}`);
+    } else {
+      await scheduleRecord?.update({
+        sentAt: moment().format("YYYY-MM-DD HH:mm"),
+        status: "ENVIADA"
+      });
+      logger.info(`Mensagem agendada enviada para: ${schedule.contact.name}`);
+      sendScheduledMessages.clean(15000, "completed");
+    }
   } catch (e: any) {
     Sentry.captureException(e);
     await scheduleRecord?.update({

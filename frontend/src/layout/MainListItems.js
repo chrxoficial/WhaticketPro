@@ -9,6 +9,7 @@ import Divider from "@material-ui/core/Divider";
 import { Badge, Collapse, List } from "@material-ui/core";
 import DashboardOutlinedIcon from "@material-ui/icons/DashboardOutlined";
 import WhatsAppIcon from "@material-ui/icons/WhatsApp";
+import Schedule from "@material-ui/icons/Schedule";
 import SyncAltIcon from "@material-ui/icons/SyncAlt";
 import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
@@ -236,6 +237,12 @@ const MainListItems = (props) => {
         icon={<WhatsAppIcon />}
       />
 
+      {/* <ListItemLink
+        to="/calendar"
+        primary={i18n.t("Calendário")}
+        icon={<EventIcon />}
+      /> */}
+
       <ListItemLink
         to="/quick-messages"
         primary={i18n.t("mainDrawer.listItems.quickMessages")}
@@ -251,7 +258,7 @@ const MainListItems = (props) => {
       <ListItemLink
         to="/schedules"
         primary={i18n.t("mainDrawer.listItems.schedules")}
-        icon={<EventIcon />}
+        icon={<Schedule />}
       />
 
       <ListItemLink
@@ -270,11 +277,11 @@ const MainListItems = (props) => {
         }
       />
 
-      <ListItemLink
+      {/* <ListItemLink
         to="/helps"
         primary={i18n.t("mainDrawer.listItems.helps")}
         icon={<HelpOutlineIcon />}
-      />
+      /> */}
 
       <Can
         role={user.profile}
@@ -379,12 +386,12 @@ const MainListItems = (props) => {
               primary={i18n.t("mainDrawer.listItems.settings")}
               icon={<SettingsOutlinedIcon />}
             />
-{/*             <ListItemLink
+             {/*<ListItemLink
               to="/subscription"
               primary="Assinatura"
               icon={<PaymentIcon />}
-              //className={classes.menuItem}
-            /> */}
+              // className={classes.menuItem}
+            />*/} 
           </>
         )}
       />

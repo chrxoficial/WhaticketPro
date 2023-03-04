@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import toastError from "../../errors/toastError";
 import Popover from "@material-ui/core/Popover";
-import AnnouncementIcon from "@material-ui/icons/Announcement";
+//import AnnouncementIcon from "@material-ui/icons/Announcement";
 import {
   Avatar,
   Badge,
@@ -24,6 +24,7 @@ import api from "../../services/api";
 import { isArray } from "lodash";
 import moment from "moment";
 import { socketConnection } from "../../services/socket";
+import notificationIcon from "./../../assets/icons/campainha.png"
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
@@ -34,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
     ...theme.scrollbarStyles,
   },
+  icon: {
+    width: "20px"
+  }
 }));
 
 function AnnouncementDialog({ announcement, open, handleClose }) {
@@ -246,7 +250,7 @@ export default function AnnouncementsPopover() {
           variant="dot"
           invisible={invisible || announcements.length < 1}
         >
-          <AnnouncementIcon />
+          <img src={notificationIcon} className={classes.icon} alt="icon"/>
         </Badge>
       </IconButton>
       <Popover

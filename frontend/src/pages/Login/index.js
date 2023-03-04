@@ -1,11 +1,10 @@
-import React, { useState, useContext } from "react";
-// import { Link as RouterLink } from "react-router-dom";
+import React, { useState, useContext } from "react";import { Link as RouterLink } from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
-// import Link from "@material-ui/core/Link";
-// import Grid from "@material-ui/core/Grid";
+import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid"; 
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
@@ -31,14 +30,29 @@ import logo from "../../assets/zapsimples.png";
 // };
 
 const useStyles = makeStyles(theme => ({
-	paper: {
-		marginTop: theme.spacing(8),
+	root: {
+		width: "100vw",
+		height: "100vh",
+		backgroundImage: "url(https://img.freepik.com/free-vector/flat-design-abstract-shapes-background_23-2149120544.jpg?w=1380&t=st=1677789447~exp=1677790047~hmac=212f3d6da989e6f7a5aa901e7acc14a559e81e354763cbb4eff94a7aabe01fe0)",
+		backgroundRepeat: "no-repeat",
+		backgroundSize: "100% 100%",
+		backgroundPosition: "center",
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
+		justifyContent: "center",
+		textAlign: "center",
+	},
+	paper: {
+		backgroundColor: "white",
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+		padding: "55px 30px",
+		borderRadius: "12.5px",
 	},
 	avatar: {
-		margin: theme.spacing(1),
+		margin: theme.spacing(1),  
 		backgroundColor: theme.palette.secondary.main,
 	},
 	form: {
@@ -48,6 +62,9 @@ const useStyles = makeStyles(theme => ({
 	submit: {
 		margin: theme.spacing(3, 0, 2),
 	},
+	powered: {
+		color: "white"
+	}
 }));
 
 const Login = () => {
@@ -67,8 +84,9 @@ const Login = () => {
 	};
 
 	return (
+		<div className={classes.root}>
 		<Container component="main" maxWidth="xs">
-			<CssBaseline />
+			<CssBaseline/>
 			<div className={classes.paper}>
 				<div>
 					<img style={{ margin: "0 auto", height: "80px", width: "100%" }} src={logo} alt="Whats" />
@@ -112,7 +130,7 @@ const Login = () => {
 					>
 						{i18n.t("login.buttons.submit")}
 					</Button>
-					{/*<Grid container>
+					{/* <Grid container>
 						<Grid item>
 							<Link
 								href="#"
@@ -123,11 +141,15 @@ const Login = () => {
 								{i18n.t("login.buttons.register")}
 							</Link>
 						</Grid>
-					</Grid>*/}
+					</Grid> */}
 				</form>
+			<span className={classes.rodape}>Experimente nossa versão mobile</span>
 			</div>
+			<br/>
+			<span className={classes.powered}>@Powered by Proxigma(2023).</span>
 			<Box mt={8}>{/* <Copyright /> */}</Box>
 		</Container>
+		</div>
 	);
 };
 

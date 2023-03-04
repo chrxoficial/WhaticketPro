@@ -36,7 +36,7 @@ const Contacts = () => {
   const { user } = useContext(AuthContext);
 
   const [loading,] = useState(false);
-  const [, setPageNumber] = useState(1);
+  const [pageNumber, setPageNumber] = useState(1);
   const [selectedContactId, setSelectedContactId] = useState(null);
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [hasMore,] = useState(false);
@@ -65,7 +65,7 @@ const Contacts = () => {
   };
 
   return (
-    <MainContainer className={classes.mainContainer}>
+    <MainContainer>
       <SubscriptionModal
         open={contactModalOpen}
         onClose={handleCloseContactModal}

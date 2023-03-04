@@ -13,6 +13,7 @@ import Financeiro from "../pages/Financeiro/";
 import Users from "../pages/Users";
 import Contacts from "../pages/Contacts/";
 import Queues from "../pages/Queues/";
+import Calendar from "../pages/Calendar/";
 import Tags from "../pages/Tags/";
 import MessagesAPI from "../pages/MessagesAPI/";
 import Helps from "../pages/Helps/";
@@ -60,6 +61,14 @@ const Routes = () => {
                   component={TicketResponsiveContainer}
                   isPrivate
                 />
+
+                <Route
+                  exact
+                  path="/calendar"
+                  component={Calendar}
+                  isPrivate
+                />
+
                 <Route
                   exact
                   path="/connections"
