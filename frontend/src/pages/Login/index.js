@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
 	root: {
 		width: "100vw",
 		height: "100vh",
-		backgroundImage: "url(https://img.freepik.com/free-vector/flat-design-abstract-shapes-background_23-2149120544.jpg?w=1380&t=st=1677789447~exp=1677790047~hmac=212f3d6da989e6f7a5aa901e7acc14a559e81e354763cbb4eff94a7aabe01fe0)",
+		backgroundImage: "url(https://drive.google.com/file/d/1iolKQTypZhkG7yCRzpf9wz2H5e76IWZv/view)",
 		backgroundRepeat: "no-repeat",
 		backgroundSize: "100% 100%",
 		backgroundPosition: "center",
