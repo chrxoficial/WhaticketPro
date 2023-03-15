@@ -91,6 +91,10 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
     ...theme.scrollbarStyles,
   },
+  botoesResponsivos: {
+    display: "flex",
+    flexWrap: "wrap",
+  }
 }));
 
 const Tags = () => {
@@ -216,7 +220,7 @@ const Tags = () => {
         aria-labelledby="form-dialog-title"
         tagId={selectedTag && selectedTag.id}
       />
-      <MainHeader>
+      <MainHeader className={classes.botoesResponsivos}>
         <Title>{i18n.t("tags.title")}</Title>
         <MainHeaderButtonsWrapper>
           <TextField

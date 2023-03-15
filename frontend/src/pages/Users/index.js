@@ -81,6 +81,10 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
     ...theme.scrollbarStyles,
   },
+  botoesResponsivos: {
+    display: "flex",
+    flexWrap: "wrap",
+  }
 }));
 
 const Users = () => {
@@ -204,7 +208,7 @@ const Users = () => {
         aria-labelledby="form-dialog-title"
         userId={selectedUser && selectedUser.id}
       />
-      <MainHeader>
+      <MainHeader className={classes.botoesResponsivos}>
         <Title>{i18n.t("users.title")}</Title>
         <MainHeaderButtonsWrapper>
           <TextField

@@ -18,6 +18,7 @@ import toastError from "../../errors/toastError";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { TagsContainer } from "../TagsContainer";
 import { socketConnection } from "../../services/socket";
+import { isArray, isString } from "lodash";
 
 const drawerWidth = 320;
 
@@ -56,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
 const Ticket = () => {
   const { ticketId } = useParams();
   const history = useHistory();
@@ -67,6 +69,10 @@ const Ticket = () => {
   const [loading, setLoading] = useState(true);
   const [contact, setContact] = useState({});
   const [ticket, setTicket] = useState({});
+  const [tagAdded, setTagAdded] = useState()
+  const [selecteds, setSelecteds] = useState([]);
+  const [tags, setTags] = useState([]);
+
 
   useEffect(() => {
     setLoading(true);
@@ -130,6 +136,7 @@ const Ticket = () => {
     };
   }, [ticketId, ticket, history]);
 
+
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
   };
@@ -163,6 +170,60 @@ const Ticket = () => {
     );
   };
 
+  const loadTags = async () => {
+    try {
+      const { data } = await api.get(`/tags/list`);
+      setTags(data);
+    } catch (err) {
+      toastError(err);
+    }
+  }
+
+  const syncTags = async (data) => {
+    try {
+      const { data: responseData } = await api.post(`/tags/sync`, data);
+      return responseData;
+    } catch (err) {
+      toastError(err);
+    }
+  }
+
+  const createTag = async (data) => {
+    try {
+      const { data: responseData } = await api.post(`/tags`, data);
+      return responseData;
+    } catch (err) {
+      toastError(err);
+    }
+  }
+
+  const onChange = async (value, reason) => {
+    let optionsChanged = []
+    if (reason === 'create-option') {
+      if (isArray(value)) {
+        for (let item of value) {
+          if (isString(item)) {
+            const newTag = await createTag({ name: item })
+            optionsChanged.push(newTag);
+          } else {
+            optionsChanged.push(item);
+          }
+        }
+      }
+      await loadTags();
+    } else {
+      optionsChanged = value;
+    }
+    setSelecteds(optionsChanged);
+    await syncTags({ ticketId: ticket.id, tags: optionsChanged });
+  }
+
+
+
+
+
+
+
   return (
     <div className={classes.root} id="drawer-container">
       <Paper
@@ -174,10 +235,10 @@ const Ticket = () => {
       >
         <TicketHeader loading={loading}>
           {renderTicketInfo()}
-          <TicketActionButtons ticket={ticket} />
+          <TicketActionButtons ticket={ticket} tagAdded={tagAdded} setTagAdded={setTagAdded} selecteds={selecteds} onChange={onChange} setDrawerOpen={setDrawerOpen}/>
         </TicketHeader>
         <Paper>
-          <TagsContainer ticket={ticket} />
+          <TagsContainer ticket={ticket} setTagAdded={setTagAdded} tagAdded={tagAdded} selecteds={selecteds} setSelecteds={setSelecteds} tags={tags} setTags={setTags}/>
         </Paper>
         <ReplyMessageProvider>{renderMessagesList()}</ReplyMessageProvider>
       </Paper>

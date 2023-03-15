@@ -244,6 +244,12 @@ const MainListItems = (props) => {
       /> */}
 
       <ListItemLink
+        to="/todolist"
+        primary={i18n.t("ToDoList")}
+        icon={<EventIcon />}
+      />
+
+      <ListItemLink
         to="/quick-messages"
         primary={i18n.t("mainDrawer.listItems.quickMessages")}
         icon={<FlashOnIcon />}

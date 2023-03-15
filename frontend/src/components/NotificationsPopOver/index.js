@@ -125,8 +125,16 @@ const NotificationsPopOver = () => {
 					const ticketIndex = prevState.findIndex(t => t.id === data.ticket.id);
 					if (ticketIndex !== -1) {
 						prevState[ticketIndex] = data.ticket;
+            // Envie dados para o aplicativo
+            try{
+              window.postMessage({notificacao:[...prevState] });
+            } catch {}
 						return [...prevState];
 					}
+          // Envie dados para o aplicativo
+          try{
+            window.postMessage({notificacao:[data.ticket, ...prevState] });
+          } catch {}
 					return [data.ticket, ...prevState];
 				});
 

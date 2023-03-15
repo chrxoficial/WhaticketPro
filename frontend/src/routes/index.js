@@ -13,13 +13,13 @@ import Financeiro from "../pages/Financeiro/";
 import Users from "../pages/Users";
 import Contacts from "../pages/Contacts/";
 import Queues from "../pages/Queues/";
-import Calendar from "../pages/Calendar/";
+//import Calendar from "../pages/Calendar/";
 import Tags from "../pages/Tags/";
 import MessagesAPI from "../pages/MessagesAPI/";
 import Helps from "../pages/Helps/";
 import ContactLists from "../pages/ContactLists/";
 import ContactListItems from "../pages/ContactListItems/";
-// import Companies from "../pages/Companies/";
+//import Companies from "../pages/Companies/";
 import QuickMessages from "../pages/QuickMessages/";
 import { AuthProvider } from "../context/Auth/AuthContext";
 import { TicketsContextProvider } from "../context/Tickets/TicketsContext";
@@ -32,6 +32,7 @@ import CampaignReport from "../pages/CampaignReport";
 import Annoucements from "../pages/Annoucements";
 import Chat from "../pages/Chat";
 import Subscription from "../pages/Subscription/";
+import ToDoList from "../pages/ToDoList/";
 
 
 const Routes = () => {
@@ -64,23 +65,26 @@ const Routes = () => {
 
                 <Route
                   exact
-                  path="/calendar"
-                  component={Calendar}
-                  isPrivate
-                />
-
-                <Route
-                  exact
                   path="/connections"
                   component={Connections}
                   isPrivate
                 />
+                
+
                 <Route
                   exact
                   path="/quick-messages"
                   component={QuickMessages}
                   isPrivate
                 />
+
+                <Route
+                  exact
+                  path="/todolist"
+                  component={ToDoList}
+                  isPrivate
+                />
+
                 <Route
                   exact
                   path="/schedules"

@@ -5,11 +5,13 @@ import { isArray, isString } from "lodash";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
 
-export function TagsContainer ({ ticket }) {
-
-    const [tags, setTags] = useState([]);
-    const [selecteds, setSelecteds] = useState([]);
+export function TagsContainer({ ticket, setTagAdded, tagAdded, selecteds,  setSelecteds, tags, setTags}) {
     const isMounted = useRef(true);
+    const [pageNumber, setPageNumber] = useState(1);
+	const [searchParam, setSearchParam] = useState("");
+
+    
+
 
     useEffect(() => {
         return () => {
@@ -28,6 +30,50 @@ export function TagsContainer ({ ticket }) {
             });
         }
     }, [ticket]);
+
+
+    
+    useEffect(() => {
+        fetchTags()
+			.then(() => {
+				verificarTagPendente();
+				
+			})
+			.catch(err => {
+				toastError(err);
+			});
+
+    }, [])
+
+    useEffect(() => {
+        setTagAdded(selecteds.filter(a => a.name == "Pendente").length? true : false)
+
+    }, [selecteds])
+
+
+    const fetchTags = async () => {
+		try {
+			const { data } = await api.get("/tags", {
+				params: { searchParam, pageNumber },
+			});
+			setTags(data.tags);
+
+
+		} catch (err) {
+			toastError(err);
+		}
+	};
+
+    const verificarTagPendente = async () => {
+		if (tags.filter((tag) => tag.name === "Pendente").length === 0) {
+			createTag({
+				name: "Pendente",
+				color: "#FF0000"
+			})
+		}
+	};
+    
+    
 
     const createTag = async (data) => {
         try {
@@ -77,8 +123,13 @@ export function TagsContainer ({ ticket }) {
         await syncTags({ ticketId: ticket.id, tags: optionsChanged });
     }
 
+
+   
+
+
+
     return (
-        <Paper style={{padding: 12}}>
+        <Paper style={{ padding: 12 }}>
             <Autocomplete
                 multiple
                 size="small"
@@ -91,7 +142,7 @@ export function TagsContainer ({ ticket }) {
                     value.map((option, index) => (
                         <Chip
                             variant="outlined"
-                            style={{backgroundColor: option.color || '#eee', textShadow: '1px 1px 1px #000', color: 'white'}}
+                            style={{ backgroundColor: option.color || '#eee', textShadow: '1px 1px 1px #000', color: 'white' }}
                             label={option.name}
                             {...getTagProps({ index })}
                             size="small"
@@ -102,7 +153,7 @@ export function TagsContainer ({ ticket }) {
                     <TextField {...params} variant="outlined" placeholder="Tags" />
                 )}
                 PaperComponent={({ children }) => (
-                    <Paper style={{width: 400, marginLeft: 12}}>
+                    <Paper style={{ width: 400, marginLeft: 12 }}>
                         {children}
                     </Paper>
                 )}

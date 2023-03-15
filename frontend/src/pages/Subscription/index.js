@@ -112,7 +112,7 @@ const Contacts = () => {
                 shrink: true,
               }}
               InputProps={{
-                readOnly: true,
+                readOnly: false,
               }}
               variant="outlined"
             />

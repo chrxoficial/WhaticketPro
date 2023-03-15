@@ -96,6 +96,10 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
     ...theme.scrollbarStyles,
   },
+  botoesResponsivos: {
+    display: "flex",
+    flexWrap: "wrap",
+  }
 }));
 
 const Schedules = () => {
@@ -262,9 +266,9 @@ const Schedules = () => {
         cleanContact={cleanContact}
         recorrency={recorrency}
       />
-      <MainHeader>
+      <MainHeader className={classes.botoesResponsivos}>
         <Title>{i18n.t("schedules.title")}</Title>
-        <MainHeaderButtonsWrapper>
+        <MainHeaderButtonsWrapper >
           <TextField
             placeholder={i18n.t("contacts.searchPlaceholder")}
             type="search"
