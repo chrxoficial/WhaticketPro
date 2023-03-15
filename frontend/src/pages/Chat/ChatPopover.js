@@ -8,7 +8,7 @@ import React, {
 import { makeStyles } from "@material-ui/core/styles";
 import toastError from "../../errors/toastError";
 import Popover from "@material-ui/core/Popover";
-//import ForumIcon from "@material-ui/icons/Forum";
+import ForumIcon from "@material-ui/icons/Forum";
 import {
   Badge,
   IconButton,
@@ -227,8 +227,9 @@ export default function ChatPopover() {
         color={invisible ? "default" : "inherit"}
         onClick={handleClick}
       >
-        <Badge color="secondary" variant="dot" invisible={invisible}>
-        <img src={notificationIcon} className={classes.icon} alt="icon"/>
+        <Badge color="secondary" variant="dot" invisible={invisible}  style={{ color: 'white' }}>
+        {/* <img src={notificationIcon} className={classes.icon} alt="icon"/> */}
+        <ForumIcon />
         </Badge>
       </IconButton>
       <Popover

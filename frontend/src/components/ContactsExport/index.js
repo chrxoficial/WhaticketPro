@@ -85,14 +85,21 @@ const ContactsExport = (props) => {
         if (selecteds.length === 0 && queueSelected.length === 0) {
             setPlanilha(planilha)
         } else {
+            // Filtra tickets por tags e setores
             let tempTickets = tickets.filter(ticket => filterTickets(ticket, selecteds, 'tags'))
             tempTickets = tempTickets.filter(ticket => filterTickets(ticket, queueSelected, 'queue'))
-            tempTickets = tempTickets.map(contact => {
+
+            /* 
+            Mapeia cada ticket e concatena com a variavel
+            "finalTempTickets" e pula de linha para formar uma tabela
+            */
+            let finalTempTickets = ""
+            for(let contact of tempTickets){
                 const t = contact
-                return [
-                    `Nome: ${t.contact.name}, Numero: ${t.contact.number}${t.contact.email? (", E-mail:" + t.contact.email) : ""}, Tags: ${t.tags}${t.queue? (", Setores: " + t.queue) : ""}`
-                ]
-            })
+                finalTempTickets +=  
+                    `${t.contact.name},${t.contact.number},${t.contact.email},${t.tags.map(tag => tag.name)},${t.queue !== null? (t.queue.map(queue => queue.name)) : ""}\n`
+            }
+            tempTickets = "Nome, Numero, E-mail, Tags, Setores\n" + finalTempTickets
             setPlanilha(tempTickets)
         }
     }, [selecteds, queueSelected])

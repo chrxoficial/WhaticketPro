@@ -18,7 +18,7 @@ import {
 
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-//import AccountCircle from "@material-ui/icons/AccountCircle";
+import AccountCircle from "@material-ui/icons/AccountCircle";
 
 import MainListItems from "./MainListItems";
 import NotificationsPopOver from "../components/NotificationsPopOver";
@@ -281,7 +281,7 @@ const LoggedInLayout = ({ children }) => {
           {user.id && <NotificationsPopOver />}
 
           <AnnouncementsPopover />
-
+ 
           <ChatPopover />
 
           <div>
@@ -293,7 +293,7 @@ const LoggedInLayout = ({ children }) => {
               variant="contained"
 
             >
-              <img src={notificationIcon} className={classes.icon} alt="icon"/>
+              <AccountCircle  style={{ color: 'white' }}/>
             </IconButton>
             <Menu
               id="menu-appbar"

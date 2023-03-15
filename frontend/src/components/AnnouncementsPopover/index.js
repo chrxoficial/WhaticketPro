@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import toastError from "../../errors/toastError";
 import Popover from "@material-ui/core/Popover";
-//import AnnouncementIcon from "@material-ui/icons/Announcement";
+import AnnouncementIcon from "@material-ui/icons/Announcement";
 import {
   Avatar,
   Badge,
@@ -250,7 +250,8 @@ export default function AnnouncementsPopover() {
           variant="dot"
           invisible={invisible || announcements.length < 1}
         >
-          <img src={notificationIcon} className={classes.icon} alt="icon"/>
+          {/* <img src={notificationIcon} className={classes.icon} alt="icon"/> */}
+          <AnnouncementIcon  style={{ color: 'white' }}/>
         </Badge>
       </IconButton>
       <Popover
