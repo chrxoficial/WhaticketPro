@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+
 const NotificationsPopOver = () => {
   const classes = useStyles();
 
@@ -64,10 +65,9 @@ const NotificationsPopOver = () => {
   const soundAlertRef = useRef();
 
   const historyRef = useRef(history);
+  const [modify, setModify] = useState(false)
 
-  handleClick = () => {
-    this.forceUpdate();
-  }
+  
 
 	useEffect(() => {
 		soundAlertRef.current = play;
@@ -81,7 +81,7 @@ const NotificationsPopOver = () => {
 
 	useEffect(() => {
 		setNotifications(tickets);
-	}, [tickets]);
+	}, [tickets, modify]);
 
 	useEffect(() => {
 		ticketIdRef.current = ticketIdUrl;
@@ -158,7 +158,7 @@ const NotificationsPopOver = () => {
     return () => {
       socket.disconnect();
     };
-  }, [user, profile, queues]);
+  }, [user, profile, queues, modify]);
 
   const handleNotifications = (data) => {
     const { message, contact, ticket } = data;
@@ -207,6 +207,16 @@ const NotificationsPopOver = () => {
     return <div onClick={handleClickAway}>{children}</div>;
   };
 
+
+
+  const ahandleClick = () => {
+    if(modify){
+      setModify(false)
+    }else {
+      setModify(true)
+    }
+  }
+
   return (
     <>
       <IconButton
@@ -242,9 +252,11 @@ const NotificationsPopOver = () => {
             </ListItem>
           ) : (
             notifications.map((ticket) => (
-              <NotificationTicket key={ticket.id}>
-                <TicketListItem ticket={ticket} onClick={this.handleClick} />
+              <div onClick={ahandleClick}>
+              <NotificationTicket key={ticket.id} >
+                <TicketListItem ticket={ticket}/>
               </NotificationTicket>
+              </div>
             ))
           )}
         </List>
