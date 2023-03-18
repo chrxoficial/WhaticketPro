@@ -65,6 +65,10 @@ const NotificationsPopOver = () => {
 
   const historyRef = useRef(history);
 
+  handleClick = () => {
+    this.forceUpdate();
+  }
+
 	useEffect(() => {
 		soundAlertRef.current = play;
 
@@ -239,7 +243,7 @@ const NotificationsPopOver = () => {
           ) : (
             notifications.map((ticket) => (
               <NotificationTicket key={ticket.id}>
-                <TicketListItem ticket={ticket} />
+                <TicketListItem ticket={ticket} onClick={this.handleClick} />
               </NotificationTicket>
             ))
           )}
