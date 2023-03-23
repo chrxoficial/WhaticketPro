@@ -139,21 +139,25 @@ async function handleSendScheduledMessage(job) {
       body: schedule.body
     });
 
-    //modify
-    if (schedule.recorrency == true) {
+    //Modify
+    if(schedule.recorrency) {
+      const dataAgendamento = moment(schedule.sendAt, "YYYY-MM-DD HH:mm");
+      dataAgendamento.month( (moment().month()) + 1 );
+      const dataProximoMes = dataAgendamento.format("YYYY-MM-DD HH:mm")
+
       await scheduleRecord?.update({
-        sentAt: schedule.sendAt,
-        status: "AGENDADA"
+        sendAt: dataProximoMes,
+        status: "PENDENTE"
       });
-      logger.info(`Mensagem agendada enviada para: ${schedule.contact.name}`);
     } else {
       await scheduleRecord?.update({
         sentAt: moment().format("YYYY-MM-DD HH:mm"),
         status: "ENVIADA"
       });
-      logger.info(`Mensagem agendada enviada para: ${schedule.contact.name}`);
-      sendScheduledMessages.clean(15000, "completed");
     }
+
+    logger.info(`Mensagem agendada enviada para: ${schedule.contact.name}`);
+    sendScheduledMessages.clean(15000, "completed");
   } catch (e: any) {
     Sentry.captureException(e);
     await scheduleRecord?.update({

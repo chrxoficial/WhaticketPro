@@ -60,7 +60,8 @@ const ScheduleSchema = Yup.object().shape({
 		.min(5, "Mensagem muito curta")
 		.required("Obrigatório"),
 	contactId: Yup.number().required("Obrigatório"),
-	sendAt: Yup.string().required("Obrigatório")
+	sendAt: Yup.string().required("Obrigatório"),
+	recorrency: Yup.boolean()
 });
 
 const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, reload, recorrency }) => {
@@ -73,6 +74,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 		contactId: "",
 		sendAt: moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm'),
 		sentAt: "",
+		recorrency: recorrency
 	};
 
 	const initialContact = {
@@ -136,7 +138,7 @@ const ScheduleModal = ({ open, onClose, scheduleId, contactId, cleanContact, rel
 			if (scheduleId) {
 				await api.put(`/schedules/${scheduleId}`, scheduleData);
 			} else {
-				await api.post("/schedules", { ...scheduleData, recorrency});
+				await api.post("/schedules", { ...scheduleData });
 			}
 			toast.success(i18n.t("scheduleModal.success"));
 			if (typeof reload == 'function') {

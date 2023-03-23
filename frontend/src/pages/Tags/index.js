@@ -264,7 +264,7 @@ const Tags = () => {
           </TableHead>
           <TableBody>
             <>
-              {tags.map((tag) => (
+              {tags.map((tag) => tag.name !== "Pendente"?(
                 <TableRow key={tag.id}>
                   <TableCell align="center">
                     <Chip
@@ -281,8 +281,11 @@ const Tags = () => {
                   <TableCell align="center">{tag.ticketsCount}</TableCell>
                   <TableCell align="center">
 
-                    <IconButton size="small" onClick={() => handleEditTag(tag)}>
-                      <EditIcon />
+                    <IconButton 
+                      size="small" 
+                      onClick={() => handleEditTag(tag)}
+                      >
+                        <EditIcon />
                     </IconButton>
 
                     <Can
@@ -301,7 +304,7 @@ const Tags = () => {
                       )} />
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : "")}
               {loading && <TableRowSkeleton columns={4} />}
             </>
           </TableBody>

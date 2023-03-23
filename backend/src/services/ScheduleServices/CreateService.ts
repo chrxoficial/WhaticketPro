@@ -38,8 +38,8 @@ const CreateService = async ({
       contactId,
       companyId,
       userId,
-      status: 'PENDENTE',
       recorrency,
+      status: 'PENDENTE'
     }
   );
 
