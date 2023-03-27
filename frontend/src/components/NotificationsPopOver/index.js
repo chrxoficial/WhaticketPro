@@ -253,8 +253,8 @@ const NotificationsPopOver = () => {
           ) : (
             notifications.map((ticket) => (
               <div onClick={ahandleClick}>
-              <NotificationTicket key={ticket.id} >
-                <TicketListItem ticket={ticket}/>
+              <NotificationTicket key={ticket.id} onClick={ahandleClick}>
+                <TicketListItem ticket={ticket} onClick={ahandleClick}/>
               </NotificationTicket>
               </div>
             ))
