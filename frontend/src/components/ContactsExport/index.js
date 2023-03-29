@@ -86,36 +86,51 @@ const ContactsExport = (props) => {
             setPlanilha(planilha)
         } else {
             // Filtra tickets por tags e setores
-            let tempTickets = tickets.filter(ticket => filterTickets(ticket, selecteds, 'tags'))
-            tempTickets = tempTickets.filter(ticket => filterTickets(ticket, queueSelected, 'queue'))
+            console.log("Abaixo estão o resultado de tickets da api, esses dados não contem nenhum tipo de tratamento:");
+            console.log("Tickets");
+            console.log(tickets);
+            console.log("tags");
+            console.log(selecteds);
+            console.log("Filas");
+            console.log(queueSelected);
+            let tempTickets = []
+            if(selecteds.length){
+                tempTickets = tickets.filter(ticket => filterTickets(ticket, selecteds, 'tags'))
+            }
+            if(queueSelected.length){
+                tempTickets = tempTickets.filter(ticket => filterTickets(ticket, queueSelected, 'queue'))
+            }
 
             /* 
             Mapeia cada ticket e concatena com a variavel
             "finalTempTickets" e pula de linha para formar uma tabela
             */
             let finalTempTickets = ""
-            for(let contact of tempTickets){
+            for (let contact of tempTickets) {
                 const t = contact
-                finalTempTickets +=  
-                    `${t.contact.name},${t.contact.number},${t.contact.email},${t.tags.map(tag => tag.name)},${t.queue !== null? (t.queue.map(queue => queue.name)) : ""}\n`
+                finalTempTickets +=
+                    `${t.contact.name},${t.contact.number},${t.contact.email},${t.tags.map(tag => tag.name)},${t.queue !== null ? (t.queue.map(queue => queue.name)) : ""}\n`
             }
-            tempTickets = "Nome, Numero, E-mail, Tags, Setores\n" + finalTempTickets
+            tempTickets = "Nome, Numero, E-mail, Setores, Tags\n" + finalTempTickets
             setPlanilha(tempTickets)
         }
     }, [selecteds, queueSelected])
 
     //Filtra tiquet por tags ou queues
     const filterTickets = (ticket, filter, typeFilter) => {
-        let aprovado = true
-
-        for (let tag of filter) {
-            if ((ticket[typeFilter].filter(obgTag => obgTag.name === tag.name)).length === 0) {
-                aprovado = false
+        if (ticket[typeFilter].length) {
+            if (ticket[typeFilter].filter(opgParaFiltrar => filter.filter(tag => tag.name === opgParaFiltrar.name).length >= 1).length >= 1) {
+                return true
+            } else {
+                return false
             }
+        } else {
+            return false
         }
 
-        return aprovado
     }
+
+
 
 
     const loadTickets = async () => {
@@ -187,9 +202,12 @@ const ContactsExport = (props) => {
         try {
             const { data } = await api.get(`/contacts`);
             const apiData = data.contacts
-            await setPlanilha(
-                apiData.map((u) => ([`Nome: ${u.name}, Numero: ${u.number}, E-mail: ${u.email || ""}`]))
-            )
+            let finalTempTickets = ""
+            for (let contact of apiData) {
+                finalTempTickets += `${contact.name},${contact.number},${contact.email},,\n`
+            }
+            let tempTickets = "Nome, Numero, E-mail, Tags, Setores\n" + finalTempTickets
+            await setPlanilha(tempTickets)
 
         } catch (err) {
             toastError(err);

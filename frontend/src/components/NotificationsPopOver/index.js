@@ -11,8 +11,8 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { makeStyles } from "@material-ui/core/styles";
 import Badge from "@material-ui/core/Badge";
-import ChatIcon from "@material-ui/icons/Chat";
-import notificationIcon from "./../../assets/icons/mensagens.png"
+//import ChatIcon from "@material-ui/icons/Chat";
+//import notificationIcon from "./../../assets/icons/mensagens.png"
 
 
 import TicketListItem from "../TicketListItem";
@@ -67,25 +67,26 @@ const NotificationsPopOver = () => {
   const historyRef = useRef(history);
   const [modify, setModify] = useState(false)
 
-  
 
-	useEffect(() => {
-		soundAlertRef.current = play;
 
-		if (!("Notification" in window)) {
-			console.log("This browser doesn't support notifications");
-		} else {
-			Notification.requestPermission();
-		}
-	}, [play]);
+  useEffect(() => {
+    soundAlertRef.current = play;
 
-	useEffect(() => {
-		setNotifications(tickets);
-	}, [tickets, modify]);
+    if (!("Notification" in window)) {
+      console.log("This browser doesn't support notifications");
+    } else {
+      Notification.requestPermission();
+    }
+  }, [play]);
 
-	useEffect(() => {
-		ticketIdRef.current = ticketIdUrl;
-	}, [ticketIdUrl]);
+  useEffect(() => {
+    setTimeout(setNotifications(tickets.filter(ticket => ticket.status === "pending")), 300)
+
+  }, [tickets, modify]);
+
+  useEffect(() => {
+    ticketIdRef.current = ticketIdUrl;
+  }, [ticketIdUrl]);
 
   useEffect(() => {
     const companyId = localStorage.getItem("companyId");
@@ -97,62 +98,64 @@ const NotificationsPopOver = () => {
 
     socket.on(`company-${companyId}-ticket`, (data) => {
       if (data.action === "updateUnread" || data.action === "delete") {
-				setNotifications(prevState => {
-					const ticketIndex = prevState.findIndex(t => t.id === data.ticketId);
-					if (ticketIndex !== -1) {
-						prevState.splice(ticketIndex, 1);
-						return [...prevState];
-					}
-					return prevState;
-				});
+        setNotifications(prevState => {
+          const ticketIndex = prevState.findIndex(t => t.id === data.ticketId);
+          if (ticketIndex !== -1) {
+            prevState.splice(ticketIndex, 1);
+            console.log(...prevState);
+            return [...prevState];
+          }
+          console.log(prevState);
+          return prevState;
+        });
 
-				setDesktopNotifications(prevState => {
-					const notfiticationIndex = prevState.findIndex(
-						n => n.tag === String(data.ticketId)
-					);
-					if (notfiticationIndex !== -1) {
-						prevState[notfiticationIndex].close();
-						prevState.splice(notfiticationIndex, 1);
-						return [...prevState];
-					}
-					return prevState;
-				});
+        setDesktopNotifications(prevState => {
+          const notfiticationIndex = prevState.findIndex(
+            n => n.tag === String(data.ticketId)
+          );
+          if (notfiticationIndex !== -1) {
+            prevState[notfiticationIndex].close();
+            prevState.splice(notfiticationIndex, 1);
+            return [...prevState];
+          }
+          return prevState;
+        });
       }
     });
 
     socket.on(`company-${companyId}-appMessage`, (data) => {
-			if (
-				data.action === "create" &&
-				!data.message.read &&
-				(data.ticket.userId === user?.id || !data.ticket.userId)
-			) {
-				setNotifications(prevState => {
-					const ticketIndex = prevState.findIndex(t => t.id === data.ticket.id);
-					if (ticketIndex !== -1) {
-						prevState[ticketIndex] = data.ticket;
+      if (
+        data.action === "create" &&
+        !data.message.read &&
+        (data.ticket.userId === user?.id || !data.ticket.userId)
+      ) {
+        setNotifications(prevState => {
+          const ticketIndex = prevState.findIndex(t => t.id === data.ticket.id);
+          if (ticketIndex !== -1) {
+            prevState[ticketIndex] = data.ticket;
             // Envie dados para o aplicativo
-            try{
-              window.postMessage({notificacao:[...prevState] });
-            } catch {}
-						return [...prevState];
-					}
+            try {
+              window.postMessage({ notificacao: [...prevState] });
+            } catch { }
+            return [...prevState];
+          }
           // Envie dados para o aplicativo
-          try{
-            window.postMessage({notificacao:[data.ticket, ...prevState] });
-          } catch {}
-					return [data.ticket, ...prevState];
-				});
+          try {
+            window.postMessage({ notificacao: [data.ticket, ...prevState] });
+          } catch { }
+          return [data.ticket, ...prevState];
+        });
 
-				const shouldNotNotificate =
-					(data.message.ticketId === ticketIdRef.current &&
-						document.visibilityState === "visible") ||
-					(data.ticket.userId && data.ticket.userId !== user?.id) ||
-					data.ticket.isGroup;
+        const shouldNotNotificate =
+          (data.message.ticketId === ticketIdRef.current &&
+            document.visibilityState === "visible") ||
+          (data.ticket.userId && data.ticket.userId !== user?.id) ||
+          data.ticket.isGroup;
 
-				if (shouldNotNotificate) return;
+        if (shouldNotNotificate) return;
 
-				handleNotifications(data);
-			}
+        handleNotifications(data);
+      }
     });
 
     return () => {
@@ -162,6 +165,7 @@ const NotificationsPopOver = () => {
 
   const handleNotifications = (data) => {
     const { message, contact, ticket } = data;
+
 
     const options = {
       body: `${message.body} - ${format(new Date(), "HH:mm")}`,
@@ -210,12 +214,13 @@ const NotificationsPopOver = () => {
 
 
   const ahandleClick = () => {
-    if(modify){
+    if (modify) {
       setModify(false)
-    }else {
+    } else {
       setModify(true)
     }
   }
+
 
   return (
     <>
@@ -227,8 +232,8 @@ const NotificationsPopOver = () => {
 
       >
         {/* <img src={notificationIcon} className={classes.icon} alt="icon"/> */}
-        <Badge badgeContent={notifications.length} color="secondary"  style={{ color: 'white' }}>
-        </Badge> 
+        <Badge badgeContent={notifications.length} color="secondary" style={{ color: 'white' }}>
+        </Badge>
       </IconButton>
       <Popover
         disableScrollLock
@@ -251,13 +256,13 @@ const NotificationsPopOver = () => {
               <ListItemText>{i18n.t("notifications.noTickets")}</ListItemText>
             </ListItem>
           ) : (
-            notifications.map((ticket) => (
-              <div onClick={ahandleClick}>
+            notifications.map((ticket) =>
+            (
               <NotificationTicket key={ticket.id} onClick={ahandleClick}>
-                <TicketListItem ticket={ticket} onClick={ahandleClick}/>
+                <TicketListItem ticket={ticket} onClick={ahandleClick} />
               </NotificationTicket>
-              </div>
-            ))
+            )
+            )
           )}
         </List>
       </Popover>

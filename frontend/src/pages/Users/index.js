@@ -263,7 +263,6 @@ const Users = () => {
                   <TableCell align="center">
                     <IconButton
                       size="small"
-                      disabled
                       onClick={() => handleEditUser(user)}
                     >
                       <EditIcon />
