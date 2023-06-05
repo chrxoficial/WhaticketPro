@@ -25,6 +25,7 @@
     "material-ui-color": "^1.2.0",
     "mic-recorder-to-mp3": "^2.2.2",
     "moment": "^2.29.1",
+    "prettier": "^2.8.8",
     "qrcode.react": "^1.0.0",
     "query-string": "^7.0.0",
     "react": "^16.13.1",

@@ -1,204 +1,204 @@
-import React, { useState, useEffect, useReducer } from "react";
-import { toast } from "react-toastify";
+import React, { useState, useEffect, useReducer } from "react"
+import { toast } from "react-toastify"
 
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import IconButton from "@material-ui/core/IconButton";
-import SearchIcon from "@material-ui/icons/Search";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import { makeStyles } from "@material-ui/core/styles"
+import Paper from "@material-ui/core/Paper"
+import Button from "@material-ui/core/Button"
+import Table from "@material-ui/core/Table"
+import TableBody from "@material-ui/core/TableBody"
+import TableCell from "@material-ui/core/TableCell"
+import TableHead from "@material-ui/core/TableHead"
+import TableRow from "@material-ui/core/TableRow"
+import IconButton from "@material-ui/core/IconButton"
+import SearchIcon from "@material-ui/icons/Search"
+import TextField from "@material-ui/core/TextField"
+import InputAdornment from "@material-ui/core/InputAdornment"
 
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import EditIcon from "@material-ui/icons/Edit";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline"
+import EditIcon from "@material-ui/icons/Edit"
 
-import MainContainer from "../../components/MainContainer";
-import MainHeader from "../../components/MainHeader";
-import Title from "../../components/Title";
+import MainContainer from "../../components/MainContainer"
+import MainHeader from "../../components/MainHeader"
+import Title from "../../components/Title"
 
-import api from "../../services/api";
-import { i18n } from "../../translate/i18n";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import AnnouncementModal from "../../components/AnnouncementModal";
-import ConfirmationModal from "../../components/ConfirmationModal";
-import toastError from "../../errors/toastError";
-import { Grid } from "@material-ui/core";
-import { isArray } from "lodash";
-import { socketConnection } from "../../services/socket";
+import api from "../../services/api"
+import { i18n } from "../../translate/i18n"
+import TableRowSkeleton from "../../components/TableRowSkeleton"
+import AnnouncementModal from "../../components/AnnouncementModal"
+import ConfirmationModal from "../../components/ConfirmationModal"
+import toastError from "../../errors/toastError"
+import { Grid } from "@material-ui/core"
+import { isArray } from "lodash"
+import { socketConnection } from "../../services/socket"
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_ANNOUNCEMENTS") {
-    const announcements = action.payload;
-    const newAnnouncements = [];
+    const announcements = action.payload
+    const newAnnouncements = []
 
     if (isArray(announcements)) {
       announcements.forEach((announcement) => {
         const announcementIndex = state.findIndex(
           (u) => u.id === announcement.id
-        );
+        )
         if (announcementIndex !== -1) {
-          state[announcementIndex] = announcement;
+          state[announcementIndex] = announcement
         } else {
-          newAnnouncements.push(announcement);
+          newAnnouncements.push(announcement)
         }
-      });
+      })
     }
 
-    return [...state, ...newAnnouncements];
+    return [...state, ...newAnnouncements]
   }
 
   if (action.type === "UPDATE_ANNOUNCEMENTS") {
-    const announcement = action.payload;
-    const announcementIndex = state.findIndex((u) => u.id === announcement.id);
+    const announcement = action.payload
+    const announcementIndex = state.findIndex((u) => u.id === announcement.id)
 
     if (announcementIndex !== -1) {
-      state[announcementIndex] = announcement;
-      return [...state];
+      state[announcementIndex] = announcement
+      return [...state]
     } else {
-      return [announcement, ...state];
+      return [announcement, ...state]
     }
   }
 
   if (action.type === "DELETE_ANNOUNCEMENT") {
-    const announcementId = action.payload;
+    const announcementId = action.payload
 
-    const announcementIndex = state.findIndex((u) => u.id === announcementId);
+    const announcementIndex = state.findIndex((u) => u.id === announcementId)
     if (announcementIndex !== -1) {
-      state.splice(announcementIndex, 1);
+      state.splice(announcementIndex, 1)
     }
-    return [...state];
+    return [...state]
   }
 
   if (action.type === "RESET") {
-    return [];
+    return []
   }
-};
+}
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
-  },
-}));
+    ...theme.scrollbarStyles
+  }
+}))
 
 const Announcements = () => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const [loading, setLoading] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
-  const [deletingAnnouncement, setDeletingAnnouncement] = useState(null);
-  const [announcementModalOpen, setAnnouncementModalOpen] = useState(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [searchParam, setSearchParam] = useState("");
-  const [announcements, dispatch] = useReducer(reducer, []);
-
-  useEffect(() => {
-    dispatch({ type: "RESET" });
-    setPageNumber(1);
-  }, [searchParam]);
+  const [loading, setLoading] = useState(false)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null)
+  const [deletingAnnouncement, setDeletingAnnouncement] = useState(null)
+  const [announcementModalOpen, setAnnouncementModalOpen] = useState(false)
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const [searchParam, setSearchParam] = useState("")
+  const [announcements, dispatch] = useReducer(reducer, [])
 
   useEffect(() => {
-    setLoading(true);
+    dispatch({ type: "RESET" })
+    setPageNumber(1)
+  }, [searchParam])
+
+  useEffect(() => {
+    setLoading(true)
     const delayDebounceFn = setTimeout(() => {
-      fetchAnnouncements();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
+      fetchAnnouncements()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParam, pageNumber]);
+  }, [searchParam, pageNumber])
 
   useEffect(() => {
-    const companyId = localStorage.getItem("companyId");
-    const socket = socketConnection({ companyId });
+    const companyId = localStorage.getItem("companyId")
+    const socket = socketConnection({ companyId })
 
     socket.on(`company-announcement`, (data) => {
       if (data.action === "update" || data.action === "create") {
-        dispatch({ type: "UPDATE_ANNOUNCEMENTS", payload: data.record });
+        dispatch({ type: "UPDATE_ANNOUNCEMENTS", payload: data.record })
       }
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_ANNOUNCEMENT", payload: +data.id });
+        dispatch({ type: "DELETE_ANNOUNCEMENT", payload: +data.id })
       }
-    });
+    })
     return () => {
-      socket.disconnect();
-    };
-  }, []);
+      socket.disconnect()
+    }
+  }, [])
 
   const fetchAnnouncements = async () => {
     try {
       const { data } = await api.get("/announcements/", {
-        params: { searchParam, pageNumber },
-      });
-      dispatch({ type: "LOAD_ANNOUNCEMENTS", payload: data.records });
-      setHasMore(data.hasMore);
-      setLoading(false);
+        params: { searchParam, pageNumber }
+      })
+      dispatch({ type: "LOAD_ANNOUNCEMENTS", payload: data.records })
+      setHasMore(data.hasMore)
+      setLoading(false)
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-  };
+  }
 
   const handleOpenAnnouncementModal = () => {
-    setSelectedAnnouncement(null);
-    setAnnouncementModalOpen(true);
-  };
+    setSelectedAnnouncement(null)
+    setAnnouncementModalOpen(true)
+  }
 
   const handleCloseAnnouncementModal = () => {
-    setSelectedAnnouncement(null);
-    setAnnouncementModalOpen(false);
-  };
+    setSelectedAnnouncement(null)
+    setAnnouncementModalOpen(false)
+  }
 
   const handleSearch = (event) => {
-    setSearchParam(event.target.value.toLowerCase());
-  };
+    setSearchParam(event.target.value.toLowerCase())
+  }
 
   const handleEditAnnouncement = (announcement) => {
-    setSelectedAnnouncement(announcement);
-    setAnnouncementModalOpen(true);
-  };
+    setSelectedAnnouncement(announcement)
+    setAnnouncementModalOpen(true)
+  }
 
   const handleDeleteAnnouncement = async (announcementId) => {
     try {
-      await api.delete(`/announcements/${announcementId}`);
-      toast.success(i18n.t("announcements.toasts.deleted"));
+      await api.delete(`/announcements/${announcementId}`)
+      toast.success(i18n.t("announcements.toasts.deleted"))
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-    setDeletingAnnouncement(null);
-    setSearchParam("");
-    setPageNumber(1);
-  };
+    setDeletingAnnouncement(null)
+    setSearchParam("")
+    setPageNumber(1)
+  }
 
   const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
-  };
+    setPageNumber((prevState) => prevState + 1)
+  }
 
   const handleScroll = (e) => {
-    if (!hasMore || loading) return;
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (!hasMore || loading) return
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
     if (scrollHeight - (scrollTop + 100) < clientHeight) {
-      loadMore();
+      loadMore()
     }
-  };
+  }
 
   const translatePriority = (val) => {
     if (val === 1) {
-      return "Alta";
+      return "Alta"
     }
     if (val === 2) {
-      return "Média";
+      return "Média"
     }
     if (val === 3) {
-      return "Baixa";
+      return "Baixa"
     }
-  };
+  }
 
   return (
     <MainContainer>
@@ -217,8 +217,8 @@ const Announcements = () => {
       </ConfirmationModal>
       <AnnouncementModal
         resetPagination={() => {
-          setPageNumber(1);
-          fetchAnnouncements();
+          setPageNumber(1)
+          fetchAnnouncements()
         }}
         open={announcementModalOpen}
         onClose={handleCloseAnnouncementModal}
@@ -244,7 +244,7 @@ const Announcements = () => {
                       <InputAdornment position="start">
                         <SearchIcon style={{ color: "gray" }} />
                       </InputAdornment>
-                    ),
+                    )
                   }}
                 />
               </Grid>
@@ -312,8 +312,8 @@ const Announcements = () => {
                     <IconButton
                       size="small"
                       onClick={(e) => {
-                        setConfirmModalOpen(true);
-                        setDeletingAnnouncement(announcement);
+                        setConfirmModalOpen(true)
+                        setDeletingAnnouncement(announcement)
                       }}
                     >
                       <DeleteOutlineIcon />
@@ -327,7 +327,7 @@ const Announcements = () => {
         </Table>
       </Paper>
     </MainContainer>
-  );
-};
+  )
+}
 
-export default Announcements;
+export default Announcements

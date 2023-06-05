@@ -1,33 +1,33 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react"
+import { useParams, useHistory } from "react-router-dom"
 
-import { toast } from "react-toastify";
-import clsx from "clsx";
+import { toast } from "react-toastify"
+import clsx from "clsx"
 
-import { Paper, makeStyles } from "@material-ui/core";
+import { Paper, makeStyles } from "@material-ui/core"
 
-import ContactDrawer from "../ContactDrawer";
-import MessageInput from "../MessageInputCustom/";
-import TicketHeader from "../TicketHeader";
-import TicketInfo from "../TicketInfo";
-import TicketActionButtons from "../TicketActionButtonsCustom";
-import MessagesList from "../MessagesList";
-import api from "../../services/api";
-import { ReplyMessageProvider } from "../../context/ReplyingMessage/ReplyingMessageContext";
-import toastError from "../../errors/toastError";
-import { AuthContext } from "../../context/Auth/AuthContext";
-import { TagsContainer } from "../TagsContainer";
-import { socketConnection } from "../../services/socket";
-import { isArray, isString } from "lodash";
+import ContactDrawer from "../ContactDrawer"
+import MessageInput from "../MessageInputCustom/"
+import TicketHeader from "../TicketHeader"
+import TicketInfo from "../TicketInfo"
+import TicketActionButtons from "../TicketActionButtonsCustom"
+import MessagesList from "../MessagesList"
+import api from "../../services/api"
+import { ReplyMessageProvider } from "../../context/ReplyingMessage/ReplyingMessageContext"
+import toastError from "../../errors/toastError"
+import { AuthContext } from "../../context/Auth/AuthContext"
+import { TagsContainer } from "../TagsContainer"
+import { socketConnection } from "../../services/socket"
+import { isArray, isString } from "lodash"
 
-const drawerWidth = 320;
+const drawerWidth = 320
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     height: "100%",
     position: "relative",
-    overflow: "hidden",
+    overflow: "hidden"
   },
 
   mainWrapper: {
@@ -42,8 +42,8 @@ const useStyles = makeStyles((theme) => ({
     marginRight: -drawerWidth,
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
+      duration: theme.transitions.duration.leavingScreen
+    })
   },
 
   mainWrapperShift: {
@@ -51,99 +51,96 @@ const useStyles = makeStyles((theme) => ({
     borderBottomRightRadius: 0,
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
+      duration: theme.transitions.duration.enteringScreen
     }),
-    marginRight: 0,
-  },
-}));
-
+    marginRight: 0
+  }
+}))
 
 const Ticket = () => {
-  const { ticketId } = useParams();
-  const history = useHistory();
-  const classes = useStyles();
+  const { ticketId } = useParams()
+  const history = useHistory()
+  const classes = useStyles()
 
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext)
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [contact, setContact] = useState({});
-  const [ticket, setTicket] = useState({});
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [contact, setContact] = useState({})
+  const [ticket, setTicket] = useState({})
   const [tagAdded, setTagAdded] = useState()
-  const [selecteds, setSelecteds] = useState([]);
-  const [tags, setTags] = useState([]);
-
+  const [selecteds, setSelecteds] = useState([])
+  const [tags, setTags] = useState([])
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(true)
     const delayDebounceFn = setTimeout(() => {
       const fetchTicket = async () => {
         try {
-          const { data } = await api.get("/tickets/u/" + ticketId);
-          const { queueId } = data;
-          const { queues, profile } = user;
+          const { data } = await api.get("/tickets/u/" + ticketId)
+          const { queueId } = data
+          const { queues, profile } = user
 
-          const queueAllowed = queues.find((q) => q.id === queueId);
+          const queueAllowed = queues.find((q) => q.id === queueId)
           if (queueAllowed === undefined && profile !== "admin") {
-            toast.error("Acesso não permitido");
-            history.push("/tickets");
-            return;
+            toast.error("Acesso não permitido")
+            history.push("/tickets")
+            return
           }
 
-          setContact(data.contact);
-          setTicket(data);
-          setLoading(false);
+          setContact(data.contact)
+          setTicket(data)
+          setLoading(false)
         } catch (err) {
-          setLoading(false);
-          toastError(err);
+          setLoading(false)
+          toastError(err)
         }
-      };
-      fetchTicket();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
-  }, [ticketId, user, history]);
+      }
+      fetchTicket()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
+  }, [ticketId, user, history])
 
   useEffect(() => {
-    const companyId = localStorage.getItem("companyId");
-    const socket = socketConnection({ companyId });
+    const companyId = localStorage.getItem("companyId")
+    const socket = socketConnection({ companyId })
 
-    socket.on("connect", () => socket.emit("joinChatBox", `${ticket.id}`));
+    socket.on("connect", () => socket.emit("joinChatBox", `${ticket.id}`))
 
     socket.on(`company-${companyId}-ticket`, (data) => {
       if (data.action === "update") {
-        setTicket(data.ticket);
+        setTicket(data.ticket)
       }
 
       if (data.action === "delete") {
-        toast.success("Ticket deleted sucessfully.");
-        history.push("/tickets");
+        toast.success("Ticket deleted sucessfully.")
+        history.push("/tickets")
       }
-    });
+    })
 
     socket.on(`company-${companyId}-contact`, (data) => {
       if (data.action === "update") {
         setContact((prevState) => {
           if (prevState.id === data.contact?.id) {
-            return { ...prevState, ...data.contact };
+            return { ...prevState, ...data.contact }
           }
-          return prevState;
-        });
+          return prevState
+        })
       }
-    });
+    })
 
     return () => {
-      socket.disconnect();
-    };
-  }, [ticketId, ticket, history]);
-
+      socket.disconnect()
+    }
+  }, [ticketId, ticket, history])
 
   const handleDrawerOpen = () => {
-    setDrawerOpen(true);
-  };
+    setDrawerOpen(true)
+  }
 
   const handleDrawerClose = () => {
-    setDrawerOpen(false);
-  };
+    setDrawerOpen(false)
+  }
 
   const renderTicketInfo = () => {
     if (ticket.user !== undefined) {
@@ -153,9 +150,9 @@ const Ticket = () => {
           ticket={ticket}
           onClick={handleDrawerOpen}
         />
-      );
+      )
     }
-  };
+  }
 
   const renderMessagesList = () => {
     return (
@@ -167,62 +164,56 @@ const Ticket = () => {
         ></MessagesList>
         <MessageInput ticketId={ticket.id} ticketStatus={ticket.status} />
       </>
-    );
-  };
+    )
+  }
 
   const loadTags = async () => {
     try {
-      const { data } = await api.get(`/tags/list`);
-      setTags(data);
+      const { data } = await api.get(`/tags/list`)
+      setTags(data)
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
   }
 
   const syncTags = async (data) => {
     try {
-      const { data: responseData } = await api.post(`/tags/sync`, data);
-      return responseData;
+      const { data: responseData } = await api.post(`/tags/sync`, data)
+      return responseData
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
   }
 
   const createTag = async (data) => {
     try {
-      const { data: responseData } = await api.post(`/tags`, data);
-      return responseData;
+      const { data: responseData } = await api.post(`/tags`, data)
+      return responseData
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
   }
 
   const onChange = async (value, reason) => {
     let optionsChanged = []
-    if (reason === 'create-option') {
+    if (reason === "create-option") {
       if (isArray(value)) {
         for (let item of value) {
           if (isString(item)) {
             const newTag = await createTag({ name: item })
-            optionsChanged.push(newTag);
+            optionsChanged.push(newTag)
           } else {
-            optionsChanged.push(item);
+            optionsChanged.push(item)
           }
         }
       }
-      await loadTags();
+      await loadTags()
     } else {
-      optionsChanged = value;
+      optionsChanged = value
     }
-    setSelecteds(optionsChanged);
-    await syncTags({ ticketId: ticket.id, tags: optionsChanged });
+    setSelecteds(optionsChanged)
+    await syncTags({ ticketId: ticket.id, tags: optionsChanged })
   }
-
-
-
-
-
-
 
   return (
     <div className={classes.root} id="drawer-container">
@@ -230,15 +221,30 @@ const Ticket = () => {
         variant="outlined"
         elevation={0}
         className={clsx(classes.mainWrapper, {
-          [classes.mainWrapperShift]: drawerOpen,
+          [classes.mainWrapperShift]: drawerOpen
         })}
       >
         <TicketHeader loading={loading}>
           {renderTicketInfo()}
-          <TicketActionButtons ticket={ticket} tagAdded={tagAdded} setTagAdded={setTagAdded} selecteds={selecteds} onChange={onChange} setDrawerOpen={setDrawerOpen}/>
+          <TicketActionButtons
+            ticket={ticket}
+            tagAdded={tagAdded}
+            setTagAdded={setTagAdded}
+            selecteds={selecteds}
+            onChange={onChange}
+            setDrawerOpen={setDrawerOpen}
+          />
         </TicketHeader>
         <Paper>
-          <TagsContainer ticket={ticket} setTagAdded={setTagAdded} tagAdded={tagAdded} selecteds={selecteds} setSelecteds={setSelecteds} tags={tags} setTags={setTags}/>
+          <TagsContainer
+            ticket={ticket}
+            setTagAdded={setTagAdded}
+            tagAdded={tagAdded}
+            selecteds={selecteds}
+            setSelecteds={setSelecteds}
+            tags={tags}
+            setTags={setTags}
+          />
         </Paper>
         <ReplyMessageProvider>{renderMessagesList()}</ReplyMessageProvider>
       </Paper>
@@ -250,7 +256,7 @@ const Ticket = () => {
         ticket={ticket}
       />
     </div>
-  );
-};
+  )
+}
 
-export default Ticket;
+export default Ticket

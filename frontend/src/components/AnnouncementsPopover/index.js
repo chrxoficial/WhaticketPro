@@ -1,8 +1,8 @@
-import React, { useEffect, useReducer, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import toastError from "../../errors/toastError";
-import Popover from "@material-ui/core/Popover";
-import AnnouncementIcon from "@material-ui/icons/Announcement";
+import React, { useEffect, useReducer, useState } from "react"
+import { makeStyles } from "@material-ui/core/styles"
+import toastError from "../../errors/toastError"
+import Popover from "@material-ui/core/Popover"
+import AnnouncementIcon from "@material-ui/icons/Announcement"
 import {
   Avatar,
   Badge,
@@ -18,12 +18,12 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  DialogContentText,
-} from "@material-ui/core";
-import api from "../../services/api";
-import { isArray } from "lodash";
-import moment from "moment";
-import { socketConnection } from "../../services/socket";
+  DialogContentText
+} from "@material-ui/core"
+import api from "../../services/api"
+import { isArray } from "lodash"
+import moment from "moment"
+import { socketConnection } from "../../services/socket"
 import notificationIcon from "./../../assets/icons/campainha.png"
 
 const useStyles = makeStyles((theme) => ({
@@ -33,17 +33,17 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 500,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
+    ...theme.scrollbarStyles
   },
   icon: {
     width: "20px"
   }
-}));
+}))
 
 function AnnouncementDialog({ announcement, open, handleClose }) {
   const getMediaPath = (filename) => {
-    return `${process.env.REACT_APP_BACKEND_URL}public/${filename}`;
-  };
+    return `${process.env.REACT_APP_BACKEND_URL}public/${filename}`
+  }
   return (
     <Dialog
       open={open}
@@ -64,7 +64,7 @@ function AnnouncementDialog({ announcement, open, handleClose }) {
               backgroundImage: `url(${getMediaPath(announcement.mediaPath)})`,
               backgroundRepeat: "no-repeat",
               backgroundSize: "contain",
-              backgroundPosition: "center",
+              backgroundPosition: "center"
             }}
           ></div>
         )}
@@ -78,160 +78,160 @@ function AnnouncementDialog({ announcement, open, handleClose }) {
         </Button>
       </DialogActions>
     </Dialog>
-  );
+  )
 }
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_ANNOUNCEMENTS") {
-    const announcements = action.payload;
-    const newAnnouncements = [];
+    const announcements = action.payload
+    const newAnnouncements = []
 
     if (isArray(announcements)) {
       announcements.forEach((announcement) => {
         const announcementIndex = state.findIndex(
           (u) => u.id === announcement.id
-        );
+        )
         if (announcementIndex !== -1) {
-          state[announcementIndex] = announcement;
+          state[announcementIndex] = announcement
         } else {
-          newAnnouncements.push(announcement);
+          newAnnouncements.push(announcement)
         }
-      });
+      })
     }
 
-    return [...state, ...newAnnouncements];
+    return [...state, ...newAnnouncements]
   }
 
   if (action.type === "UPDATE_ANNOUNCEMENTS") {
-    const announcement = action.payload;
-    const announcementIndex = state.findIndex((u) => u.id === announcement.id);
+    const announcement = action.payload
+    const announcementIndex = state.findIndex((u) => u.id === announcement.id)
 
     if (announcementIndex !== -1) {
-      state[announcementIndex] = announcement;
-      return [...state];
+      state[announcementIndex] = announcement
+      return [...state]
     } else {
-      return [announcement, ...state];
+      return [announcement, ...state]
     }
   }
 
   if (action.type === "DELETE_ANNOUNCEMENT") {
-    const announcementId = action.payload;
+    const announcementId = action.payload
 
-    const announcementIndex = state.findIndex((u) => u.id === announcementId);
+    const announcementIndex = state.findIndex((u) => u.id === announcementId)
     if (announcementIndex !== -1) {
-      state.splice(announcementIndex, 1);
+      state.splice(announcementIndex, 1)
     }
-    return [...state];
+    return [...state]
   }
 
   if (action.type === "RESET") {
-    return [];
+    return []
   }
-};
+}
 
 export default function AnnouncementsPopover() {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const [loading, setLoading] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [searchParam] = useState("");
-  const [announcements, dispatch] = useReducer(reducer, []);
-  const [invisible, setInvisible] = useState(false);
-  const [announcement, setAnnouncement] = useState({});
-  const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
-
-  useEffect(() => {
-    dispatch({ type: "RESET" });
-    setPageNumber(1);
-  }, [searchParam]);
+  const [loading, setLoading] = useState(false)
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
+  const [searchParam] = useState("")
+  const [announcements, dispatch] = useReducer(reducer, [])
+  const [invisible, setInvisible] = useState(false)
+  const [announcement, setAnnouncement] = useState({})
+  const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false)
 
   useEffect(() => {
-    setLoading(true);
+    dispatch({ type: "RESET" })
+    setPageNumber(1)
+  }, [searchParam])
+
+  useEffect(() => {
+    setLoading(true)
     const delayDebounceFn = setTimeout(() => {
-      fetchAnnouncements();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
+      fetchAnnouncements()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParam, pageNumber]);
+  }, [searchParam, pageNumber])
 
   useEffect(() => {
-    const companyId = localStorage.getItem("companyId");
-    const socket = socketConnection({ companyId });
+    const companyId = localStorage.getItem("companyId")
+    const socket = socketConnection({ companyId })
 
     socket.on(`company-announcement`, (data) => {
       if (data.action === "update" || data.action === "create") {
-        dispatch({ type: "UPDATE_ANNOUNCEMENTS", payload: data.record });
-        setInvisible(false);
+        dispatch({ type: "UPDATE_ANNOUNCEMENTS", payload: data.record })
+        setInvisible(false)
       }
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_ANNOUNCEMENT", payload: +data.id });
+        dispatch({ type: "DELETE_ANNOUNCEMENT", payload: +data.id })
       }
-    });
+    })
     return () => {
-      socket.disconnect();
-    };
-  }, []);
+      socket.disconnect()
+    }
+  }, [])
 
   const fetchAnnouncements = async () => {
     try {
       const { data } = await api.get("/announcements/", {
-        params: { searchParam, pageNumber },
-      });
-      dispatch({ type: "LOAD_ANNOUNCEMENTS", payload: data.records });
-      setHasMore(data.hasMore);
-      setLoading(false);
+        params: { searchParam, pageNumber }
+      })
+      dispatch({ type: "LOAD_ANNOUNCEMENTS", payload: data.records })
+      setHasMore(data.hasMore)
+      setLoading(false)
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-  };
+  }
 
   const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
-  };
+    setPageNumber((prevState) => prevState + 1)
+  }
 
   const handleScroll = (e) => {
-    if (!hasMore || loading) return;
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (!hasMore || loading) return
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
     if (scrollHeight - (scrollTop + 100) < clientHeight) {
-      loadMore();
+      loadMore()
     }
-  };
+  }
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-    setInvisible(true);
-  };
+    setAnchorEl(event.currentTarget)
+    setInvisible(true)
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const borderPriority = (priority) => {
     if (priority === 1) {
-      return "4px solid #b81111";
+      return "4px solid #b81111"
     }
     if (priority === 2) {
-      return "4px solid orange";
+      return "4px solid orange"
     }
     if (priority === 3) {
-      return "4px solid grey";
+      return "4px solid grey"
     }
-  };
+  }
 
   const getMediaPath = (filename) => {
-    return `${process.env.REACT_APP_BACKEND_URL}public/${filename}`;
-  };
+    return `${process.env.REACT_APP_BACKEND_URL}public/${filename}`
+  }
 
   const handleShowAnnouncementDialog = (record) => {
-    setAnnouncement(record);
-    setShowAnnouncementDialog(true);
-    setAnchorEl(null);
-  };
+    setAnnouncement(record)
+    setShowAnnouncementDialog(true)
+    setAnchorEl(null)
+  }
 
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+  const open = Boolean(anchorEl)
+  const id = open ? "simple-popover" : undefined
 
   return (
     <div>
@@ -251,7 +251,7 @@ export default function AnnouncementsPopover() {
           invisible={invisible || announcements.length < 1}
         >
           {/* <img src={notificationIcon} className={classes.icon} alt="icon"/> */}
-          <AnnouncementIcon  style={{ color: 'white' }}/>
+          <AnnouncementIcon style={{ color: "white" }} />
         </Badge>
       </IconButton>
       <Popover
@@ -261,11 +261,11 @@ export default function AnnouncementsPopover() {
         onClose={handleClose}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "center",
+          horizontal: "center"
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "center",
+          horizontal: "center"
         }}
       >
         <Paper
@@ -286,7 +286,7 @@ export default function AnnouncementsPopover() {
                     background: key % 2 === 0 ? "#ededed" : "white",
                     border: "1px solid #eee",
                     borderLeft: borderPriority(item.priority),
-                    cursor: "pointer",
+                    cursor: "pointer"
                   }}
                   onClick={() => handleShowAnnouncementDialog(item)}
                 >
@@ -321,5 +321,5 @@ export default function AnnouncementsPopover() {
         </Paper>
       </Popover>
     </div>
-  );
+  )
 }

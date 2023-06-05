@@ -1,32 +1,32 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react"
 
-import { toast } from "react-toastify";
-import api from "../../services/api";
-import toastError from "../../errors/toastError";
+import { toast } from "react-toastify"
+import api from "../../services/api"
+import toastError from "../../errors/toastError"
 
 import {
   Box,
   Button,
   Dialog,
   DialogActions,
-  makeStyles,
-} from "@material-ui/core";
-import { useHistory } from "react-router-dom";
-import { AuthContext } from "../../context/Auth/AuthContext";
-import MessagesList from "../MessagesList";
-import { ReplyMessageProvider } from "../../context/ReplyingMessage/ReplyingMessageContext";
-import TicketHeader from "../TicketHeader";
-import TicketInfo from "../TicketInfo";
-import { socketConnection } from "../../services/socket";
+  makeStyles
+} from "@material-ui/core"
+import { useHistory } from "react-router-dom"
+import { AuthContext } from "../../context/Auth/AuthContext"
+import MessagesList from "../MessagesList"
+import { ReplyMessageProvider } from "../../context/ReplyingMessage/ReplyingMessageContext"
+import TicketHeader from "../TicketHeader"
+import TicketInfo from "../TicketInfo"
+import { socketConnection } from "../../services/socket"
 
-const drawerWidth = 320;
+const drawerWidth = 320
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     height: "100%",
     position: "relative",
-    overflow: "hidden",
+    overflow: "hidden"
   },
 
   mainWrapper: {
@@ -41,8 +41,8 @@ const useStyles = makeStyles((theme) => ({
     marginRight: -drawerWidth,
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
+      duration: theme.transitions.duration.leavingScreen
+    })
   },
 
   mainWrapperShift: {
@@ -50,100 +50,100 @@ const useStyles = makeStyles((theme) => ({
     borderBottomRightRadius: 0,
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
+      duration: theme.transitions.duration.enteringScreen
     }),
-    marginRight: 0,
-  },
-}));
+    marginRight: 0
+  }
+}))
 
 export default function TicketMessagesDialog({ open, handleClose, ticketId }) {
-  const history = useHistory();
-  const classes = useStyles();
+  const history = useHistory()
+  const classes = useStyles()
 
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext)
 
-  const [, setDrawerOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [contact, setContact] = useState({});
-  const [ticket, setTicket] = useState({});
+  const [, setDrawerOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [contact, setContact] = useState({})
+  const [ticket, setTicket] = useState({})
 
   useEffect(() => {
-    let delayDebounceFn = null;
+    let delayDebounceFn = null
     if (open) {
-      setLoading(true);
+      setLoading(true)
       delayDebounceFn = setTimeout(() => {
         const fetchTicket = async () => {
           try {
-            const { data } = await api.get("/tickets/" + ticketId);
-            const { queueId } = data;
-            const { queues, profile } = user;
+            const { data } = await api.get("/tickets/" + ticketId)
+            const { queueId } = data
+            const { queues, profile } = user
 
-            const queueAllowed = queues.find((q) => q.id === queueId);
+            const queueAllowed = queues.find((q) => q.id === queueId)
             if (queueAllowed === undefined && profile !== "admin") {
-              toast.error("Acesso não permitido");
-              history.push("/tickets");
-              return;
+              toast.error("Acesso não permitido")
+              history.push("/tickets")
+              return
             }
 
-            setContact(data.contact);
-            setTicket(data);
-            setLoading(false);
+            setContact(data.contact)
+            setTicket(data)
+            setLoading(false)
           } catch (err) {
-            setLoading(false);
-            toastError(err);
+            setLoading(false)
+            toastError(err)
           }
-        };
-        fetchTicket();
-      }, 500);
+        }
+        fetchTicket()
+      }, 500)
     }
     return () => {
       if (delayDebounceFn !== null) {
-        clearTimeout(delayDebounceFn);
+        clearTimeout(delayDebounceFn)
       }
-    };
-  }, [ticketId, user, history, open]);
+    }
+  }, [ticketId, user, history, open])
 
   useEffect(() => {
-    const companyId = localStorage.getItem("companyId");
-    let socket = null;
+    const companyId = localStorage.getItem("companyId")
+    let socket = null
 
     if (open) {
-      socket = socketConnection({ companyId });
-      socket.on("connect", () => socket.emit("joinChatBox", `${ticket.id}`));
+      socket = socketConnection({ companyId })
+      socket.on("connect", () => socket.emit("joinChatBox", `${ticket.id}`))
 
       socket.on(`company-${companyId}-ticket`, (data) => {
         if (data.action === "update") {
-          setTicket(data.ticket);
+          setTicket(data.ticket)
         }
 
         if (data.action === "delete") {
-          toast.success("Ticket deleted sucessfully.");
-          history.push("/tickets");
+          toast.success("Ticket deleted sucessfully.")
+          history.push("/tickets")
         }
-      });
+      })
 
       socket.on(`company-${companyId}-contact`, (data) => {
         if (data.action === "update") {
           setContact((prevState) => {
             if (prevState.id === data.contact?.id) {
-              return { ...prevState, ...data.contact };
+              return { ...prevState, ...data.contact }
             }
-            return prevState;
-          });
+            return prevState
+          })
         }
-      });
+      })
     }
 
     return () => {
       if (socket !== null) {
-        socket.disconnect();
+        socket.disconnect()
       }
-    };
-  }, [ticketId, ticket, history, open]);
+    }
+  }, [ticketId, ticket, history, open])
 
   const handleDrawerOpen = () => {
-    setDrawerOpen(true);
-  };
+    setDrawerOpen(true)
+  }
 
   const renderTicketInfo = () => {
     if (ticket.user !== undefined) {
@@ -153,9 +153,9 @@ export default function TicketMessagesDialog({ open, handleClose, ticketId }) {
           ticket={ticket}
           onClick={handleDrawerOpen}
         />
-      );
+      )
     }
-  };
+  }
 
   const renderMessagesList = () => {
     return (
@@ -166,8 +166,8 @@ export default function TicketMessagesDialog({ open, handleClose, ticketId }) {
           isGroup={ticket.isGroup}
         ></MessagesList>
       </Box>
-    );
-  };
+    )
+  }
 
   return (
     <Dialog maxWidth="md" onClose={handleClose} open={open}>
@@ -179,5 +179,5 @@ export default function TicketMessagesDialog({ open, handleClose, ticketId }) {
         </Button>
       </DialogActions>
     </Dialog>
-  );
+  )
 }

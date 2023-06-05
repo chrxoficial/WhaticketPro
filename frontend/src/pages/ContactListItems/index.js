@@ -3,247 +3,247 @@ import React, {
   useEffect,
   useReducer,
   useContext,
-  useRef,
-} from "react";
+  useRef
+} from "react"
 
-import { toast } from "react-toastify";
-import { useParams, useHistory } from "react-router-dom";
+import { toast } from "react-toastify"
+import { useParams, useHistory } from "react-router-dom"
 
-import { makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import SearchIcon from "@material-ui/icons/Search";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import { makeStyles } from "@material-ui/core/styles"
+import Table from "@material-ui/core/Table"
+import TableBody from "@material-ui/core/TableBody"
+import TableCell from "@material-ui/core/TableCell"
+import TableHead from "@material-ui/core/TableHead"
+import TableRow from "@material-ui/core/TableRow"
+import Paper from "@material-ui/core/Paper"
+import Button from "@material-ui/core/Button"
+import SearchIcon from "@material-ui/icons/Search"
+import TextField from "@material-ui/core/TextField"
+import InputAdornment from "@material-ui/core/InputAdornment"
 
-import IconButton from "@material-ui/core/IconButton";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import EditIcon from "@material-ui/icons/Edit";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import BlockIcon from "@material-ui/icons/Block";
+import IconButton from "@material-ui/core/IconButton"
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline"
+import EditIcon from "@material-ui/icons/Edit"
+import CheckCircleIcon from "@material-ui/icons/CheckCircle"
+import BlockIcon from "@material-ui/icons/Block"
 
-import api from "../../services/api";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import ContactListItemModal from "../../components/ContactListItemModal";
-import ConfirmationModal from "../../components/ConfirmationModal/";
+import api from "../../services/api"
+import TableRowSkeleton from "../../components/TableRowSkeleton"
+import ContactListItemModal from "../../components/ContactListItemModal"
+import ConfirmationModal from "../../components/ConfirmationModal/"
 
-import { i18n } from "../../translate/i18n";
-import MainHeader from "../../components/MainHeader";
-import Title from "../../components/Title";
-import MainContainer from "../../components/MainContainer";
-import toastError from "../../errors/toastError";
-import { AuthContext } from "../../context/Auth/AuthContext";
-import { Can } from "../../components/Can";
-import useContactLists from "../../hooks/useContactLists";
-import { Grid } from "@material-ui/core";
+import { i18n } from "../../translate/i18n"
+import MainHeader from "../../components/MainHeader"
+import Title from "../../components/Title"
+import MainContainer from "../../components/MainContainer"
+import toastError from "../../errors/toastError"
+import { AuthContext } from "../../context/Auth/AuthContext"
+import { Can } from "../../components/Can"
+import useContactLists from "../../hooks/useContactLists"
+import { Grid } from "@material-ui/core"
 
-import planilhaExemplo from "../../assets/planilha.xlsx";
-import { socketConnection } from "../../services/socket";
+import planilhaExemplo from "../../assets/planilha.xlsx"
+import { socketConnection } from "../../services/socket"
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_CONTACTS") {
-    const contacts = action.payload;
-    const newContacts = [];
+    const contacts = action.payload
+    const newContacts = []
 
     contacts.forEach((contact) => {
-      const contactIndex = state.findIndex((c) => c.id === contact.id);
+      const contactIndex = state.findIndex((c) => c.id === contact.id)
       if (contactIndex !== -1) {
-        state[contactIndex] = contact;
+        state[contactIndex] = contact
       } else {
-        newContacts.push(contact);
+        newContacts.push(contact)
       }
-    });
+    })
 
-    return [...state, ...newContacts];
+    return [...state, ...newContacts]
   }
 
   if (action.type === "UPDATE_CONTACTS") {
-    const contact = action.payload;
-    const contactIndex = state.findIndex((c) => c.id === contact.id);
+    const contact = action.payload
+    const contactIndex = state.findIndex((c) => c.id === contact.id)
 
     if (contactIndex !== -1) {
-      state[contactIndex] = contact;
-      return [...state];
+      state[contactIndex] = contact
+      return [...state]
     } else {
-      return [contact, ...state];
+      return [contact, ...state]
     }
   }
 
   if (action.type === "DELETE_CONTACT") {
-    const contactId = action.payload;
+    const contactId = action.payload
 
-    const contactIndex = state.findIndex((c) => c.id === contactId);
+    const contactIndex = state.findIndex((c) => c.id === contactId)
     if (contactIndex !== -1) {
-      state.splice(contactIndex, 1);
+      state.splice(contactIndex, 1)
     }
-    return [...state];
+    return [...state]
   }
 
   if (action.type === "RESET") {
-    return [];
+    return []
   }
-};
+}
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
-  },
-}));
+    ...theme.scrollbarStyles
+  }
+}))
 
 const ContactListItems = () => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const { user } = useContext(AuthContext);
-  const { contactListId } = useParams();
-  const history = useHistory();
+  const { user } = useContext(AuthContext)
+  const { contactListId } = useParams()
+  const history = useHistory()
 
-  const [loading, setLoading] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [searchParam, setSearchParam] = useState("");
-  const [contacts, dispatch] = useReducer(reducer, []);
-  const [selectedContactId, setSelectedContactId] = useState(null);
+  const [loading, setLoading] = useState(false)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [searchParam, setSearchParam] = useState("")
+  const [contacts, dispatch] = useReducer(reducer, [])
+  const [selectedContactId, setSelectedContactId] = useState(null)
   const [contactListItemModalOpen, setContactListItemModalOpen] =
-    useState(false);
-  const [deletingContact, setDeletingContact] = useState(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
-  const [contactList, setContactList] = useState({});
-  const fileUploadRef = useRef(null);
+    useState(false)
+  const [deletingContact, setDeletingContact] = useState(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [hasMore, setHasMore] = useState(false)
+  const [contactList, setContactList] = useState({})
+  const fileUploadRef = useRef(null)
 
-  const { findById: findContactList } = useContactLists();
+  const { findById: findContactList } = useContactLists()
 
   useEffect(() => {
     findContactList(contactListId).then((data) => {
-      setContactList(data);
-    });
+      setContactList(data)
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contactListId]);
+  }, [contactListId])
 
   useEffect(() => {
-    dispatch({ type: "RESET" });
-    setPageNumber(1);
-  }, [searchParam]);
+    dispatch({ type: "RESET" })
+    setPageNumber(1)
+  }, [searchParam])
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(true)
     const delayDebounceFn = setTimeout(() => {
       const fetchContacts = async () => {
         try {
           const { data } = await api.get(`contact-list-items`, {
-            params: { searchParam, pageNumber, contactListId },
-          });
-          dispatch({ type: "LOAD_CONTACTS", payload: data.contacts });
-          setHasMore(data.hasMore);
-          setLoading(false);
+            params: { searchParam, pageNumber, contactListId }
+          })
+          dispatch({ type: "LOAD_CONTACTS", payload: data.contacts })
+          setHasMore(data.hasMore)
+          setLoading(false)
         } catch (err) {
-          toastError(err);
+          toastError(err)
         }
-      };
-      fetchContacts();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchParam, pageNumber, contactListId]);
+      }
+      fetchContacts()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchParam, pageNumber, contactListId])
 
   useEffect(() => {
-    const companyId = localStorage.getItem("companyId");
-    const socket = socketConnection({ companyId });
+    const companyId = localStorage.getItem("companyId")
+    const socket = socketConnection({ companyId })
 
     socket.on(`company-${companyId}-ContactListItem`, (data) => {
       if (data.action === "update" || data.action === "create") {
-        dispatch({ type: "UPDATE_CONTACTS", payload: data.record });
+        dispatch({ type: "UPDATE_CONTACTS", payload: data.record })
       }
 
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_CONTACT", payload: +data.id });
+        dispatch({ type: "DELETE_CONTACT", payload: +data.id })
       }
 
       if (data.action === "reload") {
-        dispatch({ type: "LOAD_CONTACTS", payload: data.records });
+        dispatch({ type: "LOAD_CONTACTS", payload: data.records })
       }
-    });
+    })
 
     socket.on(
       `company-${companyId}-ContactListItem-${contactListId}`,
       (data) => {
         if (data.action === "reload") {
-          dispatch({ type: "LOAD_CONTACTS", payload: data.records });
+          dispatch({ type: "LOAD_CONTACTS", payload: data.records })
         }
       }
-    );
+    )
 
     return () => {
-      socket.disconnect();
-    };
-  }, [contactListId]);
+      socket.disconnect()
+    }
+  }, [contactListId])
 
   const handleSearch = (event) => {
-    setSearchParam(event.target.value.toLowerCase());
-  };
+    setSearchParam(event.target.value.toLowerCase())
+  }
 
   const handleOpenContactListItemModal = () => {
-    setSelectedContactId(null);
-    setContactListItemModalOpen(true);
-  };
+    setSelectedContactId(null)
+    setContactListItemModalOpen(true)
+  }
 
   const handleCloseContactListItemModal = () => {
-    setSelectedContactId(null);
-    setContactListItemModalOpen(false);
-  };
+    setSelectedContactId(null)
+    setContactListItemModalOpen(false)
+  }
 
   const hadleEditContact = (contactId) => {
-    setSelectedContactId(contactId);
-    setContactListItemModalOpen(true);
-  };
+    setSelectedContactId(contactId)
+    setContactListItemModalOpen(true)
+  }
 
   const handleDeleteContact = async (contactId) => {
     try {
-      await api.delete(`/contact-list-items/${contactId}`);
-      toast.success(i18n.t("contacts.toasts.deleted"));
+      await api.delete(`/contact-list-items/${contactId}`)
+      toast.success(i18n.t("contacts.toasts.deleted"))
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-    setDeletingContact(null);
-    setSearchParam("");
-    setPageNumber(1);
-  };
+    setDeletingContact(null)
+    setSearchParam("")
+    setPageNumber(1)
+  }
 
   const handleImportContacts = async () => {
     try {
-      const formData = new FormData();
-      formData.append("file", fileUploadRef.current.files[0]);
+      const formData = new FormData()
+      formData.append("file", fileUploadRef.current.files[0])
       await api.request({
         url: `contact-lists/${contactListId}/upload`,
         method: "POST",
-        data: formData,
-      });
+        data: formData
+      })
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-  };
+  }
 
   const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
-  };
+    setPageNumber((prevState) => prevState + 1)
+  }
 
   const handleScroll = (e) => {
-    if (!hasMore || loading) return;
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (!hasMore || loading) return
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
     if (scrollHeight - (scrollTop + 100) < clientHeight) {
-      loadMore();
+      loadMore()
     }
-  };
+  }
 
   const goToContactLists = () => {
-    history.push("/contact-lists");
-  };
+    history.push("/contact-lists")
+  }
 
   return (
     <MainContainer className={classes.mainContainer}>
@@ -299,7 +299,7 @@ const ContactListItems = () => {
                       <InputAdornment position="start">
                         <SearchIcon style={{ color: "gray" }} />
                       </InputAdornment>
-                    ),
+                    )
                   }}
                 />
               </Grid>
@@ -319,8 +319,8 @@ const ContactListItems = () => {
                   variant="contained"
                   color="primary"
                   onClick={() => {
-                    fileUploadRef.current.value = null;
-                    fileUploadRef.current.click();
+                    fileUploadRef.current.value = null
+                    fileUploadRef.current.click()
                   }}
                 >
                   {i18n.t("contactListItems.buttons.import")}
@@ -353,7 +353,7 @@ const ContactListItems = () => {
             type="file"
             accept=".xls,.xlsx"
             onChange={() => {
-              setConfirmOpen(true);
+              setConfirmOpen(true)
             }}
             ref={fileUploadRef}
           />
@@ -412,8 +412,8 @@ const ContactListItems = () => {
                         <IconButton
                           size="small"
                           onClick={() => {
-                            setConfirmOpen(true);
-                            setDeletingContact(contact);
+                            setConfirmOpen(true)
+                            setDeletingContact(contact)
                           }}
                         >
                           <DeleteOutlineIcon />
@@ -429,7 +429,7 @@ const ContactListItems = () => {
         </Table>
       </Paper>
     </MainContainer>
-  );
-};
+  )
+}
 
-export default ContactListItems;
+export default ContactListItems

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components"
 
 export const Container = styled.div`
   footer {
@@ -27,7 +27,7 @@ export const Container = styled.div`
       margin-left: 16px;
     }
   }
-`;
+`
 export const Total = styled.div`
   display: flex;
   align-items: baseline;
@@ -47,7 +47,7 @@ export const Total = styled.div`
     min-width: 100%;
     justify-content: space-between;
   }
-`;
+`
 
 export const SuccessContent = styled.div`
   display: flex;
@@ -100,7 +100,7 @@ export const SuccessContent = styled.div`
       margin-right: 8px;
     }
   }
-`;
+`
 
 export const CheckoutWrapper = styled.div`
   width: 100%;
@@ -114,4 +114,5 @@ export const CheckoutWrapper = styled.div`
   background: #fff;
   @media (max-width: 768px) {
     padding: 16px 24px;
-`;
+  }
+`

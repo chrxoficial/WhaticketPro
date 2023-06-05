@@ -1,17 +1,17 @@
-import React, {useContext} from 'react';
-import { Typography, Grid } from '@material-ui/core';
-import useStyles from './styles';
-import { AuthContext } from "../../../context/Auth/AuthContext";
+import React, { useContext } from "react"
+import { Typography, Grid } from "@material-ui/core"
+import useStyles from "./styles"
+import { AuthContext } from "../../../context/Auth/AuthContext"
 
 function PaymentDetails(props) {
-  const { formValues } = props;
-  const classes = useStyles();
-  const { firstName, address2, city, zipcode, state, country, plan } = formValues;
-  const { user } = useContext(AuthContext);
+  const { formValues } = props
+  const classes = useStyles()
+  const { firstName, address2, city, zipcode, state, country, plan } =
+    formValues
+  const { user } = useContext(AuthContext)
 
-
-  const newPlan = JSON.parse(plan);
-  const { price } = newPlan;
+  const newPlan = JSON.parse(plan)
+  const { price } = newPlan
 
   return (
     <Grid item container direction="column" xs={12} sm={6}>
@@ -41,7 +41,7 @@ function PaymentDetails(props) {
           </Grid>
           <Grid item xs={6}>
             <Typography gutterBottom>
-            {address2}, {city} - {state} {zipcode} {country}
+              {address2}, {city} - {state} {zipcode} {country}
             </Typography>
           </Grid>
         </React.Fragment>
@@ -50,12 +50,14 @@ function PaymentDetails(props) {
             <Typography gutterBottom>Total:</Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography gutterBottom>R${price.toLocaleString('pt-br', {minimumFractionDigits: 2})}</Typography>
+            <Typography gutterBottom>
+              R${price.toLocaleString("pt-br", { minimumFractionDigits: 2 })}
+            </Typography>
           </Grid>
         </React.Fragment>
       </Grid>
     </Grid>
-  );
+  )
 }
 
-export default PaymentDetails;
+export default PaymentDetails

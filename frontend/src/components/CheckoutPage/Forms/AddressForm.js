@@ -1,40 +1,36 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Grid, Typography } from "@material-ui/core";
-import { InputField, SelectField } from "../../FormFields";
-import { AuthContext } from "../../../context/Auth/AuthContext";
+import React, { useContext, useEffect, useState } from "react"
+import { Grid, Typography } from "@material-ui/core"
+import { InputField, SelectField } from "../../FormFields"
+import { AuthContext } from "../../../context/Auth/AuthContext"
 
 const countries = [
   {
     value: "BR",
-    label: "Brasil",
+    label: "Brasil"
   },
   {
     value: "usa",
-    label: "United States",
-  },
-];
+    label: "United States"
+  }
+]
 
 export default function AddressForm(props) {
-
-  const { user } = useContext(AuthContext);
-  const [billingName, setBillingName] = useState(user.company.billingName);
-  const [addressZipCode, setAddressZipCode] = useState(user.company.addressZipCode);
-  const [addressStreet, setAddressStreet] = useState(user.company.addressStreet);
-  const [addressState, setAddressState] = useState(user.company.addressState);
-  const [addressCity, setAddressCity] = useState(user.company.addressCity);
-  const [addressDistrict, setAddressDistrict] = useState(user.company.addressDistrict);
+  const { user } = useContext(AuthContext)
+  const [billingName, setBillingName] = useState(user.company.billingName)
+  const [addressZipCode, setAddressZipCode] = useState(
+    user.company.addressZipCode
+  )
+  const [addressStreet, setAddressStreet] = useState(user.company.addressStreet)
+  const [addressState, setAddressState] = useState(user.company.addressState)
+  const [addressCity, setAddressCity] = useState(user.company.addressCity)
+  const [addressDistrict, setAddressDistrict] = useState(
+    user.company.addressDistrict
+  )
 
   const {
-    formField: {
-      firstName,
-      address1,
-      city,
-      state,
-      zipcode,
-      country,
-    },
+    formField: { firstName, address1, city, state, zipcode, country },
     setFieldValue
-  } = props;
+  } = props
   useEffect(() => {
     setFieldValue("firstName", billingName)
     setFieldValue("zipcode", addressZipCode)
@@ -51,9 +47,11 @@ export default function AddressForm(props) {
         Vamos precisar de algumas informações
       </Typography>
       <Grid container spacing={3}>
-
         <Grid item xs={6} sm={6}>
-          <InputField name={firstName.name} label={firstName.label} fullWidth
+          <InputField
+            name={firstName.name}
+            label={firstName.label}
+            fullWidth
             value={billingName}
             onChange={(e) => {
               setBillingName(e.target.value)
@@ -71,8 +69,7 @@ export default function AddressForm(props) {
             onChange={(e) => {
               setAddressDistrict(e.target.value)
               setFieldValue("country", e.target.value)
-            }
-            }
+            }}
           />
         </Grid>
 
@@ -97,7 +94,6 @@ export default function AddressForm(props) {
             onChange={(e) => {
               setAddressStreet(e.target.value)
               setFieldValue("address2", e.target.value)
-
             }}
           />
         </Grid>
@@ -111,7 +107,6 @@ export default function AddressForm(props) {
             onChange={(e) => {
               setAddressState(e.target.value)
               setFieldValue("state", e.target.value)
-
             }}
           />
         </Grid>
@@ -127,8 +122,7 @@ export default function AddressForm(props) {
             }}
           />
         </Grid>
-
       </Grid>
     </React.Fragment>
-  );
+  )
 }

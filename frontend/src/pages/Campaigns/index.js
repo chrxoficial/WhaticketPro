@@ -1,242 +1,242 @@
 /* eslint-disable no-unused-vars */
 
-import React, { useState, useEffect, useReducer } from "react";
-import { toast } from "react-toastify";
+import React, { useState, useEffect, useReducer } from "react"
+import { toast } from "react-toastify"
 
-import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom"
 
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import IconButton from "@material-ui/core/IconButton";
-import SearchIcon from "@material-ui/icons/Search";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import { makeStyles } from "@material-ui/core/styles"
+import Paper from "@material-ui/core/Paper"
+import Button from "@material-ui/core/Button"
+import Table from "@material-ui/core/Table"
+import TableBody from "@material-ui/core/TableBody"
+import TableCell from "@material-ui/core/TableCell"
+import TableHead from "@material-ui/core/TableHead"
+import TableRow from "@material-ui/core/TableRow"
+import IconButton from "@material-ui/core/IconButton"
+import SearchIcon from "@material-ui/icons/Search"
+import TextField from "@material-ui/core/TextField"
+import InputAdornment from "@material-ui/core/InputAdornment"
 
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import EditIcon from "@material-ui/icons/Edit";
-import DescriptionIcon from "@material-ui/icons/Description";
-import TimerOffIcon from "@material-ui/icons/TimerOff";
-import PlayCircleOutlineIcon from "@material-ui/icons/PlayCircleOutline";
-import PauseCircleOutlineIcon from "@material-ui/icons/PauseCircleOutline";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline"
+import EditIcon from "@material-ui/icons/Edit"
+import DescriptionIcon from "@material-ui/icons/Description"
+import TimerOffIcon from "@material-ui/icons/TimerOff"
+import PlayCircleOutlineIcon from "@material-ui/icons/PlayCircleOutline"
+import PauseCircleOutlineIcon from "@material-ui/icons/PauseCircleOutline"
 
-import MainContainer from "../../components/MainContainer";
-import MainHeader from "../../components/MainHeader";
-import Title from "../../components/Title";
+import MainContainer from "../../components/MainContainer"
+import MainHeader from "../../components/MainHeader"
+import Title from "../../components/Title"
 
-import api from "../../services/api";
-import { i18n } from "../../translate/i18n";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import CampaignModal from "../../components/CampaignModal";
-import ConfirmationModal from "../../components/ConfirmationModal";
-import toastError from "../../errors/toastError";
-import { Grid } from "@material-ui/core";
-import { isArray } from "lodash";
-import { useDate } from "../../hooks/useDate";
-import { socketConnection } from "../../services/socket";
+import api from "../../services/api"
+import { i18n } from "../../translate/i18n"
+import TableRowSkeleton from "../../components/TableRowSkeleton"
+import CampaignModal from "../../components/CampaignModal"
+import ConfirmationModal from "../../components/ConfirmationModal"
+import toastError from "../../errors/toastError"
+import { Grid } from "@material-ui/core"
+import { isArray } from "lodash"
+import { useDate } from "../../hooks/useDate"
+import { socketConnection } from "../../services/socket"
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_CAMPAIGNS") {
-    const campaigns = action.payload;
-    const newCampaigns = [];
+    const campaigns = action.payload
+    const newCampaigns = []
 
     if (isArray(campaigns)) {
       campaigns.forEach((campaign) => {
-        const campaignIndex = state.findIndex((u) => u.id === campaign.id);
+        const campaignIndex = state.findIndex((u) => u.id === campaign.id)
         if (campaignIndex !== -1) {
-          state[campaignIndex] = campaign;
+          state[campaignIndex] = campaign
         } else {
-          newCampaigns.push(campaign);
+          newCampaigns.push(campaign)
         }
-      });
+      })
     }
 
-    return [...state, ...newCampaigns];
+    return [...state, ...newCampaigns]
   }
 
   if (action.type === "UPDATE_CAMPAIGNS") {
-    const campaign = action.payload;
-    const campaignIndex = state.findIndex((u) => u.id === campaign.id);
+    const campaign = action.payload
+    const campaignIndex = state.findIndex((u) => u.id === campaign.id)
 
     if (campaignIndex !== -1) {
-      state[campaignIndex] = campaign;
-      return [...state];
+      state[campaignIndex] = campaign
+      return [...state]
     } else {
-      return [campaign, ...state];
+      return [campaign, ...state]
     }
   }
 
   if (action.type === "DELETE_CAMPAIGN") {
-    const campaignId = action.payload;
+    const campaignId = action.payload
 
-    const campaignIndex = state.findIndex((u) => u.id === campaignId);
+    const campaignIndex = state.findIndex((u) => u.id === campaignId)
     if (campaignIndex !== -1) {
-      state.splice(campaignIndex, 1);
+      state.splice(campaignIndex, 1)
     }
-    return [...state];
+    return [...state]
   }
 
   if (action.type === "RESET") {
-    return [];
+    return []
   }
-};
+}
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
-  },
-}));
+    ...theme.scrollbarStyles
+  }
+}))
 
 const Campaigns = () => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const history = useHistory();
+  const history = useHistory()
 
-  const [loading, setLoading] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState(null);
-  const [deletingCampaign, setDeletingCampaign] = useState(null);
-  const [campaignModalOpen, setCampaignModalOpen] = useState(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [searchParam, setSearchParam] = useState("");
-  const [campaigns, dispatch] = useReducer(reducer, []);
+  const [loading, setLoading] = useState(false)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
+  const [selectedCampaign, setSelectedCampaign] = useState(null)
+  const [deletingCampaign, setDeletingCampaign] = useState(null)
+  const [campaignModalOpen, setCampaignModalOpen] = useState(false)
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const [searchParam, setSearchParam] = useState("")
+  const [campaigns, dispatch] = useReducer(reducer, [])
 
-  const { datetimeToClient } = useDate();
-
-  useEffect(() => {
-    dispatch({ type: "RESET" });
-    setPageNumber(1);
-  }, [searchParam]);
+  const { datetimeToClient } = useDate()
 
   useEffect(() => {
-    setLoading(true);
+    dispatch({ type: "RESET" })
+    setPageNumber(1)
+  }, [searchParam])
+
+  useEffect(() => {
+    setLoading(true)
     const delayDebounceFn = setTimeout(() => {
-      fetchCampaigns();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
+      fetchCampaigns()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParam, pageNumber]);
+  }, [searchParam, pageNumber])
 
   useEffect(() => {
-    const companyId = localStorage.getItem("companyId");
-    const socket = socketConnection({ companyId });
+    const companyId = localStorage.getItem("companyId")
+    const socket = socketConnection({ companyId })
 
     socket.on(`company-${companyId}-campaign`, (data) => {
       if (data.action === "update" || data.action === "create") {
-        dispatch({ type: "UPDATE_CAMPAIGNS", payload: data.record });
+        dispatch({ type: "UPDATE_CAMPAIGNS", payload: data.record })
       }
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_CAMPAIGN", payload: +data.id });
+        dispatch({ type: "DELETE_CAMPAIGN", payload: +data.id })
       }
-    });
+    })
     return () => {
-      socket.disconnect();
-    };
-  }, []);
+      socket.disconnect()
+    }
+  }, [])
 
   const fetchCampaigns = async () => {
     try {
       const { data } = await api.get("/campaigns/", {
-        params: { searchParam, pageNumber },
-      });
-      dispatch({ type: "LOAD_CAMPAIGNS", payload: data.records });
-      setHasMore(data.hasMore);
-      setLoading(false);
+        params: { searchParam, pageNumber }
+      })
+      dispatch({ type: "LOAD_CAMPAIGNS", payload: data.records })
+      setHasMore(data.hasMore)
+      setLoading(false)
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-  };
+  }
 
   const handleOpenCampaignModal = () => {
-    setSelectedCampaign(null);
-    setCampaignModalOpen(true);
-  };
+    setSelectedCampaign(null)
+    setCampaignModalOpen(true)
+  }
 
   const handleCloseCampaignModal = () => {
-    setSelectedCampaign(null);
-    setCampaignModalOpen(false);
-  };
+    setSelectedCampaign(null)
+    setCampaignModalOpen(false)
+  }
 
   const handleSearch = (event) => {
-    setSearchParam(event.target.value.toLowerCase());
-  };
+    setSearchParam(event.target.value.toLowerCase())
+  }
 
   const handleEditCampaign = (campaign) => {
-    setSelectedCampaign(campaign);
-    setCampaignModalOpen(true);
-  };
+    setSelectedCampaign(campaign)
+    setCampaignModalOpen(true)
+  }
 
   const handleDeleteCampaign = async (campaignId) => {
     try {
-      await api.delete(`/campaigns/${campaignId}`);
-      toast.success(i18n.t("campaigns.toasts.deleted"));
+      await api.delete(`/campaigns/${campaignId}`)
+      toast.success(i18n.t("campaigns.toasts.deleted"))
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-    setDeletingCampaign(null);
-    setSearchParam("");
-    setPageNumber(1);
-  };
+    setDeletingCampaign(null)
+    setSearchParam("")
+    setPageNumber(1)
+  }
 
   const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
-  };
+    setPageNumber((prevState) => prevState + 1)
+  }
 
   const handleScroll = (e) => {
-    if (!hasMore || loading) return;
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (!hasMore || loading) return
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
     if (scrollHeight - (scrollTop + 100) < clientHeight) {
-      loadMore();
+      loadMore()
     }
-  };
+  }
 
   const formatStatus = (val) => {
     switch (val) {
       case "INATIVA":
-        return "Inativa";
+        return "Inativa"
       case "PROGRAMADA":
-        return "Programada";
+        return "Programada"
       case "EM_ANDAMENTO":
-        return "Em Andamento";
+        return "Em Andamento"
       case "CANCELADA":
-        return "Cancelada";
+        return "Cancelada"
       case "FINALIZADA":
-        return "Finalizada";
+        return "Finalizada"
       default:
-        return val;
+        return val
     }
-  };
+  }
 
   const cancelCampaign = async (campaign) => {
     try {
-      await api.post(`/campaigns/${campaign.id}/cancel`);
-      toast.success(i18n.t("campaigns.toasts.cancel"));
-      setPageNumber(1);
-      fetchCampaigns();
+      await api.post(`/campaigns/${campaign.id}/cancel`)
+      toast.success(i18n.t("campaigns.toasts.cancel"))
+      setPageNumber(1)
+      fetchCampaigns()
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message)
     }
-  };
+  }
 
   const restartCampaign = async (campaign) => {
     try {
-      await api.post(`/campaigns/${campaign.id}/restart`);
-      toast.success(i18n.t("campaigns.toasts.restart"));
-      setPageNumber(1);
-      fetchCampaigns();
+      await api.post(`/campaigns/${campaign.id}/restart`)
+      toast.success(i18n.t("campaigns.toasts.restart"))
+      setPageNumber(1)
+      fetchCampaigns()
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message)
     }
-  };
+  }
 
   return (
     <MainContainer>
@@ -255,8 +255,8 @@ const Campaigns = () => {
       </ConfirmationModal>
       <CampaignModal
         resetPagination={() => {
-          setPageNumber(1);
-          fetchCampaigns();
+          setPageNumber(1)
+          fetchCampaigns()
         }}
         open={campaignModalOpen}
         onClose={handleCloseCampaignModal}
@@ -282,7 +282,7 @@ const Campaigns = () => {
                       <InputAdornment position="start">
                         <SearchIcon style={{ color: "gray" }} />
                       </InputAdornment>
-                    ),
+                    )
                   }}
                 />
               </Grid>
@@ -402,8 +402,8 @@ const Campaigns = () => {
                     <IconButton
                       size="small"
                       onClick={(e) => {
-                        setConfirmModalOpen(true);
-                        setDeletingCampaign(campaign);
+                        setConfirmModalOpen(true)
+                        setDeletingCampaign(campaign)
                       }}
                     >
                       <DeleteOutlineIcon />
@@ -417,7 +417,7 @@ const Campaigns = () => {
         </Table>
       </Paper>
     </MainContainer>
-  );
-};
+  )
+}
 
-export default Campaigns;
+export default Campaigns

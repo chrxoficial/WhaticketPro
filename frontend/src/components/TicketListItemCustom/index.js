@@ -1,47 +1,47 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react"
 
-import { useHistory, useParams } from "react-router-dom";
-import { parseISO, format, isSameDay } from "date-fns";
-import clsx from "clsx";
+import { useHistory, useParams } from "react-router-dom"
+import { parseISO, format, isSameDay } from "date-fns"
+import clsx from "clsx"
 
-import { makeStyles } from "@material-ui/core/styles";
-import { green, grey, red, blue } from "@material-ui/core/colors";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import Typography from "@material-ui/core/Typography";
-import Avatar from "@material-ui/core/Avatar";
-import Divider from "@material-ui/core/Divider";
-import Badge from "@material-ui/core/Badge";
-import Box from "@material-ui/core/Box";
+import { makeStyles } from "@material-ui/core/styles"
+import { green, grey, red, blue } from "@material-ui/core/colors"
+import ListItem from "@material-ui/core/ListItem"
+import ListItemText from "@material-ui/core/ListItemText"
+import ListItemAvatar from "@material-ui/core/ListItemAvatar"
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction"
+import Typography from "@material-ui/core/Typography"
+import Avatar from "@material-ui/core/Avatar"
+import Divider from "@material-ui/core/Divider"
+import Badge from "@material-ui/core/Badge"
+import Box from "@material-ui/core/Box"
 
-import { i18n } from "../../translate/i18n";
+import { i18n } from "../../translate/i18n"
 
-import api from "../../services/api";
-import ButtonWithSpinner from "../ButtonWithSpinner";
-import MarkdownWrapper from "../MarkdownWrapper";
-import { Tooltip } from "@material-ui/core";
-import { AuthContext } from "../../context/Auth/AuthContext";
-import { TicketsContext } from "../../context/Tickets/TicketsContext";
-import toastError from "../../errors/toastError";
-import { v4 as uuidv4 } from "uuid";
+import api from "../../services/api"
+import ButtonWithSpinner from "../ButtonWithSpinner"
+import MarkdownWrapper from "../MarkdownWrapper"
+import { Tooltip } from "@material-ui/core"
+import { AuthContext } from "../../context/Auth/AuthContext"
+import { TicketsContext } from "../../context/Tickets/TicketsContext"
+import toastError from "../../errors/toastError"
+import { v4 as uuidv4 } from "uuid"
 
-import RoomIcon from '@material-ui/icons/Room';
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
-import AndroidIcon from "@material-ui/icons/Android";
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import TicketMessagesDialog from "../TicketMessagesDialog";
-import DoneIcon from '@material-ui/icons/Done';
-import ClearOutlinedIcon from '@material-ui/icons/ClearOutlined';
+import RoomIcon from "@material-ui/icons/Room"
+import WhatsAppIcon from "@material-ui/icons/WhatsApp"
+import AndroidIcon from "@material-ui/icons/Android"
+import VisibilityIcon from "@material-ui/icons/Visibility"
+import TicketMessagesDialog from "../TicketMessagesDialog"
+import DoneIcon from "@material-ui/icons/Done"
+import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined"
 
 const useStyles = makeStyles((theme) => ({
   ticket: {
-    position: "relative",
+    position: "relative"
   },
 
   pendingTicket: {
-    cursor: "unset",
+    cursor: "unset"
   },
 
   noTicketsDiv: {
@@ -50,26 +50,26 @@ const useStyles = makeStyles((theme) => ({
     margin: 40,
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
 
   noTicketsText: {
     textAlign: "center",
     color: "rgb(104, 121, 146)",
     fontSize: "14px",
-    lineHeight: "1.4",
+    lineHeight: "1.4"
   },
 
   noTicketsTitle: {
     textAlign: "center",
     fontSize: "16px",
     fontWeight: "600",
-    margin: "0px",
+    margin: "0px"
   },
 
   contactNameWrapper: {
     display: "flex",
-    justifyContent: "space-between",
+    justifyContent: "space-between"
   },
 
   lastMessageTime: {
@@ -83,11 +83,11 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: "center",
     justifySelf: "flex-end",
     marginRight: 32,
-    marginLeft: "auto",
+    marginLeft: "auto"
   },
 
   contactLastMessage: {
-    paddingRight: "50%",
+    paddingRight: "50%"
   },
 
   newMessagesCount: {
@@ -100,12 +100,12 @@ const useStyles = makeStyles((theme) => ({
   badgeStyle: {
     color: "white",
     backgroundColor: green[500],
-    right: 20,
+    right: 20
   },
 
   acceptButton: {
     position: "absolute",
-    right: "108px",
+    right: "108px"
   },
 
   ticketQueueColor: {
@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     position: "absolute",
     top: "0%",
-    left: "0%",
+    left: "0%"
   },
 
   ticketInfo: {
@@ -136,80 +136,79 @@ const useStyles = makeStyles((theme) => ({
       padding: 3
     },
     "& .MuiBadge-anchorOriginTopRightRectangle": {
-      transform: "scale(1) translate(0%, -40%)",
-    },
-
+      transform: "scale(1) translate(0%, -40%)"
+    }
   }
-}));
+}))
 
 const TicketListItemCustom = ({ ticket }) => {
-  const classes = useStyles();
-  const history = useHistory();
-  const [loading, setLoading] = useState(false);
-  const [ticketUser, setTicketUser] = useState(null);
-  const [whatsAppName, setWhatsAppName] = useState(null);
+  const classes = useStyles()
+  const history = useHistory()
+  const [loading, setLoading] = useState(false)
+  const [ticketUser, setTicketUser] = useState(null)
+  const [whatsAppName, setWhatsAppName] = useState(null)
 
-  const [openTicketMessageDialog, setOpenTicketMessageDialog] = useState(false);
-  const { ticketId } = useParams();
-  const isMounted = useRef(true);
-  const { setCurrentTicket } = useContext(TicketsContext);
-  const { user } = useContext(AuthContext);
-  const { profile } = user;
+  const [openTicketMessageDialog, setOpenTicketMessageDialog] = useState(false)
+  const { ticketId } = useParams()
+  const isMounted = useRef(true)
+  const { setCurrentTicket } = useContext(TicketsContext)
+  const { user } = useContext(AuthContext)
+  const { profile } = user
 
   useEffect(() => {
     if (ticket.userId && ticket.user) {
-      setTicketUser(ticket.user.name);
+      setTicketUser(ticket.user.name)
     }
 
     if (ticket.whatsappId && ticket.whatsapp) {
-      setWhatsAppName(ticket.whatsapp.name);
+      setWhatsAppName(ticket.whatsapp.name)
     }
 
     return () => {
-      isMounted.current = false;
-    };
+      isMounted.current = false
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   const handleCloseTicket = async (id) => {
-    setLoading(true);
+    setLoading(true)
     try {
       await api.put(`/tickets/${id}`, {
         status: "closed",
-        userId: user?.id,
-      });
+        userId: user?.id
+      })
     } catch (err) {
-      setLoading(false);
-      toastError(err);
+      setLoading(false)
+      toastError(err)
     }
     if (isMounted.current) {
-      setLoading(false);
+      setLoading(false)
     }
-    history.push(`/tickets/`);
-  };
+    history.push(`/tickets/`)
+  }
 
   const handleAcepptTicket = async (id) => {
-    setLoading(true);
+    setLoading(true)
     try {
       await api.put(`/tickets/${id}`, {
         status: "open",
-        userId: user?.id,
-      });
+        userId: user?.id
+      })
     } catch (err) {
-      setLoading(false);
-      toastError(err);
+      setLoading(false)
+      toastError(err)
     }
     if (isMounted.current) {
-      setLoading(false);
+      setLoading(false)
     }
-    history.push(`/tickets/${ticket.uuid}`);
-  };
+    history.push(`/tickets/${ticket.uuid}`)
+  }
 
   const handleSelectTicket = (ticket) => {
-    const code = uuidv4();
-    const { id, uuid } = ticket;
-    setCurrentTicket({ id, uuid, code });
-  };
+    const code = uuidv4()
+    const { id, uuid } = ticket
+    setCurrentTicket({ id, uuid, code })
+  }
 
   const renderTicketInfo = () => {
     if (ticketUser) {
@@ -249,7 +248,7 @@ const TicketListItemCustom = ({ ticket }) => {
                 top: -6
               }}
               badgeContent={ticket.queue?.name || "Sem fila"}
-            //color="primary"
+              //color="primary"
             />
           )}
           {ticket.status === "open" && (
@@ -260,7 +259,7 @@ const TicketListItemCustom = ({ ticket }) => {
                 style={{
                   color: red[700],
                   cursor: "pointer",
-                  marginRight: 5,
+                  marginRight: 5
                 }}
               />
             </Tooltip>
@@ -273,7 +272,7 @@ const TicketListItemCustom = ({ ticket }) => {
                 style={{
                   color: blue[700],
                   cursor: "pointer",
-                  marginRight: 5,
+                  marginRight: 5
                 }}
               />
             </Tooltip>
@@ -287,11 +286,10 @@ const TicketListItemCustom = ({ ticket }) => {
             </Tooltip>
           )}
         </>
-      );
+      )
     } else {
       return (
         <>
-
           {ticket.queue?.name !== null && (
             <Badge
               className={classes.Radiusdot}
@@ -306,7 +304,7 @@ const TicketListItemCustom = ({ ticket }) => {
                 top: -6
               }}
               badgeContent={ticket.queue?.name || "Sem fila"}
-            //color=
+              //color=
             />
           )}
           {ticket.status === "pending" && (
@@ -317,7 +315,7 @@ const TicketListItemCustom = ({ ticket }) => {
                 style={{
                   color: red[700],
                   cursor: "pointer",
-                  marginRight: 5,
+                  marginRight: 5
                 }}
               />
             </Tooltip>
@@ -338,7 +336,7 @@ const TicketListItemCustom = ({ ticket }) => {
                 style={{
                   color: red[700],
                   cursor: "pointer",
-                  marginRight: 5,
+                  marginRight: 5
                 }}
               />
             </Tooltip>
@@ -351,7 +349,7 @@ const TicketListItemCustom = ({ ticket }) => {
                 style={{
                   color: blue[700],
                   cursor: "pointer",
-                  marginRight: 5,
+                  marginRight: 5
                 }}
               />
             </Tooltip>
@@ -364,15 +362,15 @@ const TicketListItemCustom = ({ ticket }) => {
                 style={{
                   color: green[700],
                   cursor: "pointer",
-                  marginRight: 5,
+                  marginRight: 5
                 }}
               />
             </Tooltip>
           )}
         </>
-      );
+      )
     }
-  };
+  }
 
   return (
     <React.Fragment key={ticket.id}>
@@ -385,12 +383,12 @@ const TicketListItemCustom = ({ ticket }) => {
         dense
         button
         onClick={(e) => {
-          if (ticket.status === "pending") return;
-          handleSelectTicket(ticket);
+          if (ticket.status === "pending") return
+          handleSelectTicket(ticket)
         }}
         selected={ticketId && +ticketId === ticket.id}
         className={clsx(classes.ticket, {
-          [classes.pendingTicket]: ticket.status === "pending",
+          [classes.pendingTicket]: ticket.status === "pending"
         })}
       >
         <Tooltip
@@ -431,11 +429,20 @@ const TicketListItemCustom = ({ ticket }) => {
                 component="span"
                 variant="body2"
                 color="textSecondary"
-              > {ticket.lastMessage.includes('data:image/png;base64') ? <MarkdownWrapper> Localização</MarkdownWrapper> : <MarkdownWrapper>{ticket.lastMessage}</MarkdownWrapper>}
-                {ticket.lastMessage === "" ? <br /> : <MarkdownWrapper>{ticket.lastMessage}</MarkdownWrapper>}
+              >
+                {" "}
+                {ticket.lastMessage.includes("data:image/png;base64") ? (
+                  <MarkdownWrapper> Localização</MarkdownWrapper>
+                ) : (
+                  <MarkdownWrapper>{ticket.lastMessage}</MarkdownWrapper>
+                )}
+                {ticket.lastMessage === "" ? (
+                  <br />
+                ) : (
+                  <MarkdownWrapper>{ticket.lastMessage}</MarkdownWrapper>
+                )}
               </Typography>
             </span>
-
           }
         />
         <ListItemSecondaryAction>
@@ -460,9 +467,11 @@ const TicketListItemCustom = ({ ticket }) => {
             <>
               <Badge
                 className={classes.newMessagesCount}
-                badgeContent={ticket.unreadMessages ? ticket.unreadMessages : null}
+                badgeContent={
+                  ticket.unreadMessages ? ticket.unreadMessages : null
+                }
                 classes={{
-                  badge: classes.badgeStyle,
+                  badge: classes.badgeStyle
                 }}
               />
               <Typography
@@ -478,16 +487,13 @@ const TicketListItemCustom = ({ ticket }) => {
                 )}
               </Typography>
               <br />
-
             </>
           )}
-
         </ListItemSecondaryAction>
-
       </ListItem>
       <Divider variant="inset" component="li" />
     </React.Fragment>
-  );
-};
+  )
+}
 
-export default TicketListItemCustom;
+export default TicketListItemCustom

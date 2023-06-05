@@ -1,38 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 
-import * as Yup from "yup";
-import { Formik, Form, Field } from "formik";
-import { toast } from "react-toastify";
+import * as Yup from "yup"
+import { Formik, Form, Field } from "formik"
+import { toast } from "react-toastify"
 
-import { makeStyles } from "@material-ui/core/styles";
-import { green } from "@material-ui/core/colors";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { makeStyles } from "@material-ui/core/styles"
+import { green } from "@material-ui/core/colors"
+import Button from "@material-ui/core/Button"
+import TextField from "@material-ui/core/TextField"
+import Dialog from "@material-ui/core/Dialog"
+import DialogActions from "@material-ui/core/DialogActions"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import CircularProgress from "@material-ui/core/CircularProgress"
 
-import { i18n } from "../../translate/i18n";
+import { i18n } from "../../translate/i18n"
 
-import api from "../../services/api";
-import toastError from "../../errors/toastError";
+import api from "../../services/api"
+import toastError from "../../errors/toastError"
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    flexWrap: "wrap",
+    flexWrap: "wrap"
   },
   multFieldLine: {
     display: "flex",
     "& > *:not(:last-child)": {
-      marginRight: theme.spacing(1),
-    },
+      marginRight: theme.spacing(1)
+    }
   },
 
   btnWrapper: {
-    position: "relative",
+    position: "relative"
   },
 
   buttonProgress: {
@@ -41,65 +41,65 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     marginTop: -12,
-    marginLeft: -12,
+    marginLeft: -12
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}));
+    minWidth: 120
+  }
+}))
 
 const ContactListSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, "Too Short!")
     .max(50, "Too Long!")
-    .required("Required"),
-});
+    .required("Required")
+})
 
 const ContactListModal = ({ open, onClose, contactListId }) => {
-  const classes = useStyles();
+  const classes = useStyles()
 
   const initialState = {
-    name: "",
-  };
+    name: ""
+  }
 
-  const [contactList, setContactList] = useState(initialState);
+  const [contactList, setContactList] = useState(initialState)
 
   useEffect(() => {
     const fetchContactList = async () => {
-      if (!contactListId) return;
+      if (!contactListId) return
       try {
-        const { data } = await api.get(`/contact-lists/${contactListId}`);
+        const { data } = await api.get(`/contact-lists/${contactListId}`)
         setContactList((prevState) => {
-          return { ...prevState, ...data };
-        });
+          return { ...prevState, ...data }
+        })
       } catch (err) {
-        toastError(err);
+        toastError(err)
       }
-    };
+    }
 
-    fetchContactList();
-  }, [contactListId, open]);
+    fetchContactList()
+  }, [contactListId, open])
 
   const handleClose = () => {
-    onClose();
-    setContactList(initialState);
-  };
+    onClose()
+    setContactList(initialState)
+  }
 
   const handleSaveContactList = async (values) => {
-    const contactListData = { ...values };
+    const contactListData = { ...values }
     try {
       if (contactListId) {
-        await api.put(`/contact-lists/${contactListId}`, contactListData);
+        await api.put(`/contact-lists/${contactListId}`, contactListData)
       } else {
-        await api.post("/contact-lists", contactListData);
+        await api.post("/contact-lists", contactListData)
       }
-      toast.success(i18n.t("contactList.dialog"));
+      toast.success(i18n.t("contactList.dialog"))
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-    handleClose();
-  };
+    handleClose()
+  }
 
   return (
     <div className={classes.root}>
@@ -121,9 +121,9 @@ const ContactListModal = ({ open, onClose, contactListId }) => {
           validationSchema={ContactListSchema}
           onSubmit={(values, actions) => {
             setTimeout(() => {
-              handleSaveContactList(values);
-              actions.setSubmitting(false);
-            }, 400);
+              handleSaveContactList(values)
+              actions.setSubmitting(false)
+            }, 400)
           }}
         >
           {({ touched, errors, isSubmitting }) => (
@@ -175,7 +175,7 @@ const ContactListModal = ({ open, onClose, contactListId }) => {
         </Formik>
       </Dialog>
     </div>
-  );
-};
+  )
+}
 
-export default ContactListModal;
+export default ContactListModal

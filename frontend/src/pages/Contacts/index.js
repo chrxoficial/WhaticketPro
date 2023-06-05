@@ -1,93 +1,93 @@
-import React, { useState, useEffect, useReducer, useContext } from "react";
+import React, { useState, useEffect, useReducer, useContext } from "react"
 
-import { toast } from "react-toastify";
-import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify"
+import { useHistory } from "react-router-dom"
 
-import { makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import Avatar from "@material-ui/core/Avatar";
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
-import SearchIcon from "@material-ui/icons/Search";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import { makeStyles } from "@material-ui/core/styles"
+import Table from "@material-ui/core/Table"
+import TableBody from "@material-ui/core/TableBody"
+import TableCell from "@material-ui/core/TableCell"
+import TableHead from "@material-ui/core/TableHead"
+import TableRow from "@material-ui/core/TableRow"
+import Paper from "@material-ui/core/Paper"
+import Button from "@material-ui/core/Button"
+import Avatar from "@material-ui/core/Avatar"
+import WhatsAppIcon from "@material-ui/icons/WhatsApp"
+import SearchIcon from "@material-ui/icons/Search"
+import TextField from "@material-ui/core/TextField"
+import InputAdornment from "@material-ui/core/InputAdornment"
 
-import IconButton from "@material-ui/core/IconButton";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import EditIcon from "@material-ui/icons/Edit";
+import IconButton from "@material-ui/core/IconButton"
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline"
+import EditIcon from "@material-ui/icons/Edit"
 
-import api from "../../services/api";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import ContactModal from "../../components/ContactModal";
-import ConfirmationModal from "../../components/ConfirmationModal/";
-import ContactsExport from "../../components/ContactsExport";
+import api from "../../services/api"
+import TableRowSkeleton from "../../components/TableRowSkeleton"
+import ContactModal from "../../components/ContactModal"
+import ConfirmationModal from "../../components/ConfirmationModal/"
+import ContactsExport from "../../components/ContactsExport"
 
-import { i18n } from "../../translate/i18n";
-import MainHeader from "../../components/MainHeader";
-import Title from "../../components/Title";
-import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
-import MainContainer from "../../components/MainContainer";
-import toastError from "../../errors/toastError";
-import { AuthContext } from "../../context/Auth/AuthContext";
-import { Can } from "../../components/Can";
-import NewTicketModal from "../../components/NewTicketModal";
-import { socketConnection } from "../../services/socket";
+import { i18n } from "../../translate/i18n"
+import MainHeader from "../../components/MainHeader"
+import Title from "../../components/Title"
+import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper"
+import MainContainer from "../../components/MainContainer"
+import toastError from "../../errors/toastError"
+import { AuthContext } from "../../context/Auth/AuthContext"
+import { Can } from "../../components/Can"
+import NewTicketModal from "../../components/NewTicketModal"
+import { socketConnection } from "../../services/socket"
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_CONTACTS") {
-    const contacts = action.payload;
-    const newContacts = [];
+    const contacts = action.payload
+    const newContacts = []
 
     contacts.forEach((contact) => {
-      const contactIndex = state.findIndex((c) => c.id === contact.id);
+      const contactIndex = state.findIndex((c) => c.id === contact.id)
       if (contactIndex !== -1) {
-        state[contactIndex] = contact;
+        state[contactIndex] = contact
       } else {
-        newContacts.push(contact);
+        newContacts.push(contact)
       }
-    });
+    })
 
-    return [...state, ...newContacts];
+    return [...state, ...newContacts]
   }
 
   if (action.type === "UPDATE_CONTACTS") {
-    const contact = action.payload;
-    const contactIndex = state.findIndex((c) => c.id === contact.id);
+    const contact = action.payload
+    const contactIndex = state.findIndex((c) => c.id === contact.id)
 
     if (contactIndex !== -1) {
-      state[contactIndex] = contact;
-      return [...state];
+      state[contactIndex] = contact
+      return [...state]
     } else {
-      return [contact, ...state];
+      return [contact, ...state]
     }
   }
 
   if (action.type === "DELETE_CONTACT") {
-    const contactId = action.payload;
+    const contactId = action.payload
 
-    const contactIndex = state.findIndex((c) => c.id === contactId);
+    const contactIndex = state.findIndex((c) => c.id === contactId)
     if (contactIndex !== -1) {
-      state.splice(contactIndex, 1);
+      state.splice(contactIndex, 1)
     }
-    return [...state];
+    return [...state]
   }
 
   if (action.type === "RESET") {
-    return [];
+    return []
   }
-};
+}
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
+    ...theme.scrollbarStyles
   },
   exporte: {
     position: "absolute",
@@ -102,93 +102,90 @@ const useStyles = makeStyles((theme) => ({
     width: "235px",
     display: "flex",
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
   botoesResponsivos: {
     display: "flex",
-    flexWrap: "wrap",
+    flexWrap: "wrap"
   }
-
-}));
+}))
 
 const Contacts = () => {
-  const classes = useStyles();
-  const history = useHistory();
+  const classes = useStyles()
+  const history = useHistory()
 
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext)
 
-  const [loading, setLoading] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [searchParam, setSearchParam] = useState("");
-  const [contacts, dispatch] = useReducer(reducer, []);
-  const [selectedContactId, setSelectedContactId] = useState(null);
-  const [contactModalOpen, setContactModalOpen] = useState(false);
-  const [contactExportOpen, setContactExportOpen] = useState(false);
-  const [newTicketModalOpen, setNewTicketModalOpen] = useState(false);
-  const [contactTicket, setContactTicket] = useState({});
-  const [deletingContact, setDeletingContact] = useState(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
-
-  useEffect(() => {
-    dispatch({ type: "RESET" });
-    setPageNumber(1);
-  }, [searchParam]);
+  const [loading, setLoading] = useState(false)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [searchParam, setSearchParam] = useState("")
+  const [contacts, dispatch] = useReducer(reducer, [])
+  const [selectedContactId, setSelectedContactId] = useState(null)
+  const [contactModalOpen, setContactModalOpen] = useState(false)
+  const [contactExportOpen, setContactExportOpen] = useState(false)
+  const [newTicketModalOpen, setNewTicketModalOpen] = useState(false)
+  const [contactTicket, setContactTicket] = useState({})
+  const [deletingContact, setDeletingContact] = useState(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [hasMore, setHasMore] = useState(false)
 
   useEffect(() => {
-    setLoading(true);
+    dispatch({ type: "RESET" })
+    setPageNumber(1)
+  }, [searchParam])
+
+  useEffect(() => {
+    setLoading(true)
     const delayDebounceFn = setTimeout(() => {
       const fetchContacts = async () => {
         try {
           const { data } = await api.get("/contacts/", {
-            params: { searchParam, pageNumber },
-          });
-          dispatch({ type: "LOAD_CONTACTS", payload: data.contacts });
-          setHasMore(data.hasMore);
-          setLoading(false);
+            params: { searchParam, pageNumber }
+          })
+          dispatch({ type: "LOAD_CONTACTS", payload: data.contacts })
+          setHasMore(data.hasMore)
+          setLoading(false)
         } catch (err) {
-          toastError(err);
+          toastError(err)
         }
-      };
-      fetchContacts();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchParam, pageNumber]);
+      }
+      fetchContacts()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchParam, pageNumber])
 
   useEffect(() => {
-    const companyId = localStorage.getItem("companyId");
-    const socket = socketConnection({ companyId });
+    const companyId = localStorage.getItem("companyId")
+    const socket = socketConnection({ companyId })
 
     socket.on(`company-${companyId}-contact`, (data) => {
       if (data.action === "update" || data.action === "create") {
-        dispatch({ type: "UPDATE_CONTACTS", payload: data.contact });
+        dispatch({ type: "UPDATE_CONTACTS", payload: data.contact })
       }
 
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_CONTACT", payload: +data.contactId });
+        dispatch({ type: "DELETE_CONTACT", payload: +data.contactId })
       }
-    });
+    })
 
     return () => {
-      socket.disconnect();
-    };
-  }, []);
+      socket.disconnect()
+    }
+  }, [])
 
   const handleSearch = (event) => {
-    setSearchParam(event.target.value.toLowerCase());
-  };
+    setSearchParam(event.target.value.toLowerCase())
+  }
 
   const handleOpenContactModal = () => {
-    setSelectedContactId(null);
-    setContactModalOpen(true);
-  };
+    setSelectedContactId(null)
+    setContactModalOpen(true)
+  }
 
   const handleCloseContactModal = () => {
-    setSelectedContactId(null);
-    setContactModalOpen(false);
-  };
-
-
+    setSelectedContactId(null)
+    setContactModalOpen(false)
+  }
 
   /* Exportar */ /*
   const handleOpenContactExport = () => {
@@ -205,9 +202,6 @@ const Contacts = () => {
     }
     
   };*/
-
-
-
 
   // const handleSaveTicket = async contactId => {
   // 	if (!contactId) return;
@@ -226,67 +220,66 @@ const Contacts = () => {
   // };
 
   const handleCloseOrOpenTicket = (ticket) => {
-    setNewTicketModalOpen(false);
+    setNewTicketModalOpen(false)
     if (ticket !== undefined && ticket.uuid !== undefined) {
-      history.push(`/tickets/${ticket.uuid}`);
+      history.push(`/tickets/${ticket.uuid}`)
     }
-  };
+  }
 
   const hadleEditContact = (contactId) => {
-    setSelectedContactId(contactId);
-    setContactModalOpen(true);
-  };
+    setSelectedContactId(contactId)
+    setContactModalOpen(true)
+  }
 
   const handleDeleteContact = async (contactId) => {
     try {
-      await api.delete(`/contacts/${contactId}`);
-      toast.success(i18n.t("contacts.toasts.deleted"));
+      await api.delete(`/contacts/${contactId}`)
+      toast.success(i18n.t("contacts.toasts.deleted"))
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-    setDeletingContact(null);
-    setSearchParam("");
-    setPageNumber(1);
-  };
+    setDeletingContact(null)
+    setSearchParam("")
+    setPageNumber(1)
+  }
 
   const handleimportContact = async () => {
     try {
-      await api.post("/contacts/import");
-      history.go(0);
+      await api.post("/contacts/import")
+      history.go(0)
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-  };
+  }
 
   const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
-  };
+    setPageNumber((prevState) => prevState + 1)
+  }
 
   const handleScroll = (e) => {
-    if (!hasMore || loading) return;
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (!hasMore || loading) return
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
     if (scrollHeight - (scrollTop + 100) < clientHeight) {
-      loadMore();
+      loadMore()
     }
-  };
-
+  }
 
   /* POPUP */
-  const [showPopup, setShowPopup] = useState(false);
-  const [queue, setQueue] = useState("");
+  const [showPopup, setShowPopup] = useState(false)
+  const [queue, setQueue] = useState("")
 
   const handleFilter = (event) => {
-    event.preventDefault();
+    event.preventDefault()
     // Filtra os tickets por fila
-  };
+  }
 
   const handleQueueChange = (event) => {
-    setQueue(event.target.value);
-  };
+    setQueue(event.target.value)
+  }
 
   const togglePopup = () => {
-    setShowPopup(!showPopup);
-  };
+    setShowPopup(!showPopup)
+  }
 
   return (
     <MainContainer className={classes.mainContainer}>
@@ -299,13 +292,11 @@ const Contacts = () => {
         />
       )}
 
-
-
       <NewTicketModal
         modalOpen={newTicketModalOpen}
         initialContact={contactTicket}
         onClose={(ticket) => {
-          handleCloseOrOpenTicket(ticket);
+          handleCloseOrOpenTicket(ticket)
         }}
       />
 
@@ -318,8 +309,9 @@ const Contacts = () => {
       <ConfirmationModal
         title={
           deletingContact
-            ? `${i18n.t("contacts.confirmationModal.deleteTitle")} ${deletingContact.name
-            }?`
+            ? `${i18n.t("contacts.confirmationModal.deleteTitle")} ${
+                deletingContact.name
+              }?`
             : `${i18n.t("contacts.confirmationModal.importTitlte")}`
         }
         open={confirmOpen}
@@ -347,10 +339,9 @@ const Contacts = () => {
                 <InputAdornment position="start">
                   <SearchIcon style={{ color: "gray" }} />
                 </InputAdornment>
-              ),
+              )
             }}
           />
-
 
           {/* import */}
           <Button
@@ -369,14 +360,9 @@ const Contacts = () => {
           >
            } {i18n.t("contacts.buttons.export")
           </Button> */}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={togglePopup}
-          >
+          <Button variant="contained" color="primary" onClick={togglePopup}>
             EXPORTAR CONTATOS
           </Button>
-
 
           <Button
             variant="contained"
@@ -418,8 +404,8 @@ const Contacts = () => {
                     <IconButton
                       size="small"
                       onClick={() => {
-                        setContactTicket(contact);
-                        setNewTicketModalOpen(true);
+                        setContactTicket(contact)
+                        setNewTicketModalOpen(true)
                       }}
                     >
                       <WhatsAppIcon />
@@ -437,8 +423,8 @@ const Contacts = () => {
                         <IconButton
                           size="small"
                           onClick={(e) => {
-                            setConfirmOpen(true);
-                            setDeletingContact(contact);
+                            setConfirmOpen(true)
+                            setDeletingContact(contact)
                           }}
                         >
                           <DeleteOutlineIcon />
@@ -454,7 +440,7 @@ const Contacts = () => {
         </Table>
       </Paper>
     </MainContainer>
-  );
-};
+  )
+}
 
-export default Contacts;
+export default Contacts

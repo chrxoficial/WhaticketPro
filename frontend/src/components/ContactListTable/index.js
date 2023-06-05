@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import React, { useState, useEffect } from "react"
+import PropTypes from "prop-types"
 import {
   Table,
   TableHead,
   TableBody,
   TableCell,
   TableRow,
-  IconButton,
-} from "@material-ui/core";
+  IconButton
+} from "@material-ui/core"
 import {
   Edit as EditIcon,
   DeleteOutline as DeleteOutlineIcon,
-  People as PeopleIcon,
-} from "@material-ui/icons";
+  People as PeopleIcon
+} from "@material-ui/icons"
 
-import TableRowSkeleton from "../../components/TableRowSkeleton";
+import TableRowSkeleton from "../../components/TableRowSkeleton"
 
 function ContactListsTable(props) {
   const {
@@ -22,27 +22,27 @@ function ContactListsTable(props) {
     showLoading,
     editContactList,
     deleteContactList,
-    readOnly,
-  } = props;
-  const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState([]);
+    readOnly
+  } = props
+  const [loading, setLoading] = useState(true)
+  const [rows, setRows] = useState([])
 
   useEffect(() => {
     if (Array.isArray(contactLists)) {
-      setRows(contactLists);
+      setRows(contactLists)
     }
     if (showLoading !== undefined) {
-      setLoading(showLoading);
+      setLoading(showLoading)
     }
-  }, [contactLists, showLoading]);
+  }, [contactLists, showLoading])
 
   const handleEdit = (contactList) => {
-    editContactList(contactList);
-  };
+    editContactList(contactList)
+  }
 
   const handleDelete = (contactList) => {
-    deleteContactList(contactList);
-  };
+    deleteContactList(contactList)
+  }
 
   const renderRows = () => {
     return rows.map((contactList) => {
@@ -69,9 +69,9 @@ function ContactListsTable(props) {
             </TableCell>
           ) : null}
         </TableRow>
-      );
-    });
-  };
+      )
+    })
+  }
 
   return (
     <Table size="small">
@@ -90,14 +90,14 @@ function ContactListsTable(props) {
         )}
       </TableBody>
     </Table>
-  );
+  )
 }
 
 ContactListsTable.propTypes = {
   contactLists: PropTypes.array.isRequired,
   showLoading: PropTypes.bool,
   editContactList: PropTypes.func.isRequired,
-  deleteContactList: PropTypes.func.isRequired,
-};
+  deleteContactList: PropTypes.func.isRequired
+}
 
-export default ContactListsTable;
+export default ContactListsTable

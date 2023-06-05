@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState } from "react"
 import {
   Chip,
   IconButton,
@@ -6,18 +6,18 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  makeStyles,
-} from "@material-ui/core";
+  makeStyles
+} from "@material-ui/core"
 
-import { useHistory, useParams } from "react-router-dom";
-import { AuthContext } from "../../context/Auth/AuthContext";
-import { useDate } from "../../hooks/useDate";
+import { useHistory, useParams } from "react-router-dom"
+import { AuthContext } from "../../context/Auth/AuthContext"
+import { useDate } from "../../hooks/useDate"
 
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete"
+import EditIcon from "@material-ui/icons/Edit"
 
-import ConfirmationModal from "../../components/ConfirmationModal";
-import api from "../../services/api";
+import ConfirmationModal from "../../components/ConfirmationModal"
+import api from "../../services/api"
 
 const useStyles = makeStyles((theme) => ({
   mainContainer: {
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     height: "calc(100% - 58px)",
     overflow: "hidden",
     borderRadius: 0,
-    backgroundColor: "white",
+    backgroundColor: "white"
   },
   chatList: {
     display: "flex",
@@ -36,12 +36,12 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     flex: 1,
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
+    ...theme.scrollbarStyles
   },
   listItem: {
-    cursor: "pointer",
-  },
-}));
+    cursor: "pointer"
+  }
+}))
 
 export default function ChatList({
   chats,
@@ -49,43 +49,43 @@ export default function ChatList({
   handleDeleteChat,
   handleEditChat,
   pageInfo,
-  loading,
+  loading
 }) {
-  const classes = useStyles();
-  const history = useHistory();
-  const { user } = useContext(AuthContext);
-  const { datetimeToClient } = useDate();
+  const classes = useStyles()
+  const history = useHistory()
+  const { user } = useContext(AuthContext)
+  const { datetimeToClient } = useDate()
 
-  const [confirmationModal, setConfirmModalOpen] = useState(false);
-  const [selectedChat, setSelectedChat] = useState({});
+  const [confirmationModal, setConfirmModalOpen] = useState(false)
+  const [selectedChat, setSelectedChat] = useState({})
 
-  const { id } = useParams();
+  const { id } = useParams()
 
   const goToMessages = async (chat) => {
     if (unreadMessages(chat) > 0) {
       try {
-        await api.post(`/chats/${chat.id}/read`, { userId: user.id });
+        await api.post(`/chats/${chat.id}/read`, { userId: user.id })
       } catch (err) {}
     }
 
     if (id !== chat.uuid) {
-      history.push(`/chats/${chat.uuid}`);
-      handleSelectChat(chat);
+      history.push(`/chats/${chat.uuid}`)
+      handleSelectChat(chat)
     }
-  };
+  }
 
   const handleDelete = () => {
-    handleDeleteChat(selectedChat);
-  };
+    handleDeleteChat(selectedChat)
+  }
 
   const unreadMessages = (chat) => {
-    const currentUser = chat.users.find((u) => u.userId === user.id);
-    return currentUser.unreads;
-  };
+    const currentUser = chat.users.find((u) => u.userId === user.id)
+    return currentUser.unreads
+  }
 
   const getPrimaryText = (chat) => {
-    const mainText = chat.title;
-    const unreads = unreadMessages(chat);
+    const mainText = chat.title
+    const unreads = unreadMessages(chat)
     return (
       <>
         {mainText}
@@ -98,21 +98,21 @@ export default function ChatList({
           />
         )}
       </>
-    );
-  };
+    )
+  }
 
   const getSecondaryText = (chat) => {
     return chat.lastMessage !== ""
       ? `${datetimeToClient(chat.updatedAt)}: ${chat.lastMessage}`
-      : "";
-  };
+      : ""
+  }
 
   const getItemStyle = (chat) => {
     return {
       borderLeft: chat.uuid === id ? "6px solid #002d6e" : null,
-      backgroundColor: chat.uuid === id ? "#eee" : null,
-    };
-  };
+      backgroundColor: chat.uuid === id ? "#eee" : null
+    }
+  }
 
   return (
     <>
@@ -146,8 +146,8 @@ export default function ChatList({
                       <IconButton
                         onClick={() => {
                           goToMessages(chat).then(() => {
-                            handleEditChat(chat);
-                          });
+                            handleEditChat(chat)
+                          })
                         }}
                         edge="end"
                         aria-label="delete"
@@ -158,8 +158,8 @@ export default function ChatList({
                       </IconButton>
                       <IconButton
                         onClick={() => {
-                          setSelectedChat(chat);
-                          setConfirmModalOpen(true);
+                          setSelectedChat(chat)
+                          setConfirmModalOpen(true)
                         }}
                         edge="end"
                         aria-label="delete"
@@ -175,5 +175,5 @@ export default function ChatList({
         </div>
       </div>
     </>
-  );
+  )
 }

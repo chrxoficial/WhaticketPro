@@ -1,68 +1,67 @@
-import React, { useState, useContext } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState, useContext } from "react"
+import { makeStyles } from "@material-ui/core/styles"
 
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
+import Paper from "@material-ui/core/Paper"
+import Button from "@material-ui/core/Button"
+import Grid from "@material-ui/core/Grid"
+import TextField from "@material-ui/core/TextField"
 
-import SubscriptionModal from "../../components/SubscriptionModal";
-import MainHeader from "../../components/MainHeader";
-import Title from "../../components/Title";
-import MainContainer from "../../components/MainContainer";
+import SubscriptionModal from "../../components/SubscriptionModal"
+import MainHeader from "../../components/MainHeader"
+import Title from "../../components/Title"
+import MainContainer from "../../components/MainContainer"
 
-import { AuthContext } from "../../context/Auth/AuthContext";
+import { AuthContext } from "../../context/Auth/AuthContext"
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
-  },
-}));
+    ...theme.scrollbarStyles
+  }
+}))
 
 const _formatDate = (date) => {
-  const now = new Date();
-  const past = new Date(date);
-  const diff = Math.abs(now.getTime() - past.getTime());
-  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  const now = new Date()
+  const past = new Date(date)
+  const diff = Math.abs(now.getTime() - past.getTime())
+  const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
 
-  return days;
+  return days
 }
 
 const Contacts = () => {
-  const classes = useStyles();
-  const { user } = useContext(AuthContext);
+  const classes = useStyles()
+  const { user } = useContext(AuthContext)
 
-  const [loading,] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [selectedContactId, setSelectedContactId] = useState(null);
-  const [contactModalOpen, setContactModalOpen] = useState(false);
-  const [hasMore,] = useState(false);
-
+  const [loading] = useState(false)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [selectedContactId, setSelectedContactId] = useState(null)
+  const [contactModalOpen, setContactModalOpen] = useState(false)
+  const [hasMore] = useState(false)
 
   const handleOpenContactModal = () => {
-    setSelectedContactId(null);
-    setContactModalOpen(true);
-  };
+    setSelectedContactId(null)
+    setContactModalOpen(true)
+  }
 
   const handleCloseContactModal = () => {
-    setSelectedContactId(null);
-    setContactModalOpen(false);
-  };
+    setSelectedContactId(null)
+    setContactModalOpen(false)
+  }
 
   const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
-  };
+    setPageNumber((prevState) => prevState + 1)
+  }
 
   const handleScroll = (e) => {
-    if (!hasMore || loading) return;
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (!hasMore || loading) return
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
     if (scrollHeight - (scrollTop + 100) < clientHeight) {
-      loadMore();
+      loadMore()
     }
-  };
+  }
 
   return (
     <MainContainer>
@@ -82,23 +81,23 @@ const Contacts = () => {
           variant="outlined"
           onScroll={handleScroll}
         >
-
           <div>
             <TextField
               id="outlined-full-width"
               label="Período de teste"
-              defaultValue={`Seu período de teste termina em ${_formatDate(user?.company?.trialExpiration)} dias!`}
+              defaultValue={`Seu período de teste termina em ${_formatDate(
+                user?.company?.trialExpiration
+              )} dias!`}
               fullWidth
               margin="normal"
               InputLabelProps={{
-                shrink: true,
+                shrink: true
               }}
               InputProps={{
-                readOnly: true,
+                readOnly: true
               }}
               variant="outlined"
             />
-
           </div>
 
           <div>
@@ -109,14 +108,13 @@ const Contacts = () => {
               fullWidth
               margin="normal"
               InputLabelProps={{
-                shrink: true,
+                shrink: true
               }}
               InputProps={{
-                readOnly: false,
+                readOnly: false
               }}
               variant="outlined"
             />
-
           </div>
 
           <div>
@@ -129,11 +127,10 @@ const Contacts = () => {
               Assine Agora!
             </Button>
           </div>
-
         </Paper>
       </Grid>
     </MainContainer>
-  );
-};
+  )
+}
 
-export default Contacts;
+export default Contacts

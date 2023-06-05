@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react"
 
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom"
 
 import {
   Button,
@@ -13,18 +13,18 @@ import {
   Paper,
   Tab,
   Tabs,
-  TextField,
-} from "@material-ui/core";
-import ChatList from "./ChatList";
-import ChatMessages from "./ChatMessages";
-import { UsersFilter } from "../../components/UsersFilter";
-import api from "../../services/api";
-import { socketConnection } from "../../services/socket";
+  TextField
+} from "@material-ui/core"
+import ChatList from "./ChatList"
+import ChatMessages from "./ChatMessages"
+import { UsersFilter } from "../../components/UsersFilter"
+import api from "../../services/api"
+import { socketConnection } from "../../services/socket"
 
-import { has, isObject } from "lodash";
+import { has, isObject } from "lodash"
 
-import { AuthContext } from "../../context/Auth/AuthContext";
-import withWidth, { isWidthUp } from "@material-ui/core/withWidth";
+import { AuthContext } from "../../context/Auth/AuthContext"
+import withWidth, { isWidthUp } from "@material-ui/core/withWidth"
 
 const useStyles = makeStyles((theme) => ({
   mainContainer: {
@@ -35,67 +35,67 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     height: `calc(100% - 48px)`,
     overflowY: "hidden",
-    border: "1px solid rgba(0, 0, 0, 0.12)",
+    border: "1px solid rgba(0, 0, 0, 0.12)"
   },
   gridContainer: {
     flex: 1,
     height: "100%",
     border: "1px solid rgba(0, 0, 0, 0.12)",
-    backgroundColor: "#eee",
+    backgroundColor: "#eee"
   },
   gridItem: {
-    height: "100%",
+    height: "100%"
   },
   gridItemTab: {
     height: "92%",
-    width: "100%",
+    width: "100%"
   },
   btnContainer: {
     textAlign: "right",
-    padding: 10,
-  },
-}));
+    padding: 10
+  }
+}))
 
 export function ChatModal({
   open,
   chat,
   type,
   handleClose,
-  handleLoadNewChat,
+  handleLoadNewChat
 }) {
-  const [users, setUsers] = useState([]);
-  const [title, setTitle] = useState("");
+  const [users, setUsers] = useState([])
+  const [title, setTitle] = useState("")
 
   useEffect(() => {
-    setTitle("");
-    setUsers([]);
+    setTitle("")
+    setUsers([])
     if (type === "edit") {
       const userList = chat.users.map((u) => ({
         id: u.user.id,
-        name: u.user.name,
-      }));
-      setUsers(userList);
-      setTitle(chat.title);
+        name: u.user.name
+      }))
+      setUsers(userList)
+      setTitle(chat.title)
     }
-  }, [chat, open, type]);
+  }, [chat, open, type])
 
   const handleSave = async () => {
     try {
       if (type === "edit") {
         await api.put(`/chats/${chat.id}`, {
           users,
-          title,
-        });
+          title
+        })
       } else {
         const { data } = await api.post("/chats", {
           users,
-          title,
-        });
-        handleLoadNewChat(data);
+          title
+        })
+        handleLoadNewChat(data)
       }
-      handleClose();
+      handleClose()
     } catch (err) {}
-  };
+  }
 
   return (
     <Dialog
@@ -135,188 +135,188 @@ export function ChatModal({
         </Button>
       </DialogActions>
     </Dialog>
-  );
+  )
 }
 
 function Chat(props) {
-  const classes = useStyles();
-  const { user } = useContext(AuthContext);
-  const history = useHistory();
+  const classes = useStyles()
+  const { user } = useContext(AuthContext)
+  const history = useHistory()
 
-  const [showDialog, setShowDialog] = useState(false);
-  const [dialogType, setDialogType] = useState("new");
-  const [currentChat, setCurrentChat] = useState({});
-  const [chats, setChats] = useState([]);
-  const [chatsPageInfo, setChatsPageInfo] = useState({ hasMore: false });
-  const [messages, setMessages] = useState([]);
-  const [messagesPageInfo, setMessagesPageInfo] = useState({ hasMore: false });
-  const [messagesPage, setMessagesPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState(0);
-  const isMounted = useRef(true);
-  const scrollToBottomRef = useRef();
-  const { id } = useParams();
+  const [showDialog, setShowDialog] = useState(false)
+  const [dialogType, setDialogType] = useState("new")
+  const [currentChat, setCurrentChat] = useState({})
+  const [chats, setChats] = useState([])
+  const [chatsPageInfo, setChatsPageInfo] = useState({ hasMore: false })
+  const [messages, setMessages] = useState([])
+  const [messagesPageInfo, setMessagesPageInfo] = useState({ hasMore: false })
+  const [messagesPage, setMessagesPage] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [tab, setTab] = useState(0)
+  const isMounted = useRef(true)
+  const scrollToBottomRef = useRef()
+  const { id } = useParams()
 
   useEffect(() => {
     return () => {
-      isMounted.current = false;
-    };
-  }, []);
+      isMounted.current = false
+    }
+  }, [])
 
   useEffect(() => {
     if (isMounted.current) {
       findChats().then((data) => {
-        const { records } = data;
+        const { records } = data
         if (records.length > 0) {
-          setChats(records);
-          setChatsPageInfo(data);
+          setChats(records)
+          setChatsPageInfo(data)
 
           if (id && records.length) {
-            const chat = records.find((r) => r.uuid === id);
-            selectChat(chat);
+            const chat = records.find((r) => r.uuid === id)
+            selectChat(chat)
           }
         }
-      });
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (isObject(currentChat) && has(currentChat, "id")) {
       findMessages(currentChat.id).then(() => {
         if (typeof scrollToBottomRef.current === "function") {
           setTimeout(() => {
-            scrollToBottomRef.current();
-          }, 300);
+            scrollToBottomRef.current()
+          }, 300)
         }
-      });
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentChat]);
+  }, [currentChat])
 
   useEffect(() => {
-    const companyId = localStorage.getItem("companyId");
-    const socket = socketConnection({ companyId });
+    const companyId = localStorage.getItem("companyId")
+    const socket = socketConnection({ companyId })
 
     socket.on(`company-${companyId}-chat-user-${user.id}`, (data) => {
       if (data.action === "create") {
-        setChats((prev) => [data.record, ...prev]);
+        setChats((prev) => [data.record, ...prev])
       }
       if (data.action === "update") {
         const changedChats = chats.map((chat) => {
           if (chat.id === data.record.id) {
-            setCurrentChat(data.record);
+            setCurrentChat(data.record)
             return {
-              ...data.record,
-            };
+              ...data.record
+            }
           }
-          return chat;
-        });
-        setChats(changedChats);
+          return chat
+        })
+        setChats(changedChats)
       }
-    });
+    })
 
     socket.on(`company-${companyId}-chat`, (data) => {
       if (data.action === "delete") {
-        const filteredChats = chats.filter((c) => c.id !== +data.id);
-        setChats(filteredChats);
-        setMessages([]);
-        setMessagesPage(1);
-        setMessagesPageInfo({ hasMore: false });
-        setCurrentChat({});
-        history.push("/chats");
+        const filteredChats = chats.filter((c) => c.id !== +data.id)
+        setChats(filteredChats)
+        setMessages([])
+        setMessagesPage(1)
+        setMessagesPageInfo({ hasMore: false })
+        setCurrentChat({})
+        history.push("/chats")
       }
-    });
+    })
 
     if (isObject(currentChat) && has(currentChat, "id")) {
       socket.on(`company-${companyId}-chat-${currentChat.id}`, (data) => {
         if (data.action === "new-message") {
-          setMessages((prev) => [...prev, data.newMessage]);
+          setMessages((prev) => [...prev, data.newMessage])
           const changedChats = chats.map((chat) => {
             if (chat.id === data.newMessage.chatId) {
               return {
-                ...data.chat,
-              };
+                ...data.chat
+              }
             }
-            return chat;
-          });
-          setChats(changedChats);
-          scrollToBottomRef.current();
+            return chat
+          })
+          setChats(changedChats)
+          scrollToBottomRef.current()
         }
 
         if (data.action === "update") {
           const changedChats = chats.map((chat) => {
             if (chat.id === data.chat.id) {
               return {
-                ...data.chat,
-              };
+                ...data.chat
+              }
             }
-            return chat;
-          });
-          setChats(changedChats);
-          scrollToBottomRef.current();
+            return chat
+          })
+          setChats(changedChats)
+          scrollToBottomRef.current()
         }
-      });
+      })
     }
 
     return () => {
-      socket.disconnect();
-    };
+      socket.disconnect()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentChat]);
+  }, [currentChat])
 
   const selectChat = (chat) => {
     try {
-      setMessages([]);
-      setMessagesPage(1);
-      setCurrentChat(chat);
-      setTab(1);
+      setMessages([])
+      setMessagesPage(1)
+      setCurrentChat(chat)
+      setTab(1)
     } catch (err) {}
-  };
+  }
 
   const sendMessage = async (contentMessage) => {
-    setLoading(true);
+    setLoading(true)
     try {
       await api.post(`/chats/${currentChat.id}/messages`, {
-        message: contentMessage,
-      });
+        message: contentMessage
+      })
     } catch (err) {}
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const deleteChat = async (chat) => {
     try {
-      await api.delete(`/chats/${chat.id}`);
+      await api.delete(`/chats/${chat.id}`)
     } catch (err) {}
-  };
+  }
 
   const findMessages = async (chatId) => {
-    setLoading(true);
+    setLoading(true)
     try {
       const { data } = await api.get(
         `/chats/${chatId}/messages?pageNumber=${messagesPage}`
-      );
-      setMessagesPage((prev) => prev + 1);
-      setMessagesPageInfo(data);
-      setMessages((prev) => [...data.records, ...prev]);
+      )
+      setMessagesPage((prev) => prev + 1)
+      setMessagesPageInfo(data)
+      setMessages((prev) => [...data.records, ...prev])
     } catch (err) {}
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const loadMoreMessages = async () => {
     if (!loading) {
-      findMessages(currentChat.id);
+      findMessages(currentChat.id)
     }
-  };
+  }
 
   const findChats = async () => {
     try {
-      const { data } = await api.get("/chats");
-      return data;
+      const { data } = await api.get("/chats")
+      return data
     } catch (err) {
-      console.log(err);
+      console.log(err)
     }
-  };
+  }
 
   const renderGrid = () => {
     return (
@@ -326,8 +326,8 @@ function Chat(props) {
             <div className={classes.btnContainer}>
               <Button
                 onClick={() => {
-                  setDialogType("new");
-                  setShowDialog(true);
+                  setDialogType("new")
+                  setShowDialog(true)
                 }}
                 color="primary"
                 variant="contained"
@@ -343,8 +343,8 @@ function Chat(props) {
             handleSelectChat={(chat) => selectChat(chat)}
             handleDeleteChat={(chat) => deleteChat(chat)}
             handleEditChat={() => {
-              setDialogType("edit");
-              setShowDialog(true);
+              setDialogType("edit")
+              setShowDialog(true)
             }}
           />
         </Grid>
@@ -362,8 +362,8 @@ function Chat(props) {
           )}
         </Grid>
       </Grid>
-    );
-  };
+    )
+  }
 
   const renderTab = () => {
     return (
@@ -415,8 +415,8 @@ function Chat(props) {
           </Grid>
         )}
       </Grid>
-    );
-  };
+    )
+  }
 
   return (
     <>
@@ -425,11 +425,11 @@ function Chat(props) {
         open={showDialog}
         chat={currentChat}
         handleLoadNewChat={(data) => {
-          setMessages([]);
-          setMessagesPage(1);
-          setCurrentChat(data);
-          setTab(1);
-          history.push(`/chats/${data.uuid}`);
+          setMessages([])
+          setMessagesPage(1)
+          setCurrentChat(data)
+          setTab(1)
+          history.push(`/chats/${data.uuid}`)
         }}
         handleClose={() => setShowDialog(false)}
       />
@@ -437,7 +437,7 @@ function Chat(props) {
         {isWidthUp("md", props.width) ? renderGrid() : renderTab()}
       </Paper>
     </>
-  );
+  )
 }
 
-export default withWidth()(Chat);
+export default withWidth()(Chat)

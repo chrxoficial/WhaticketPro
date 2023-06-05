@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react"
 
 import {
   Button,
@@ -10,153 +10,153 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
-} from "@material-ui/core";
+  Typography
+} from "@material-ui/core"
 
-import MainContainer from "../../components/MainContainer";
-import MainHeader from "../../components/MainHeader";
-import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import Title from "../../components/Title";
-import { i18n } from "../../translate/i18n";
-import toastError from "../../errors/toastError";
-import api from "../../services/api";
-import { DeleteOutline, Edit } from "@material-ui/icons";
-import QueueModal from "../../components/QueueModal";
-import { toast } from "react-toastify";
-import ConfirmationModal from "../../components/ConfirmationModal";
-import { socketConnection } from "../../services/socket";
+import MainContainer from "../../components/MainContainer"
+import MainHeader from "../../components/MainHeader"
+import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper"
+import TableRowSkeleton from "../../components/TableRowSkeleton"
+import Title from "../../components/Title"
+import { i18n } from "../../translate/i18n"
+import toastError from "../../errors/toastError"
+import api from "../../services/api"
+import { DeleteOutline, Edit } from "@material-ui/icons"
+import QueueModal from "../../components/QueueModal"
+import { toast } from "react-toastify"
+import ConfirmationModal from "../../components/ConfirmationModal"
+import { socketConnection } from "../../services/socket"
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
+    ...theme.scrollbarStyles
   },
   customTableCell: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-  },
-}));
+    justifyContent: "center"
+  }
+}))
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_QUEUES") {
-    const queues = action.payload;
-    const newQueues = [];
+    const queues = action.payload
+    const newQueues = []
 
     queues.forEach((queue) => {
-      const queueIndex = state.findIndex((q) => q.id === queue.id);
+      const queueIndex = state.findIndex((q) => q.id === queue.id)
       if (queueIndex !== -1) {
-        state[queueIndex] = queue;
+        state[queueIndex] = queue
       } else {
-        newQueues.push(queue);
+        newQueues.push(queue)
       }
-    });
+    })
 
-    return [...state, ...newQueues];
+    return [...state, ...newQueues]
   }
 
   if (action.type === "UPDATE_QUEUES") {
-    const queue = action.payload;
-    const queueIndex = state.findIndex((u) => u.id === queue.id);
+    const queue = action.payload
+    const queueIndex = state.findIndex((u) => u.id === queue.id)
 
     if (queueIndex !== -1) {
-      state[queueIndex] = queue;
-      return [...state];
+      state[queueIndex] = queue
+      return [...state]
     } else {
-      return [queue, ...state];
+      return [queue, ...state]
     }
   }
 
   if (action.type === "DELETE_QUEUE") {
-    const queueId = action.payload;
-    const queueIndex = state.findIndex((q) => q.id === queueId);
+    const queueId = action.payload
+    const queueIndex = state.findIndex((q) => q.id === queueId)
     if (queueIndex !== -1) {
-      state.splice(queueIndex, 1);
+      state.splice(queueIndex, 1)
     }
-    return [...state];
+    return [...state]
   }
 
   if (action.type === "RESET") {
-    return [];
+    return []
   }
-};
+}
 
 const Queues = () => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const [queues, dispatch] = useReducer(reducer, []);
-  const [loading, setLoading] = useState(false);
+  const [queues, dispatch] = useReducer(reducer, [])
+  const [loading, setLoading] = useState(false)
 
-  const [queueModalOpen, setQueueModalOpen] = useState(false);
-  const [selectedQueue, setSelectedQueue] = useState(null);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [queueModalOpen, setQueueModalOpen] = useState(false)
+  const [selectedQueue, setSelectedQueue] = useState(null)
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
 
   useEffect(() => {
-    (async () => {
-      setLoading(true);
+    ;(async () => {
+      setLoading(true)
       try {
-        const { data } = await api.get("/queue");
-        dispatch({ type: "LOAD_QUEUES", payload: data });
+        const { data } = await api.get("/queue")
+        dispatch({ type: "LOAD_QUEUES", payload: data })
 
-        setLoading(false);
+        setLoading(false)
       } catch (err) {
-        toastError(err);
-        setLoading(false);
+        toastError(err)
+        setLoading(false)
       }
-    })();
-  }, []);
+    })()
+  }, [])
 
   useEffect(() => {
-    const companyId = localStorage.getItem("companyId");
-    const socket = socketConnection({ companyId });
+    const companyId = localStorage.getItem("companyId")
+    const socket = socketConnection({ companyId })
 
     socket.on(`company-${companyId}-queue`, (data) => {
       if (data.action === "update" || data.action === "create") {
-        dispatch({ type: "UPDATE_QUEUES", payload: data.queue });
+        dispatch({ type: "UPDATE_QUEUES", payload: data.queue })
       }
 
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_QUEUE", payload: data.queueId });
+        dispatch({ type: "DELETE_QUEUE", payload: data.queueId })
       }
-    });
+    })
 
     return () => {
-      socket.disconnect();
-    };
-  }, []);
+      socket.disconnect()
+    }
+  }, [])
 
   const handleOpenQueueModal = () => {
-    setQueueModalOpen(true);
-    setSelectedQueue(null);
-  };
+    setQueueModalOpen(true)
+    setSelectedQueue(null)
+  }
 
   const handleCloseQueueModal = () => {
-    setQueueModalOpen(false);
-    setSelectedQueue(null);
-  };
+    setQueueModalOpen(false)
+    setSelectedQueue(null)
+  }
 
   const handleEditQueue = (queue) => {
-    setSelectedQueue(queue);
-    setQueueModalOpen(true);
-  };
+    setSelectedQueue(queue)
+    setQueueModalOpen(true)
+  }
 
   const handleCloseConfirmationModal = () => {
-    setConfirmModalOpen(false);
-    setSelectedQueue(null);
-  };
+    setConfirmModalOpen(false)
+    setSelectedQueue(null)
+  }
 
   const handleDeleteQueue = async (queueId) => {
     try {
-      await api.delete(`/queue/${queueId}`);
-      toast.success(i18n.t("Queue deleted successfully!"));
+      await api.delete(`/queue/${queueId}`)
+      toast.success(i18n.t("Queue deleted successfully!"))
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-    setSelectedQueue(null);
-  };
+    setSelectedQueue(null)
+  }
 
   return (
     <MainContainer>
@@ -220,7 +220,7 @@ const Queues = () => {
                           backgroundColor: queue.color,
                           width: 60,
                           height: 20,
-                          alignSelf: "center",
+                          alignSelf: "center"
                         }}
                       />
                     </div>
@@ -247,8 +247,8 @@ const Queues = () => {
                     <IconButton
                       size="small"
                       onClick={() => {
-                        setSelectedQueue(queue);
-                        setConfirmModalOpen(true);
+                        setSelectedQueue(queue)
+                        setConfirmModalOpen(true)
                       }}
                     >
                       <DeleteOutline />
@@ -262,7 +262,7 @@ const Queues = () => {
         </Table>
       </Paper>
     </MainContainer>
-  );
-};
+  )
+}
 
-export default Queues;
+export default Queues

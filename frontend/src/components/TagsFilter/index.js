@@ -1,33 +1,33 @@
-import { Box, Chip, TextField } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import React, { useEffect, useState } from "react";
-import toastError from "../../errors/toastError";
-import api from "../../services/api";
+import { Box, Chip, TextField } from "@material-ui/core"
+import Autocomplete from "@material-ui/lab/Autocomplete"
+import React, { useEffect, useState } from "react"
+import toastError from "../../errors/toastError"
+import api from "../../services/api"
 
 export function TagsFilter({ onFiltered }) {
-  const [tags, setTags] = useState([]);
-  const [selecteds, setSelecteds] = useState([]);
+  const [tags, setTags] = useState([])
+  const [selecteds, setSelecteds] = useState([])
 
   useEffect(() => {
     async function fetchData() {
-      await loadTags();
+      await loadTags()
     }
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   const loadTags = async () => {
     try {
-      const { data } = await api.get(`/tags/list`);
-      setTags(data);
+      const { data } = await api.get(`/tags/list`)
+      setTags(data)
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-  };
+  }
 
   const onChange = async (value) => {
-    setSelecteds(value);
-    onFiltered(value);
-  };
+    setSelecteds(value)
+    onFiltered(value)
+  }
 
   return (
     <Box style={{ padding: 10 }}>
@@ -45,7 +45,7 @@ export function TagsFilter({ onFiltered }) {
               style={{
                 backgroundColor: option.color || "#eee",
                 textShadow: "1px 1px 1px #000",
-                color: "white",
+                color: "white"
               }}
               label={option.name}
               {...getTagProps({ index })}
@@ -62,5 +62,5 @@ export function TagsFilter({ onFiltered }) {
         )}
       />
     </Box>
-  );
+  )
 }

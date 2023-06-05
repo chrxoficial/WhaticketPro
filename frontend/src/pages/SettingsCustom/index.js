@@ -1,39 +1,39 @@
-import React, { useState, useEffect } from "react";
-import MainContainer from "../../components/MainContainer";
-import MainHeader from "../../components/MainHeader";
-import Title from "../../components/Title";
-import { makeStyles, Paper, Tabs, Tab } from "@material-ui/core";
+import React, { useState, useEffect } from "react"
+import MainContainer from "../../components/MainContainer"
+import MainHeader from "../../components/MainHeader"
+import Title from "../../components/Title"
+import { makeStyles, Paper, Tabs, Tab } from "@material-ui/core"
 
-import TabPanel from "../../components/TabPanel";
+import TabPanel from "../../components/TabPanel"
 
-import SchedulesForm from "../../components/SchedulesForm";
-import CompaniesManager from "../../components/CompaniesManager";
-import PlansManager from "../../components/PlansManager";
-import HelpsManager from "../../components/HelpsManager";
-import Options from "../../components/Settings/Options";
+import SchedulesForm from "../../components/SchedulesForm"
+import CompaniesManager from "../../components/CompaniesManager"
+import PlansManager from "../../components/PlansManager"
+import HelpsManager from "../../components/HelpsManager"
+import Options from "../../components/Settings/Options"
 
-import { i18n } from "../../translate/i18n.js";
-import { toast } from "react-toastify";
+import { i18n } from "../../translate/i18n.js"
+import { toast } from "react-toastify"
 
-import useCompanies from "../../hooks/useCompanies";
-import useAuth from "../../hooks/useAuth.js";
-import useSettings from "../../hooks/useSettings";
+import useCompanies from "../../hooks/useCompanies"
+import useAuth from "../../hooks/useAuth.js"
+import useSettings from "../../hooks/useSettings"
 
-import OnlyForSuperUser from "../../components/OnlyForSuperUser";
+import OnlyForSuperUser from "../../components/OnlyForSuperUser"
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flex: 1,
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper
   },
   mainPaper: {
     ...theme.scrollbarStyles,
     overflowY: "scroll",
-    flex: 1,
+    flex: 1
   },
   tab: {
     background: "#f2f5f3",
-    borderRadius: 4,
+    borderRadius: 4
   },
   paper: {
     ...theme.scrollbarStyles,
@@ -41,113 +41,109 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     display: "flex",
     alignItems: "center",
-    width: "100%",
+    width: "100%"
   },
   container: {
     width: "100%",
-    maxHeight: "100%",
+    maxHeight: "100%"
   },
   control: {
-    padding: theme.spacing(1),
+    padding: theme.spacing(1)
   },
   textfield: {
-    width: "100%",
-  },
-}));
+    width: "100%"
+  }
+}))
 
 const SettingsCustom = () => {
-  const classes = useStyles();
-  const [tab, setTab] = useState("options");
-  const [schedules, setSchedules] = useState([]);
-  const [company, setCompany] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [currentUser, setCurrentUser] = useState({});
-  const [settings, setSettings] = useState({});
-  const [schedulesEnabled, setSchedulesEnabled] = useState(false);
+  const classes = useStyles()
+  const [tab, setTab] = useState("options")
+  const [schedules, setSchedules] = useState([])
+  const [company, setCompany] = useState({})
+  const [loading, setLoading] = useState(false)
+  const [currentUser, setCurrentUser] = useState({})
+  const [settings, setSettings] = useState({})
+  const [schedulesEnabled, setSchedulesEnabled] = useState(false)
 
-  const { getCurrentUserInfo } = useAuth();
-  const { find, updateSchedules } = useCompanies();
-  const { getAll: getAllSettings } = useSettings();
+  const { getCurrentUserInfo } = useAuth()
+  const { find, updateSchedules } = useCompanies()
+  const { getAll: getAllSettings } = useSettings()
 
   useEffect(() => {
     async function findData() {
-      setLoading(true);
+      setLoading(true)
       try {
-        const companyId = localStorage.getItem("companyId");
-        const company = await find(companyId);
-        const settingList = await getAllSettings();
-        setCompany(company);
-        setSchedules(company.schedules);
-        setSettings(settingList);
+        const companyId = localStorage.getItem("companyId")
+        const company = await find(companyId)
+        const settingList = await getAllSettings()
+        setCompany(company)
+        setSchedules(company.schedules)
+        setSettings(settingList)
 
         if (Array.isArray(settingList)) {
-          const scheduleType = settingList.find(
-            (d) => d.key === "scheduleType"
-          );
+          const scheduleType = settingList.find((d) => d.key === "scheduleType")
           if (scheduleType) {
-            setSchedulesEnabled(scheduleType.value === "company");
+            setSchedulesEnabled(scheduleType.value === "company")
           }
         }
 
-        const user = await getCurrentUserInfo();
-        setCurrentUser(user);
+        const user = await getCurrentUserInfo()
+        setCurrentUser(user)
       } catch (e) {
-        toast.error(e);
+        toast.error(e)
       }
-      setLoading(false);
+      setLoading(false)
     }
-    findData();
+    findData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   const handleTabChange = (event, newValue) => {
-      async function findData() {
-        setLoading(true);
-        try {
-          const companyId = localStorage.getItem("companyId");
-          const company = await find(companyId);
-          const settingList = await getAllSettings();
-          setCompany(company);
-          setSchedules(company.schedules);
-          setSettings(settingList);
-  
-          if (Array.isArray(settingList)) {
-            const scheduleType = settingList.find(
-              (d) => d.key === "scheduleType"
-            );
-            if (scheduleType) {
-              setSchedulesEnabled(scheduleType.value === "company");
-            }
-          }
-  
-          const user = await getCurrentUserInfo();
-          setCurrentUser(user);
-        } catch (e) {
-          toast.error(e);
-        }
-        setLoading(false);
-      }
-      findData();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    async function findData() {
+      setLoading(true)
+      try {
+        const companyId = localStorage.getItem("companyId")
+        const company = await find(companyId)
+        const settingList = await getAllSettings()
+        setCompany(company)
+        setSchedules(company.schedules)
+        setSettings(settingList)
 
-    setTab(newValue);
-  };
+        if (Array.isArray(settingList)) {
+          const scheduleType = settingList.find((d) => d.key === "scheduleType")
+          if (scheduleType) {
+            setSchedulesEnabled(scheduleType.value === "company")
+          }
+        }
+
+        const user = await getCurrentUserInfo()
+        setCurrentUser(user)
+      } catch (e) {
+        toast.error(e)
+      }
+      setLoading(false)
+    }
+    findData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    setTab(newValue)
+  }
 
   const handleSubmitSchedules = async (data) => {
-    setLoading(true);
+    setLoading(true)
     try {
-      setSchedules(data);
-      await updateSchedules({ id: company.id, schedules: data });
-      toast.success("Horários atualizados com sucesso.");
+      setSchedules(data)
+      await updateSchedules({ id: company.id, schedules: data })
+      toast.success("Horários atualizados com sucesso.")
     } catch (e) {
-      toast.error(e);
+      toast.error(e)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const isSuper = () => {
-    return currentUser.super;
-  };
+    return currentUser.super
+  }
 
   return (
     <MainContainer className={classes.root}>
@@ -229,7 +225,7 @@ const SettingsCustom = () => {
         </Paper>
       </Paper>
     </MainContainer>
-  );
-};
+  )
+}
 
-export default SettingsCustom;
+export default SettingsCustom

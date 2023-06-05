@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import toastError from "../../errors/toastError";
+import { useState, useEffect } from "react"
+import toastError from "../../errors/toastError"
 
-import api from "../../services/api";
+import api from "../../services/api"
 
 const useTickets = ({
   searchParam,
@@ -13,14 +13,14 @@ const useTickets = ({
   updatedAt,
   showAll,
   queueIds,
-  withUnreadMessages,
+  withUnreadMessages
 }) => {
-  const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(false);
-  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true)
+  const [hasMore, setHasMore] = useState(false)
+  const [tickets, setTickets] = useState([])
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(true)
     const delayDebounceFn = setTimeout(() => {
       const fetchTickets = async () => {
         try {
@@ -35,20 +35,20 @@ const useTickets = ({
               updatedAt,
               showAll,
               queueIds,
-              withUnreadMessages,
-            },
-          });
-          setTickets(data.tickets);
-          setHasMore(data.hasMore);
-          setLoading(false);
+              withUnreadMessages
+            }
+          })
+          setTickets(data.tickets)
+          setHasMore(data.hasMore)
+          setLoading(false)
         } catch (err) {
-          setLoading(false);
-          toastError(err);
+          setLoading(false)
+          toastError(err)
         }
-      };
-      fetchTickets();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
+      }
+      fetchTickets()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
   }, [
     searchParam,
     tags,
@@ -59,10 +59,10 @@ const useTickets = ({
     updatedAt,
     showAll,
     queueIds,
-    withUnreadMessages,
-  ]);
+    withUnreadMessages
+  ])
 
-  return { tickets, loading, hasMore };
-};
+  return { tickets, loading, hasMore }
+}
 
-export default useTickets;
+export default useTickets

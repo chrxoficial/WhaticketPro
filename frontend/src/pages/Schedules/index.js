@@ -3,245 +3,244 @@ import React, {
   useEffect,
   useReducer,
   useCallback,
-  useContext,
-} from "react";
-import { toast } from "react-toastify";
+  useContext
+} from "react"
+import { toast } from "react-toastify"
 
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import IconButton from "@material-ui/core/IconButton";
-import SearchIcon from "@material-ui/icons/Search";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import { makeStyles } from "@material-ui/core/styles"
+import Paper from "@material-ui/core/Paper"
+import Button from "@material-ui/core/Button"
+import Table from "@material-ui/core/Table"
+import TableBody from "@material-ui/core/TableBody"
+import TableCell from "@material-ui/core/TableCell"
+import TableHead from "@material-ui/core/TableHead"
+import TableRow from "@material-ui/core/TableRow"
+import IconButton from "@material-ui/core/IconButton"
+import SearchIcon from "@material-ui/icons/Search"
+import TextField from "@material-ui/core/TextField"
+import InputAdornment from "@material-ui/core/InputAdornment"
 
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import EditIcon from "@material-ui/icons/Edit";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline"
+import EditIcon from "@material-ui/icons/Edit"
 
-import MainContainer from "../../components/MainContainer";
-import MainHeader from "../../components/MainHeader";
-import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
-import Title from "../../components/Title";
+import MainContainer from "../../components/MainContainer"
+import MainHeader from "../../components/MainHeader"
+import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper"
+import Title from "../../components/Title"
 
-import api from "../../services/api";
-import { i18n } from "../../translate/i18n";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import ScheduleModal from "../../components/ScheduleModal";
-import ConfirmationModal from "../../components/ConfirmationModal";
-import toastError from "../../errors/toastError";
-import moment from "moment";
-import { capitalize } from "lodash";
-import { socketConnection } from "../../services/socket";
-import { AuthContext } from "../../context/Auth/AuthContext";
+import api from "../../services/api"
+import { i18n } from "../../translate/i18n"
+import TableRowSkeleton from "../../components/TableRowSkeleton"
+import ScheduleModal from "../../components/ScheduleModal"
+import ConfirmationModal from "../../components/ConfirmationModal"
+import toastError from "../../errors/toastError"
+import moment from "moment"
+import { capitalize } from "lodash"
+import { socketConnection } from "../../services/socket"
+import { AuthContext } from "../../context/Auth/AuthContext"
 
 // A custom hook that builds on useLocation to parse
 // the query string for you.
 const getUrlParam = (param) => {
-  return new URLSearchParams(window.location.search).get(param);
-};
+  return new URLSearchParams(window.location.search).get(param)
+}
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_SCHEDULES") {
-    const schedules = action.payload;
-    const newSchedules = [];
+    const schedules = action.payload
+    const newSchedules = []
 
     schedules.forEach((schedule) => {
-      const scheduleIndex = state.findIndex((s) => s.id === schedule.id);
+      const scheduleIndex = state.findIndex((s) => s.id === schedule.id)
       if (scheduleIndex !== -1) {
-        state[scheduleIndex] = schedule;
+        state[scheduleIndex] = schedule
       } else {
-        newSchedules.push(schedule);
+        newSchedules.push(schedule)
       }
-    });
+    })
 
-    return [...state, ...newSchedules];
+    return [...state, ...newSchedules]
   }
 
   if (action.type === "UPDATE_SCHEDULES") {
-    const schedule = action.payload;
-    const scheduleIndex = state.findIndex((s) => s.id === schedule.id);
+    const schedule = action.payload
+    const scheduleIndex = state.findIndex((s) => s.id === schedule.id)
 
     if (scheduleIndex !== -1) {
-      state[scheduleIndex] = schedule;
-      return [...state];
+      state[scheduleIndex] = schedule
+      return [...state]
     } else {
-      return [schedule, ...state];
+      return [schedule, ...state]
     }
   }
 
   if (action.type === "DELETE_SCHEDULE") {
-    const scheduleId = action.payload;
+    const scheduleId = action.payload
 
-    const scheduleIndex = state.findIndex((s) => s.id === scheduleId);
+    const scheduleIndex = state.findIndex((s) => s.id === scheduleId)
     if (scheduleIndex !== -1) {
-      state.splice(scheduleIndex, 1);
+      state.splice(scheduleIndex, 1)
     }
-    return [...state];
+    return [...state]
   }
 
   if (action.type === "RESET") {
-    return [];
+    return []
   }
-};
+}
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
+    ...theme.scrollbarStyles
   },
   botoesResponsivos: {
     display: "flex",
-    flexWrap: "wrap",
+    flexWrap: "wrap"
   }
-}));
+}))
 
 const Schedules = () => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext)
 
-  const [loading, setLoading] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [selectedSchedule, setSelectedSchedule] = useState(null);
-  const [deletingSchedule, setDeletingSchedule] = useState(null);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [searchParam, setSearchParam] = useState("");
-  const [schedules, dispatch] = useReducer(reducer, []);
-  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
-  const [contactId, setContactId] = useState(+getUrlParam("contactId"));
+  const [loading, setLoading] = useState(false)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
+  const [selectedSchedule, setSelectedSchedule] = useState(null)
+  const [deletingSchedule, setDeletingSchedule] = useState(null)
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const [searchParam, setSearchParam] = useState("")
+  const [schedules, dispatch] = useReducer(reducer, [])
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false)
+  const [contactId, setContactId] = useState(+getUrlParam("contactId"))
   //added
-  const [ recorrency, setRecorrency ] = useState(false)
-
+  const [recorrency, setRecorrency] = useState(false)
 
   const fetchSchedules = useCallback(async () => {
     try {
       const { data } = await api.get("/schedules/", {
-        params: { searchParam, pageNumber },
-      });
-      dispatch({ type: "LOAD_SCHEDULES", payload: data.schedules });
-      setHasMore(data.hasMore);
-      setLoading(false);
+        params: { searchParam, pageNumber }
+      })
+      dispatch({ type: "LOAD_SCHEDULES", payload: data.schedules })
+      setHasMore(data.hasMore)
+      setLoading(false)
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-  }, [searchParam, pageNumber]);
+  }, [searchParam, pageNumber])
 
   const handleOpenScheduleModalFromContactId = useCallback(() => {
     if (contactId) {
-      handleOpenScheduleModal();
+      handleOpenScheduleModal()
     }
-  }, [contactId]);
+  }, [contactId])
 
   useEffect(() => {
-    dispatch({ type: "RESET" });
-    setPageNumber(1);
-  }, [searchParam]);
+    dispatch({ type: "RESET" })
+    setPageNumber(1)
+  }, [searchParam])
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(true)
     const delayDebounceFn = setTimeout(() => {
-      fetchSchedules();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
+      fetchSchedules()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
   }, [
     searchParam,
     pageNumber,
     contactId,
     fetchSchedules,
-    handleOpenScheduleModalFromContactId,
-  ]);
+    handleOpenScheduleModalFromContactId
+  ])
 
   useEffect(() => {
-    handleOpenScheduleModalFromContactId();
-    const socket = socketConnection({ companyId: user.companyId });
+    handleOpenScheduleModalFromContactId()
+    const socket = socketConnection({ companyId: user.companyId })
 
     socket.on("user", (data) => {
       if (data.action === "update" || data.action === "create") {
-        dispatch({ type: "UPDATE_SCHEDULES", payload: data.schedules });
+        dispatch({ type: "UPDATE_SCHEDULES", payload: data.schedules })
       }
 
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_USER", payload: +data.scheduleId });
+        dispatch({ type: "DELETE_USER", payload: +data.scheduleId })
       }
-    });
+    })
 
     return () => {
-      socket.disconnect();
-    };
-  }, [handleOpenScheduleModalFromContactId, user]);
+      socket.disconnect()
+    }
+  }, [handleOpenScheduleModalFromContactId, user])
 
   const cleanContact = () => {
-    setContactId("");
-  };
+    setContactId("")
+  }
 
   const handleOpenScheduleModalRec = () => {
     setRecorrency(true)
-    setSelectedSchedule(null);
-    setScheduleModalOpen(true);
-  };
+    setSelectedSchedule(null)
+    setScheduleModalOpen(true)
+  }
 
   const handleOpenScheduleModal = () => {
-    setSelectedSchedule(null);
-    setScheduleModalOpen(true);
-  };
+    setSelectedSchedule(null)
+    setScheduleModalOpen(true)
+  }
 
   const handleCloseScheduleModal = () => {
-    setSelectedSchedule(null);
-    setScheduleModalOpen(false);
+    setSelectedSchedule(null)
+    setScheduleModalOpen(false)
     setRecorrency(false)
-  };
+  }
 
   const handleSearch = (event) => {
-    setSearchParam(event.target.value.toLowerCase());
-  };
+    setSearchParam(event.target.value.toLowerCase())
+  }
 
   const handleEditSchedule = (schedule) => {
-    setSelectedSchedule(schedule);
-    setScheduleModalOpen(true);
-  };
+    setSelectedSchedule(schedule)
+    setScheduleModalOpen(true)
+  }
 
   const handleDeleteSchedule = async (scheduleId) => {
     try {
-      await api.delete(`/schedules/${scheduleId}`);
-      toast.success(i18n.t("schedules.toasts.deleted"));
+      await api.delete(`/schedules/${scheduleId}`)
+      toast.success(i18n.t("schedules.toasts.deleted"))
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-    setDeletingSchedule(null);
-    setSearchParam("");
-    setPageNumber(1);
+    setDeletingSchedule(null)
+    setSearchParam("")
+    setPageNumber(1)
 
-    dispatch({ type: "RESET" });
-    setPageNumber(1);
-    await fetchSchedules();
-  };
+    dispatch({ type: "RESET" })
+    setPageNumber(1)
+    await fetchSchedules()
+  }
 
   const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
-  };
+    setPageNumber((prevState) => prevState + 1)
+  }
 
   const handleScroll = (e) => {
-    if (!hasMore || loading) return;
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (!hasMore || loading) return
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
     if (scrollHeight - (scrollTop + 100) < clientHeight) {
-      loadMore();
+      loadMore()
     }
-  };
+  }
 
   const truncate = (str, len) => {
     if (str.length > len) {
-      return str.substring(0, len) + "...";
+      return str.substring(0, len) + "..."
     }
-    return str;
-  };
+    return str
+  }
 
   return (
     <MainContainer>
@@ -268,7 +267,7 @@ const Schedules = () => {
       />
       <MainHeader className={classes.botoesResponsivos}>
         <Title>{i18n.t("schedules.title")}</Title>
-        <MainHeaderButtonsWrapper >
+        <MainHeaderButtonsWrapper>
           <TextField
             placeholder={i18n.t("contacts.searchPlaceholder")}
             type="search"
@@ -279,7 +278,7 @@ const Schedules = () => {
                 <InputAdornment position="start">
                   <SearchIcon style={{ color: "gray" }} />
                 </InputAdornment>
-              ),
+              )
             }}
           />
           <Button
@@ -337,8 +336,8 @@ const Schedules = () => {
                   <TableCell align="center">
                     {capitalize(
                       schedule.recorrency
-                        ?`${schedule.status} - RECORRENTE`
-                        :schedule.status
+                        ? `${schedule.status} - RECORRENTE`
+                        : schedule.status
                     )}
                   </TableCell>
                   <TableCell align="center">
@@ -352,8 +351,8 @@ const Schedules = () => {
                     <IconButton
                       size="small"
                       onClick={(e) => {
-                        setConfirmModalOpen(true);
-                        setDeletingSchedule(schedule);
+                        setConfirmModalOpen(true)
+                        setDeletingSchedule(schedule)
                       }}
                     >
                       <DeleteOutlineIcon />
@@ -367,7 +366,7 @@ const Schedules = () => {
         </Table>
       </Paper>
     </MainContainer>
-  );
-};
+  )
+}
 
-export default Schedules;
+export default Schedules

@@ -1,4 +1,4 @@
-import checkoutFormModel from './checkoutFormModel';
+import checkoutFormModel from "./checkoutFormModel"
 const {
   formField: {
     firstName,
@@ -14,19 +14,19 @@ const {
     invoiceId,
     cvv
   }
-} = checkoutFormModel;
+} = checkoutFormModel
 
 export default {
-  [firstName.name]: '',
-  [lastName.name]: '',
-  [address1.name]: '',
-  [city.name]: '',
-  [state.name]: '',
-  [zipcode.name]: '',
-  [country.name]: '',
+  [firstName.name]: "",
+  [lastName.name]: "",
+  [address1.name]: "",
+  [city.name]: "",
+  [state.name]: "",
+  [zipcode.name]: "",
+  [country.name]: "",
   [useAddressForPaymentDetails.name]: false,
-  [nameOnCard.name]: '',
-  [cardNumber.name]: '',
-  [invoiceId.name]: '',
-  [cvv.name]: ''
-};
+  [nameOnCard.name]: "",
+  [cardNumber.name]: "",
+  [invoiceId.name]: "",
+  [cvv.name]: ""
+}

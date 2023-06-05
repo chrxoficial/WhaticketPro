@@ -1,46 +1,46 @@
-import React, { useContext, useEffect, useReducer, useState } from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import React, { useContext, useEffect, useReducer, useState } from "react"
+import { Link as RouterLink, useHistory } from "react-router-dom"
 
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListSubheader from "@material-ui/core/ListSubheader";
-import Divider from "@material-ui/core/Divider";
-import { Badge, Collapse, List } from "@material-ui/core";
-import DashboardOutlinedIcon from "@material-ui/icons/DashboardOutlined";
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
-import Schedule from "@material-ui/icons/Schedule";
-import SyncAltIcon from "@material-ui/icons/SyncAlt";
-import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
-import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
-import ContactPhoneOutlinedIcon from "@material-ui/icons/ContactPhoneOutlined";
-import AccountTreeOutlinedIcon from "@material-ui/icons/AccountTreeOutlined";
-import FlashOnIcon from "@material-ui/icons/FlashOn";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import CodeRoundedIcon from "@material-ui/icons/CodeRounded";
-import EventIcon from "@material-ui/icons/Event";
-import LocalOfferIcon from "@material-ui/icons/LocalOffer";
-import EventAvailableIcon from "@material-ui/icons/EventAvailable";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import PeopleIcon from "@material-ui/icons/People";
-import ListIcon from "@material-ui/icons/ListAlt";
-import AnnouncementIcon from "@material-ui/icons/Announcement";
-import ForumIcon from "@material-ui/icons/Forum";
-import LocalAtmIcon from '@material-ui/icons/LocalAtm';
-import PaymentIcon from "@material-ui/icons/Payment";
+import ListItem from "@material-ui/core/ListItem"
+import ListItemIcon from "@material-ui/core/ListItemIcon"
+import ListItemText from "@material-ui/core/ListItemText"
+import ListSubheader from "@material-ui/core/ListSubheader"
+import Divider from "@material-ui/core/Divider"
+import { Badge, Collapse, List } from "@material-ui/core"
+import DashboardOutlinedIcon from "@material-ui/icons/DashboardOutlined"
+import WhatsAppIcon from "@material-ui/icons/WhatsApp"
+import Schedule from "@material-ui/icons/Schedule"
+import SyncAltIcon from "@material-ui/icons/SyncAlt"
+import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined"
+import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined"
+import ContactPhoneOutlinedIcon from "@material-ui/icons/ContactPhoneOutlined"
+import AccountTreeOutlinedIcon from "@material-ui/icons/AccountTreeOutlined"
+import FlashOnIcon from "@material-ui/icons/FlashOn"
+import HelpOutlineIcon from "@material-ui/icons/HelpOutline"
+import CodeRoundedIcon from "@material-ui/icons/CodeRounded"
+import EventIcon from "@material-ui/icons/Event"
+import LocalOfferIcon from "@material-ui/icons/LocalOffer"
+import EventAvailableIcon from "@material-ui/icons/EventAvailable"
+import ExpandLessIcon from "@material-ui/icons/ExpandLess"
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import PeopleIcon from "@material-ui/icons/People"
+import ListIcon from "@material-ui/icons/ListAlt"
+import AnnouncementIcon from "@material-ui/icons/Announcement"
+import ForumIcon from "@material-ui/icons/Forum"
+import LocalAtmIcon from "@material-ui/icons/LocalAtm"
+import PaymentIcon from "@material-ui/icons/Payment"
 
-import { i18n } from "../translate/i18n";
-import { WhatsAppsContext } from "../context/WhatsApp/WhatsAppsContext";
-import { AuthContext } from "../context/Auth/AuthContext";
-import { Can } from "../components/Can";
-import { socketConnection } from "../services/socket";
-import { isArray } from "lodash";
-import api from "../services/api";
-import toastError from "../errors/toastError";
+import { i18n } from "../translate/i18n"
+import { WhatsAppsContext } from "../context/WhatsApp/WhatsAppsContext"
+import { AuthContext } from "../context/Auth/AuthContext"
+import { Can } from "../components/Can"
+import { socketConnection } from "../services/socket"
+import { isArray } from "lodash"
+import api from "../services/api"
+import toastError from "../errors/toastError"
 
 function ListItemLink(props) {
-  const { icon, primary, to, className } = props;
+  const { icon, primary, to, className } = props
 
   const renderLink = React.useMemo(
     () =>
@@ -48,7 +48,7 @@ function ListItemLink(props) {
         <RouterLink to={to} ref={ref} {...itemProps} />
       )),
     [to]
-  );
+  )
 
   return (
     <li>
@@ -57,132 +57,132 @@ function ListItemLink(props) {
         <ListItemText primary={primary} />
       </ListItem>
     </li>
-  );
+  )
 }
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_CHATS") {
-    const chats = action.payload;
-    const newChats = [];
+    const chats = action.payload
+    const newChats = []
 
     if (isArray(chats)) {
       chats.forEach((chat) => {
-        const chatIndex = state.findIndex((u) => u.id === chat.id);
+        const chatIndex = state.findIndex((u) => u.id === chat.id)
         if (chatIndex !== -1) {
-          state[chatIndex] = chat;
+          state[chatIndex] = chat
         } else {
-          newChats.push(chat);
+          newChats.push(chat)
         }
-      });
+      })
     }
 
-    return [...state, ...newChats];
+    return [...state, ...newChats]
   }
 
   if (action.type === "UPDATE_CHATS") {
-    const chat = action.payload;
-    const chatIndex = state.findIndex((u) => u.id === chat.id);
+    const chat = action.payload
+    const chatIndex = state.findIndex((u) => u.id === chat.id)
 
     if (chatIndex !== -1) {
-      state[chatIndex] = chat;
-      return [...state];
+      state[chatIndex] = chat
+      return [...state]
     } else {
-      return [chat, ...state];
+      return [chat, ...state]
     }
   }
 
   if (action.type === "DELETE_CHAT") {
-    const chatId = action.payload;
+    const chatId = action.payload
 
-    const chatIndex = state.findIndex((u) => u.id === chatId);
+    const chatIndex = state.findIndex((u) => u.id === chatId)
     if (chatIndex !== -1) {
-      state.splice(chatIndex, 1);
+      state.splice(chatIndex, 1)
     }
-    return [...state];
+    return [...state]
   }
 
   if (action.type === "RESET") {
-    return [];
+    return []
   }
 
   if (action.type === "CHANGE_CHAT") {
     const changedChats = state.map((chat) => {
       if (chat.id === action.payload.chat.id) {
-        return action.payload.chat;
+        return action.payload.chat
       }
-      return chat;
-    });
-    return changedChats;
+      return chat
+    })
+    return changedChats
   }
-};
+}
 
 const MainListItems = (props) => {
-  const { drawerClose } = props;
-  const { whatsApps } = useContext(WhatsAppsContext);
-  const { user } = useContext(AuthContext);
-  const [connectionWarning, setConnectionWarning] = useState(false);
-  const [openCampaignSubmenu, setOpenCampaignSubmenu] = useState(false);
-  const [showCampaigns, setShowCampaigns] = useState(false);
-  const history = useHistory();
+  const { drawerClose } = props
+  const { whatsApps } = useContext(WhatsAppsContext)
+  const { user } = useContext(AuthContext)
+  const [connectionWarning, setConnectionWarning] = useState(false)
+  const [openCampaignSubmenu, setOpenCampaignSubmenu] = useState(false)
+  const [showCampaigns, setShowCampaigns] = useState(false)
+  const history = useHistory()
 
-  const [invisible, setInvisible] = useState(true);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [searchParam] = useState("");
-  const [chats, dispatch] = useReducer(reducer, []);
+  const [invisible, setInvisible] = useState(true)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [searchParam] = useState("")
+  const [chats, dispatch] = useReducer(reducer, [])
 
   useEffect(() => {
-    dispatch({ type: "RESET" });
-    setPageNumber(1);
-  }, [searchParam]);
+    dispatch({ type: "RESET" })
+    setPageNumber(1)
+  }, [searchParam])
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      fetchChats();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
+      fetchChats()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParam, pageNumber]);
+  }, [searchParam, pageNumber])
 
   useEffect(() => {
-    const companyId = localStorage.getItem("companyId");
-    const socket = socketConnection({ companyId });
+    const companyId = localStorage.getItem("companyId")
+    const socket = socketConnection({ companyId })
 
     socket.on(`company-${companyId}-chat`, (data) => {
       if (data.action === "new-message") {
-        dispatch({ type: "CHANGE_CHAT", payload: data });
+        dispatch({ type: "CHANGE_CHAT", payload: data })
       }
       if (data.action === "update") {
-        dispatch({ type: "CHANGE_CHAT", payload: data });
+        dispatch({ type: "CHANGE_CHAT", payload: data })
       }
-    });
+    })
     return () => {
-      socket.disconnect();
-    };
-  }, []);
+      socket.disconnect()
+    }
+  }, [])
 
   useEffect(() => {
-    let unreadsCount = 0;
+    let unreadsCount = 0
     if (chats.length > 0) {
       for (let chat of chats) {
         for (let chatUser of chat.users) {
           if (chatUser.userId === user.id) {
-            unreadsCount += chatUser.unreads;
+            unreadsCount += chatUser.unreads
           }
         }
       }
     }
     if (unreadsCount > 0) {
-      setInvisible(false);
+      setInvisible(false)
     } else {
-      setInvisible(true);
+      setInvisible(true)
     }
-  }, [chats, user.id]);
+  }, [chats, user.id])
 
   useEffect(() => {
     if (localStorage.getItem("cshow")) {
-      setShowCampaigns(true);
+      setShowCampaigns(true)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -194,28 +194,28 @@ const MainListItems = (props) => {
             whats.status === "DISCONNECTED" ||
             whats.status === "TIMEOUT" ||
             whats.status === "OPENING"
-          );
-        });
+          )
+        })
         if (offlineWhats.length > 0) {
-          setConnectionWarning(true);
+          setConnectionWarning(true)
         } else {
-          setConnectionWarning(false);
+          setConnectionWarning(false)
         }
       }
-    }, 2000);
-    return () => clearTimeout(delayDebounceFn);
-  }, [whatsApps]);
+    }, 2000)
+    return () => clearTimeout(delayDebounceFn)
+  }, [whatsApps])
 
   const fetchChats = async () => {
     try {
       const { data } = await api.get("/chats/", {
-        params: { searchParam, pageNumber },
-      });
-      dispatch({ type: "LOAD_CHATS", payload: data.records });
+        params: { searchParam, pageNumber }
+      })
+      dispatch({ type: "LOAD_CHATS", payload: data.records })
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-  };
+  }
 
   return (
     <div onClick={drawerClose}>
@@ -382,27 +382,27 @@ const MainListItems = (props) => {
               primary={i18n.t("mainDrawer.listItems.messagesAPI")}
               icon={<CodeRoundedIcon />}
             />
-              <ListItemLink
-                to="/financeiro"
-                primary={i18n.t("mainDrawer.listItems.financeiro")}
-                icon={<LocalAtmIcon />}
-              />
+            <ListItemLink
+              to="/financeiro"
+              primary={i18n.t("mainDrawer.listItems.financeiro")}
+              icon={<LocalAtmIcon />}
+            />
             <ListItemLink
               to="/settings"
               primary={i18n.t("mainDrawer.listItems.settings")}
               icon={<SettingsOutlinedIcon />}
             />
-             {/*<ListItemLink
+            {/*<ListItemLink
               to="/subscription"
               primary="Assinatura"
               icon={<PaymentIcon />}
               // className={classes.menuItem}
-            />*/} 
+            />*/}
           </>
         )}
       />
     </div>
-  );
-};
+  )
+}
 
-export default MainListItems;
+export default MainListItems

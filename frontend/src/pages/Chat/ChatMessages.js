@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react"
 import {
   Box,
   FormControl,
@@ -7,13 +7,13 @@ import {
   InputAdornment,
   makeStyles,
   Paper,
-  Typography,
-} from "@material-ui/core";
-import SendIcon from "@material-ui/icons/Send";
+  Typography
+} from "@material-ui/core"
+import SendIcon from "@material-ui/icons/Send"
 
-import { AuthContext } from "../../context/Auth/AuthContext";
-import { useDate } from "../../hooks/useDate";
-import api from "../../services/api";
+import { AuthContext } from "../../context/Auth/AuthContext"
+import { useDate } from "../../hooks/useDate"
+import api from "../../services/api"
 
 const useStyles = makeStyles((theme) => ({
   mainContainer: {
@@ -24,24 +24,24 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
     borderRadius: 0,
     height: "100%",
-    borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
+    borderLeft: "1px solid rgba(0, 0, 0, 0.12)"
   },
   messageList: {
     position: "relative",
     overflowY: "auto",
     height: "100%",
     ...theme.scrollbarStyles,
-    backgroundColor: "#eee",
+    backgroundColor: "#eee"
   },
   inputArea: {
     position: "relative",
-    height: "auto",
+    height: "auto"
   },
   input: {
-    padding: "20px",
+    padding: "20px"
   },
   buttonSend: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(1)
   },
   boxLeft: {
     padding: "10px 10px 5px",
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 300,
     borderRadius: 10,
     borderBottomLeftRadius: 0,
-    border: "1px solid rgba(0, 0, 0, 0.12)",
+    border: "1px solid rgba(0, 0, 0, 0.12)"
   },
   boxRight: {
     padding: "10px 10px 5px",
@@ -62,9 +62,9 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 300,
     borderRadius: 10,
     borderBottomRightRadius: 0,
-    border: "1px solid rgba(0, 0, 0, 0.12)",
-  },
-}));
+    border: "1px solid rgba(0, 0, 0, 0.12)"
+  }
+}))
 
 export default function ChatMessages({
   chat,
@@ -73,46 +73,46 @@ export default function ChatMessages({
   handleLoadMore,
   scrollToBottomRef,
   pageInfo,
-  loading,
+  loading
 }) {
-  const classes = useStyles();
-  const { user } = useContext(AuthContext);
-  const { datetimeToClient } = useDate();
-  const baseRef = useRef();
+  const classes = useStyles()
+  const { user } = useContext(AuthContext)
+  const { datetimeToClient } = useDate()
+  const baseRef = useRef()
 
-  const [contentMessage, setContentMessage] = useState("");
+  const [contentMessage, setContentMessage] = useState("")
 
   const scrollToBottom = () => {
     if (baseRef.current) {
-      baseRef.current.scrollIntoView({});
+      baseRef.current.scrollIntoView({})
     }
-  };
+  }
 
   const unreadMessages = (chat) => {
     if (chat !== undefined) {
-      const currentUser = chat.users.find((u) => u.userId === user.id);
-      return currentUser.unreads > 0;
+      const currentUser = chat.users.find((u) => u.userId === user.id)
+      return currentUser.unreads > 0
     }
-    return 0;
-  };
+    return 0
+  }
 
   useEffect(() => {
     if (unreadMessages(chat) > 0) {
       try {
-        api.post(`/chats/${chat.id}/read`, { userId: user.id });
+        api.post(`/chats/${chat.id}/read`, { userId: user.id })
       } catch (err) {}
     }
-    scrollToBottomRef.current = scrollToBottom;
+    scrollToBottomRef.current = scrollToBottom
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   const handleScroll = (e) => {
-    const { scrollTop } = e.currentTarget;
-    if (!pageInfo.hasMore || loading) return;
+    const { scrollTop } = e.currentTarget
+    if (!pageInfo.hasMore || loading) return
     if (scrollTop < 600) {
-      handleLoadMore();
+      handleLoadMore()
     }
-  };
+  }
 
   return (
     <Paper className={classes.mainContainer}>
@@ -130,7 +130,7 @@ export default function ChatMessages({
                     {datetimeToClient(item.createdAt)}
                   </Typography>
                 </Box>
-              );
+              )
             } else {
               return (
                 <Box key={key} className={classes.boxLeft}>
@@ -142,7 +142,7 @@ export default function ChatMessages({
                     {datetimeToClient(item.createdAt)}
                   </Typography>
                 </Box>
-              );
+              )
             }
           })}
         <div ref={baseRef}></div>
@@ -154,8 +154,8 @@ export default function ChatMessages({
             value={contentMessage}
             onKeyUp={(e) => {
               if (e.key === "Enter" && contentMessage.trim() !== "") {
-                handleSendMessage(contentMessage);
-                setContentMessage("");
+                handleSendMessage(contentMessage)
+                setContentMessage("")
               }
             }}
             onChange={(e) => setContentMessage(e.target.value)}
@@ -165,8 +165,8 @@ export default function ChatMessages({
                 <IconButton
                   onClick={() => {
                     if (contentMessage.trim() !== "") {
-                      handleSendMessage(contentMessage);
-                      setContentMessage("");
+                      handleSendMessage(contentMessage)
+                      setContentMessage("")
                     }
                   }}
                   className={classes.buttonSend}
@@ -179,5 +179,5 @@ export default function ChatMessages({
         </FormControl>
       </div>
     </Paper>
-  );
+  )
 }

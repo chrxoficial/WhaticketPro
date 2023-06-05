@@ -1,191 +1,191 @@
-import React, { useState, useEffect, useReducer } from "react";
-import { toast } from "react-toastify";
+import React, { useState, useEffect, useReducer } from "react"
+import { toast } from "react-toastify"
 
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import IconButton from "@material-ui/core/IconButton";
-import SearchIcon from "@material-ui/icons/Search";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import { makeStyles } from "@material-ui/core/styles"
+import Paper from "@material-ui/core/Paper"
+import Button from "@material-ui/core/Button"
+import Table from "@material-ui/core/Table"
+import TableBody from "@material-ui/core/TableBody"
+import TableCell from "@material-ui/core/TableCell"
+import TableHead from "@material-ui/core/TableHead"
+import TableRow from "@material-ui/core/TableRow"
+import IconButton from "@material-ui/core/IconButton"
+import SearchIcon from "@material-ui/icons/Search"
+import TextField from "@material-ui/core/TextField"
+import InputAdornment from "@material-ui/core/InputAdornment"
 
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import EditIcon from "@material-ui/icons/Edit";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline"
+import EditIcon from "@material-ui/icons/Edit"
 
-import MainContainer from "../../components/MainContainer";
-import MainHeader from "../../components/MainHeader";
-import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
-import Title from "../../components/Title";
+import MainContainer from "../../components/MainContainer"
+import MainHeader from "../../components/MainHeader"
+import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper"
+import Title from "../../components/Title"
 
-import api from "../../services/api";
-import { i18n } from "../../translate/i18n";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import UserModal from "../../components/UserModal";
-import ConfirmationModal from "../../components/ConfirmationModal";
-import toastError from "../../errors/toastError";
-import { socketConnection } from "../../services/socket";
+import api from "../../services/api"
+import { i18n } from "../../translate/i18n"
+import TableRowSkeleton from "../../components/TableRowSkeleton"
+import UserModal from "../../components/UserModal"
+import ConfirmationModal from "../../components/ConfirmationModal"
+import toastError from "../../errors/toastError"
+import { socketConnection } from "../../services/socket"
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_USERS") {
-    const users = action.payload;
-    const newUsers = [];
+    const users = action.payload
+    const newUsers = []
 
     users.forEach((user) => {
-      const userIndex = state.findIndex((u) => u.id === user.id);
+      const userIndex = state.findIndex((u) => u.id === user.id)
       if (userIndex !== -1) {
-        state[userIndex] = user;
+        state[userIndex] = user
       } else {
-        newUsers.push(user);
+        newUsers.push(user)
       }
-    });
+    })
 
-    return [...state, ...newUsers];
+    return [...state, ...newUsers]
   }
 
   if (action.type === "UPDATE_USERS") {
-    const user = action.payload;
-    const userIndex = state.findIndex((u) => u.id === user.id);
+    const user = action.payload
+    const userIndex = state.findIndex((u) => u.id === user.id)
 
     if (userIndex !== -1) {
-      state[userIndex] = user;
-      return [...state];
+      state[userIndex] = user
+      return [...state]
     } else {
-      return [user, ...state];
+      return [user, ...state]
     }
   }
 
   if (action.type === "DELETE_USER") {
-    const userId = action.payload;
+    const userId = action.payload
 
-    const userIndex = state.findIndex((u) => u.id === userId);
+    const userIndex = state.findIndex((u) => u.id === userId)
     if (userIndex !== -1) {
-      state.splice(userIndex, 1);
+      state.splice(userIndex, 1)
     }
-    return [...state];
+    return [...state]
   }
 
   if (action.type === "RESET") {
-    return [];
+    return []
   }
-};
+}
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
+    ...theme.scrollbarStyles
   },
   botoesResponsivos: {
     display: "flex",
-    flexWrap: "wrap",
+    flexWrap: "wrap"
   }
-}));
+}))
 
 const Users = () => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const [loading, setLoading] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [deletingUser, setDeletingUser] = useState(null);
-  const [userModalOpen, setUserModalOpen] = useState(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [searchParam, setSearchParam] = useState("");
-  const [users, dispatch] = useReducer(reducer, []);
-
-  useEffect(() => {
-    dispatch({ type: "RESET" });
-    setPageNumber(1);
-  }, [searchParam]);
+  const [loading, setLoading] = useState(false)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
+  const [selectedUser, setSelectedUser] = useState(null)
+  const [deletingUser, setDeletingUser] = useState(null)
+  const [userModalOpen, setUserModalOpen] = useState(false)
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false)
+  const [searchParam, setSearchParam] = useState("")
+  const [users, dispatch] = useReducer(reducer, [])
 
   useEffect(() => {
-    setLoading(true);
+    dispatch({ type: "RESET" })
+    setPageNumber(1)
+  }, [searchParam])
+
+  useEffect(() => {
+    setLoading(true)
     const delayDebounceFn = setTimeout(() => {
       const fetchUsers = async () => {
         try {
           const { data } = await api.get("/users/", {
-            params: { searchParam, pageNumber },
-          });
-          dispatch({ type: "LOAD_USERS", payload: data.users });
-          setHasMore(data.hasMore);
-          setLoading(false);
+            params: { searchParam, pageNumber }
+          })
+          dispatch({ type: "LOAD_USERS", payload: data.users })
+          setHasMore(data.hasMore)
+          setLoading(false)
         } catch (err) {
-          toastError(err);
+          toastError(err)
         }
-      };
-      fetchUsers();
-    }, 500);
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchParam, pageNumber]);
+      }
+      fetchUsers()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchParam, pageNumber])
 
   useEffect(() => {
-    const companyId = localStorage.getItem("companyId");
-    const socket = socketConnection({ companyId });
+    const companyId = localStorage.getItem("companyId")
+    const socket = socketConnection({ companyId })
 
     socket.on(`company-${companyId}-user`, (data) => {
       if (data.action === "update" || data.action === "create") {
-        dispatch({ type: "UPDATE_USERS", payload: data.user });
+        dispatch({ type: "UPDATE_USERS", payload: data.user })
       }
 
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_USER", payload: +data.userId });
+        dispatch({ type: "DELETE_USER", payload: +data.userId })
       }
-    });
+    })
 
     return () => {
-      socket.disconnect();
-    };
-  }, []);
+      socket.disconnect()
+    }
+  }, [])
 
   const handleOpenUserModal = () => {
-    setSelectedUser(null);
-    setUserModalOpen(true);
-  };
+    setSelectedUser(null)
+    setUserModalOpen(true)
+  }
 
   const handleCloseUserModal = () => {
-    setSelectedUser(null);
-    setUserModalOpen(false);
-  };
+    setSelectedUser(null)
+    setUserModalOpen(false)
+  }
 
   const handleSearch = (event) => {
-    setSearchParam(event.target.value.toLowerCase());
-  };
+    setSearchParam(event.target.value.toLowerCase())
+  }
 
   const handleEditUser = (user) => {
-    setSelectedUser(user);
-    setUserModalOpen(true);
-  };
+    setSelectedUser(user)
+    setUserModalOpen(true)
+  }
 
   const handleDeleteUser = async (userId) => {
     try {
-      await api.delete(`/users/${userId}`);
-      toast.success(i18n.t("users.toasts.deleted"));
+      await api.delete(`/users/${userId}`)
+      toast.success(i18n.t("users.toasts.deleted"))
     } catch (err) {
-      toastError(err);
+      toastError(err)
     }
-    setDeletingUser(null);
-    setSearchParam("");
-    setPageNumber(1);
-  };
+    setDeletingUser(null)
+    setSearchParam("")
+    setPageNumber(1)
+  }
 
   const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
-  };
+    setPageNumber((prevState) => prevState + 1)
+  }
 
   const handleScroll = (e) => {
-    if (!hasMore || loading) return;
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (!hasMore || loading) return
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
     if (scrollHeight - (scrollTop + 100) < clientHeight) {
-      loadMore();
+      loadMore()
     }
-  };
+  }
 
   return (
     <MainContainer>
@@ -221,7 +221,7 @@ const Users = () => {
                 <InputAdornment position="start">
                   <SearchIcon style={{ color: "gray" }} />
                 </InputAdornment>
-              ),
+              )
             }}
           />
           <Button
@@ -272,8 +272,8 @@ const Users = () => {
                       size="small"
                       disabled
                       onClick={(e) => {
-                        setConfirmModalOpen(true);
-                        setDeletingUser(user);
+                        setConfirmModalOpen(true)
+                        setDeletingUser(user)
                       }}
                     >
                       <DeleteOutlineIcon />
@@ -287,7 +287,7 @@ const Users = () => {
         </Table>
       </Paper>
     </MainContainer>
-  );
-};
+  )
+}
 
-export default Users;
+export default Users

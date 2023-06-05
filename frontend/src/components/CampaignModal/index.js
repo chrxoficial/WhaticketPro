@@ -1,28 +1,28 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react"
 
-import * as Yup from "yup";
-import { Formik, Form, Field } from "formik";
-import { toast } from "react-toastify";
-import { head } from "lodash";
+import * as Yup from "yup"
+import { Formik, Form, Field } from "formik"
+import { toast } from "react-toastify"
+import { head } from "lodash"
 
-import { makeStyles } from "@material-ui/core/styles";
-import { green } from "@material-ui/core/colors";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import TextField from "@material-ui/core/TextField";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import AttachFileIcon from "@material-ui/icons/AttachFile";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import { makeStyles } from "@material-ui/core/styles"
+import { green } from "@material-ui/core/colors"
+import Button from "@material-ui/core/Button"
+import IconButton from "@material-ui/core/IconButton"
+import TextField from "@material-ui/core/TextField"
+import Dialog from "@material-ui/core/Dialog"
+import DialogActions from "@material-ui/core/DialogActions"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import AttachFileIcon from "@material-ui/icons/AttachFile"
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline"
 
-import { i18n } from "../../translate/i18n";
-import moment from "moment";
+import { i18n } from "../../translate/i18n"
+import moment from "moment"
 
-import api from "../../services/api";
-import toastError from "../../errors/toastError";
+import api from "../../services/api"
+import toastError from "../../errors/toastError"
 import {
   Box,
   FormControl,
@@ -31,30 +31,30 @@ import {
   MenuItem,
   Select,
   Tab,
-  Tabs,
-} from "@material-ui/core";
-import { AuthContext } from "../../context/Auth/AuthContext";
-import ConfirmationModal from "../ConfirmationModal";
+  Tabs
+} from "@material-ui/core"
+import { AuthContext } from "../../context/Auth/AuthContext"
+import ConfirmationModal from "../ConfirmationModal"
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    flexWrap: "wrap",
+    flexWrap: "wrap"
   },
 
   textField: {
     marginRight: theme.spacing(1),
-    flex: 1,
+    flex: 1
   },
 
   extraAttr: {
     display: "flex",
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
 
   btnWrapper: {
-    position: "relative",
+    position: "relative"
   },
 
   buttonProgress: {
@@ -63,16 +63,16 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     marginTop: -12,
-    marginLeft: -12,
-  },
-}));
+    marginLeft: -12
+  }
+}))
 
 const CampaignSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, "Too Short!")
     .max(50, "Too Long!")
-    .required("Required"),
-});
+    .required("Required")
+})
 
 const CampaignModal = ({
   open,
@@ -80,12 +80,12 @@ const CampaignModal = ({
   campaignId,
   initialValues,
   onSave,
-  resetPagination,
+  resetPagination
 }) => {
-  const classes = useStyles();
-  const isMounted = useRef(true);
-  const { user } = useContext(AuthContext);
-  const { companyId } = user;
+  const classes = useStyles()
+  const isMounted = useRef(true)
+  const { user } = useContext(AuthContext)
+  const { companyId } = user
 
   const initialState = {
     name: "",
@@ -104,136 +104,136 @@ const CampaignModal = ({
     scheduledAt: "",
     whatsappId: "",
     contactListId: "",
-    companyId,
-  };
+    companyId
+  }
 
-  const [campaign, setCampaign] = useState(initialState);
-  const [whatsapps, setWhatsapps] = useState([]);
-  const [contactLists, setContactLists] = useState([]);
-  const [messageTab, setMessageTab] = useState(0);
-  const [attachment, setAttachment] = useState(null);
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [campaignEditable, setCampaignEditable] = useState(true);
-  const attachmentFile = useRef(null);
+  const [campaign, setCampaign] = useState(initialState)
+  const [whatsapps, setWhatsapps] = useState([])
+  const [contactLists, setContactLists] = useState([])
+  const [messageTab, setMessageTab] = useState(0)
+  const [attachment, setAttachment] = useState(null)
+  const [confirmationOpen, setConfirmationOpen] = useState(false)
+  const [campaignEditable, setCampaignEditable] = useState(true)
+  const attachmentFile = useRef(null)
 
   useEffect(() => {
     return () => {
-      isMounted.current = false;
-    };
-  }, []);
+      isMounted.current = false
+    }
+  }, [])
 
   useEffect(() => {
     if (isMounted.current) {
       if (initialValues) {
         setCampaign((prevState) => {
-          return { ...prevState, ...initialValues };
-        });
+          return { ...prevState, ...initialValues }
+        })
       }
 
       api
         .get(`/contact-lists/list`, { params: { companyId } })
-        .then(({ data }) => setContactLists(data));
+        .then(({ data }) => setContactLists(data))
 
       api
         .get(`/whatsapp`, { params: { companyId, session: 0 } })
-        .then(({ data }) => setWhatsapps(data));
+        .then(({ data }) => setWhatsapps(data))
 
-      if (!campaignId) return;
+      if (!campaignId) return
 
       api.get(`/campaigns/${campaignId}`).then(({ data }) => {
         setCampaign((prev) => {
-          let prevCampaignData = Object.assign({}, prev);
+          let prevCampaignData = Object.assign({}, prev)
 
           Object.entries(data).forEach(([key, value]) => {
             if (key === "scheduledAt" && value !== "" && value !== null) {
-              prevCampaignData[key] = moment(value).format("YYYY-MM-DDTHH:mm");
+              prevCampaignData[key] = moment(value).format("YYYY-MM-DDTHH:mm")
             } else {
-              prevCampaignData[key] = value === null ? "" : value;
+              prevCampaignData[key] = value === null ? "" : value
             }
-          });
+          })
 
-          return prevCampaignData;
-        });
-      });
+          return prevCampaignData
+        })
+      })
     }
-  }, [campaignId, open, initialValues, companyId]);
+  }, [campaignId, open, initialValues, companyId])
 
   useEffect(() => {
-    const now = moment();
-    const scheduledAt = moment(campaign.scheduledAt);
+    const now = moment()
+    const scheduledAt = moment(campaign.scheduledAt)
     const moreThenAnHour =
-      !Number.isNaN(scheduledAt.diff(now)) && scheduledAt.diff(now, "hour") > 1;
+      !Number.isNaN(scheduledAt.diff(now)) && scheduledAt.diff(now, "hour") > 1
     const isEditable =
       campaign.status === "INATIVA" ||
-      (campaign.status === "PROGRAMADA" && moreThenAnHour);
+      (campaign.status === "PROGRAMADA" && moreThenAnHour)
 
-    setCampaignEditable(isEditable);
-  }, [campaign.status, campaign.scheduledAt]);
+    setCampaignEditable(isEditable)
+  }, [campaign.status, campaign.scheduledAt])
 
   const handleClose = () => {
-    onClose();
-    setCampaign(initialState);
-  };
+    onClose()
+    setCampaign(initialState)
+  }
 
   const handleAttachmentFile = (e) => {
-    const file = head(e.target.files);
+    const file = head(e.target.files)
     if (file) {
-      setAttachment(file);
+      setAttachment(file)
     }
-  };
+  }
 
   const handleSaveCampaign = async (values) => {
     try {
-      const dataValues = {};
+      const dataValues = {}
       Object.entries(values).forEach(([key, value]) => {
         if (key === "scheduledAt" && value !== "" && value !== null) {
-          dataValues[key] = moment(value).format("YYYY-MM-DD HH:mm:ss");
+          dataValues[key] = moment(value).format("YYYY-MM-DD HH:mm:ss")
         } else {
-          dataValues[key] = value === "" ? null : value;
+          dataValues[key] = value === "" ? null : value
         }
-      });
+      })
 
       if (campaignId) {
-        await api.put(`/campaigns/${campaignId}`, dataValues);
+        await api.put(`/campaigns/${campaignId}`, dataValues)
 
         if (attachment != null) {
-          const formData = new FormData();
-          formData.append("file", attachment);
-          await api.post(`/campaigns/${campaignId}/media-upload`, formData);
+          const formData = new FormData()
+          formData.append("file", attachment)
+          await api.post(`/campaigns/${campaignId}/media-upload`, formData)
         }
-        handleClose();
+        handleClose()
       } else {
-        const { data } = await api.post("/campaigns", dataValues);
+        const { data } = await api.post("/campaigns", dataValues)
 
         if (attachment != null) {
-          const formData = new FormData();
-          formData.append("file", attachment);
-          await api.post(`/campaigns/${data.id}/media-upload`, formData);
+          const formData = new FormData()
+          formData.append("file", attachment)
+          await api.post(`/campaigns/${data.id}/media-upload`, formData)
         }
         if (onSave) {
-          onSave(data);
+          onSave(data)
         }
-        handleClose();
+        handleClose()
       }
-      toast.success(i18n.t("campaigns.toasts.success"));
+      toast.success(i18n.t("campaigns.toasts.success"))
     } catch (err) {
-      console.log(err);
-      toastError(err);
+      console.log(err)
+      toastError(err)
     }
-  };
+  }
 
   const deleteMedia = async () => {
     if (attachment) {
-      setAttachment(null);
-      attachmentFile.current.value = null;
+      setAttachment(null)
+      attachmentFile.current.value = null
     }
 
     if (campaign.mediaPath) {
-      await api.delete(`/campaigns/${campaign.id}/media-upload`);
-      setCampaign((prev) => ({ ...prev, mediaPath: null, mediaName: null }));
-      toast.success(i18n.t("campaigns.toasts.deleted"));
+      await api.delete(`/campaigns/${campaign.id}/media-upload`)
+      setCampaign((prev) => ({ ...prev, mediaPath: null, mediaName: null }))
+      toast.success(i18n.t("campaigns.toasts.deleted"))
     }
-  };
+  }
 
   const renderMessageField = (identifier) => {
     return (
@@ -250,8 +250,8 @@ const CampaignModal = ({
         helperText="Utilize variáveis como {nome}, {numero}, {email} ou defina variáveis personalziadas."
         disabled={!campaignEditable && campaign.status !== "CANCELADA"}
       />
-    );
-  };
+    )
+  }
 
   const renderConfirmationMessageField = (identifier) => {
     return (
@@ -267,30 +267,30 @@ const CampaignModal = ({
         variant="outlined"
         disabled={!campaignEditable && campaign.status !== "CANCELADA"}
       />
-    );
-  };
+    )
+  }
 
   const cancelCampaign = async () => {
     try {
-      await api.post(`/campaigns/${campaign.id}/cancel`);
-      toast.success(i18n.t("campaigns.toasts.cancel"));
-      setCampaign((prev) => ({ ...prev, status: "CANCELADA" }));
-      resetPagination();
+      await api.post(`/campaigns/${campaign.id}/cancel`)
+      toast.success(i18n.t("campaigns.toasts.cancel"))
+      setCampaign((prev) => ({ ...prev, status: "CANCELADA" }))
+      resetPagination()
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message)
     }
-  };
+  }
 
   const restartCampaign = async () => {
     try {
-      await api.post(`/campaigns/${campaign.id}/restart`);
-      toast.success(i18n.t("campaigns.toasts.restart"));
-      setCampaign((prev) => ({ ...prev, status: "EM_ANDAMENTO" }));
-      resetPagination();
+      await api.post(`/campaigns/${campaign.id}/restart`)
+      toast.success(i18n.t("campaigns.toasts.restart"))
+      setCampaign((prev) => ({ ...prev, status: "EM_ANDAMENTO" }))
+      resetPagination()
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message)
     }
-  };
+  }
 
   return (
     <div className={classes.root}>
@@ -333,9 +333,9 @@ const CampaignModal = ({
           validationSchema={CampaignSchema}
           onSubmit={(values, actions) => {
             setTimeout(() => {
-              handleSaveCampaign(values);
-              actions.setSubmitting(false);
-            }, 400);
+              handleSaveCampaign(values)
+              actions.setSubmitting(false)
+            }, 400)
           }}
         >
           {({ values, errors, touched, isSubmitting }) => (
@@ -463,7 +463,7 @@ const CampaignModal = ({
                       margin="dense"
                       type="datetime-local"
                       InputLabelProps={{
-                        shrink: true,
+                        shrink: true
                       }}
                       fullWidth
                       className={classes.textField}
@@ -481,7 +481,7 @@ const CampaignModal = ({
                       style={{
                         background: "#f2f2f2",
                         border: "1px solid #e6e6e6",
-                        borderRadius: 2,
+                        borderRadius: 2
                       }}
                     >
                       <Tab label="Msg. 1" index={0} />
@@ -674,7 +674,7 @@ const CampaignModal = ({
         </Formik>
       </Dialog>
     </div>
-  );
-};
+  )
+}
 
-export default CampaignModal;
+export default CampaignModal

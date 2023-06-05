@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"
 
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import { toast } from "react-toastify";
+import { makeStyles } from "@material-ui/core/styles"
+import Paper from "@material-ui/core/Paper"
+import { toast } from "react-toastify"
 
-import MainContainer from "../../components/MainContainer";
-import MainHeader from "../../components/MainHeader";
-import Title from "../../components/Title";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import api from "../../services/api";
+import MainContainer from "../../components/MainContainer"
+import MainHeader from "../../components/MainHeader"
+import Title from "../../components/Title"
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline"
+import api from "../../services/api"
 
-import { i18n } from "../../translate/i18n";
+import { i18n } from "../../translate/i18n"
 import {
   Box,
   Button,
@@ -26,91 +26,91 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Typography,
-} from "@material-ui/core";
-import ConfirmationModal from "../../components/ConfirmationModal";
+  Typography
+} from "@material-ui/core"
+import ConfirmationModal from "../../components/ConfirmationModal"
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
+    ...theme.scrollbarStyles
   },
   textRight: {
-    textAlign: "right",
+    textAlign: "right"
   },
   tabPanelsContainer: {
-    padding: theme.spacing(2),
-  },
-}));
+    padding: theme.spacing(2)
+  }
+}))
 
 const initialSettings = {
   messageInterval: 20,
   longerIntervalAfter: 20,
   greaterInterval: 60,
-  variables: [],
-};
+  variables: []
+}
 
 const CampaignsConfig = () => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const [settings, setSettings] = useState(initialSettings);
-  const [showVariablesForm, setShowVariablesForm] = useState(false);
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [selectedKey, setSelectedKey] = useState(null);
-  const [variable, setVariable] = useState({ key: "", value: "" });
+  const [settings, setSettings] = useState(initialSettings)
+  const [showVariablesForm, setShowVariablesForm] = useState(false)
+  const [confirmationOpen, setConfirmationOpen] = useState(false)
+  const [selectedKey, setSelectedKey] = useState(null)
+  const [variable, setVariable] = useState({ key: "", value: "" })
 
   useEffect(() => {
     api.get("/campaign-settings").then(({ data }) => {
-      const settingsList = [];
+      const settingsList = []
       if (Array.isArray(data) && data.length > 0) {
         data.forEach((item) => {
-          settingsList.push([item.key, JSON.parse(item.value)]);
-        });
-        setSettings(Object.fromEntries(settingsList));
+          settingsList.push([item.key, JSON.parse(item.value)])
+        })
+        setSettings(Object.fromEntries(settingsList))
       }
-    });
-  }, []);
+    })
+  }, [])
 
   const handleOnChangeVariable = (e) => {
     if (e.target.value !== null) {
-      const changedProp = {};
-      changedProp[e.target.name] = e.target.value;
-      setVariable((prev) => ({ ...prev, ...changedProp }));
+      const changedProp = {}
+      changedProp[e.target.name] = e.target.value
+      setVariable((prev) => ({ ...prev, ...changedProp }))
     }
-  };
+  }
 
   const handleOnChangeSettings = (e) => {
-    const changedProp = {};
-    changedProp[e.target.name] = e.target.value;
-    setSettings((prev) => ({ ...prev, ...changedProp }));
-  };
+    const changedProp = {}
+    changedProp[e.target.name] = e.target.value
+    setSettings((prev) => ({ ...prev, ...changedProp }))
+  }
 
   const addVariable = () => {
     setSettings((prev) => {
       const variablesExists = settings.variables.filter(
         (v) => v.key === variable.key
-      );
-      const variables = prev.variables;
+      )
+      const variables = prev.variables
       if (variablesExists.length === 0) {
-        variables.push(Object.assign({}, variable));
-        setVariable({ key: "", value: "" });
+        variables.push(Object.assign({}, variable))
+        setVariable({ key: "", value: "" })
       }
-      return { ...prev, variables };
-    });
-  };
+      return { ...prev, variables }
+    })
+  }
 
   const removeVariable = () => {
-    const newList = settings.variables.filter((v) => v.key !== selectedKey);
-    setSettings((prev) => ({ ...prev, variables: newList }));
-    setSelectedKey(null);
-  };
+    const newList = settings.variables.filter((v) => v.key !== selectedKey)
+    setSettings((prev) => ({ ...prev, variables: newList }))
+    setSelectedKey(null)
+  }
 
   const saveSettings = async () => {
-    await api.post("/campaign-settings", { settings });
-    toast.success("Configurações salvas");
-  };
+    await api.post("/campaign-settings", { settings })
+    toast.success("Configurações salvas")
+  }
 
   return (
     <MainContainer>
@@ -285,8 +285,8 @@ const CampaignsConfig = () => {
                             <IconButton
                               size="small"
                               onClick={() => {
-                                setSelectedKey(v.key);
-                                setConfirmationOpen(true);
+                                setSelectedKey(v.key)
+                                setConfirmationOpen(true)
                               }}
                             >
                               <DeleteOutlineIcon />
@@ -304,7 +304,7 @@ const CampaignsConfig = () => {
         </Box>
       </Paper>
     </MainContainer>
-  );
-};
+  )
+}
 
-export default CampaignsConfig;
+export default CampaignsConfig
