@@ -1,19 +1,19 @@
-import { Op, fn, col, where } from "sequelize";
-import Campaign from "../../models/Campaign";
-import { isEmpty } from "lodash";
-import ContactList from "../../models/ContactList";
-import Whatsapp from "../../models/Whatsapp";
+import { Op, fn, col, where } from "sequelize"
+import Campaign from "../../models/Campaign"
+import { isEmpty } from "lodash"
+import ContactList from "../../models/ContactList"
+import Whatsapp from "../../models/Whatsapp"
 
 interface Request {
-  companyId: number | string;
-  searchParam?: string;
-  pageNumber?: string;
+  companyId: number | string
+  searchParam?: string
+  pageNumber?: string
 }
 
 interface Response {
-  records: Campaign[];
-  count: number;
-  hasMore: boolean;
+  records: Campaign[]
+  count: number
+  hasMore: boolean
 }
 
 const ListService = async ({
@@ -23,7 +23,7 @@ const ListService = async ({
 }: Request): Promise<Response> => {
   let whereCondition: any = {
     companyId
-  };
+  }
 
   if (!isEmpty(searchParam)) {
     whereCondition = {
@@ -37,11 +37,11 @@ const ListService = async ({
           )
         }
       ]
-    };
+    }
   }
 
-  const limit = 20;
-  const offset = limit * (+pageNumber - 1);
+  const limit = 20
+  const offset = limit * (+pageNumber - 1)
 
   const { count, rows: records } = await Campaign.findAndCountAll({
     where: whereCondition,
@@ -52,15 +52,15 @@ const ListService = async ({
       { model: ContactList },
       { model: Whatsapp, attributes: ["id", "name"] }
     ]
-  });
+  })
 
-  const hasMore = count > offset + records.length;
+  const hasMore = count > offset + records.length
 
   return {
     records,
     count,
     hasMore
-  };
-};
+  }
+}
 
-export default ListService;
+export default ListService

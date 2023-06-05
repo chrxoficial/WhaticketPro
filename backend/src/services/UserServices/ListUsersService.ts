@@ -1,19 +1,19 @@
-import { Sequelize, Op } from "sequelize";
-import Queue from "../../models/Queue";
-import Company from "../../models/Company";
-import User from "../../models/User";
+import { Sequelize, Op } from "sequelize"
+import Queue from "../../models/Queue"
+import Company from "../../models/Company"
+import User from "../../models/User"
 
 interface Request {
-  searchParam?: string;
-  pageNumber?: string | number;
-  profile?: string;
-  companyId?: number;
+  searchParam?: string
+  pageNumber?: string | number
+  profile?: string
+  companyId?: number
 }
 
 interface Response {
-  users: User[];
-  count: number;
-  hasMore: boolean;
+  users: User[]
+  count: number
+  hasMore: boolean
 }
 
 const ListUsersService = async ({
@@ -35,10 +35,10 @@ const ListUsersService = async ({
     companyId: {
       [Op.eq]: companyId
     }
-  };
+  }
 
-  const limit = 20;
-  const offset = limit * (+pageNumber - 1);
+  const limit = 20
+  const offset = limit * (+pageNumber - 1)
 
   const { count, rows: users } = await User.findAndCountAll({
     where: whereCondition,
@@ -50,15 +50,15 @@ const ListUsersService = async ({
       { model: Queue, as: "queues", attributes: ["id", "name", "color"] },
       { model: Company, as: "company", attributes: ["id", "name"] }
     ]
-  });
+  })
 
-  const hasMore = count > offset + users.length;
+  const hasMore = count > offset + users.length
 
   return {
     users,
     count,
     hasMore
-  };
-};
+  }
+}
 
-export default ListUsersService;
+export default ListUsersService

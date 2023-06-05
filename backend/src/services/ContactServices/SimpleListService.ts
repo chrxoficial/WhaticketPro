@@ -1,17 +1,18 @@
-import Contact from "../../models/Contact";
-import AppError from "../../errors/AppError";
-import { FindOptions, Op } from "sequelize";
+import Contact from "../../models/Contact"
+import AppError from "../../errors/AppError"
+import { FindOptions, Op } from "sequelize"
 
 export interface SearchContactParams {
-  companyId: string | number;
-  name?: string;
+  companyId: string | number
+  name?: string
 }
 
-const SimpleListService = async ({ name, companyId }: SearchContactParams): Promise<Contact[]> => {
+const SimpleListService = async ({
+  name,
+  companyId
+}: SearchContactParams): Promise<Contact[]> => {
   let options: FindOptions = {
-    order: [
-      ['name', 'ASC']
-    ]
+    order: [["name", "ASC"]]
   }
 
   if (name) {
@@ -27,13 +28,13 @@ const SimpleListService = async ({ name, companyId }: SearchContactParams): Prom
     companyId
   }
 
-  const contacts = await Contact.findAll(options);
+  const contacts = await Contact.findAll(options)
 
   if (!contacts) {
-    throw new AppError("ERR_NO_CONTACT_FOUND", 404);
+    throw new AppError("ERR_NO_CONTACT_FOUND", 404)
   }
 
-  return contacts;
-};
+  return contacts
+}
 
-export default SimpleListService;
+export default SimpleListService

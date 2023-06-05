@@ -1,4 +1,4 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -6,10 +6,10 @@ module.exports = {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0
-    });
+    })
   },
 
   down: (queryInterface: QueryInterface) => {
-    return queryInterface.removeColumn("Users", "tokenVersion");
+    return queryInterface.removeColumn("Users", "tokenVersion")
   }
-};
+}

@@ -1,28 +1,28 @@
-import * as Yup from "yup";
+import * as Yup from "yup"
 
-import AppError from "../../errors/AppError";
-import Whatsapp from "../../models/Whatsapp";
-import Company from "../../models/Company";
-import Plan from "../../models/Plan";
-import AssociateWhatsappQueue from "./AssociateWhatsappQueue";
+import AppError from "../../errors/AppError"
+import Whatsapp from "../../models/Whatsapp"
+import Company from "../../models/Company"
+import Plan from "../../models/Plan"
+import AssociateWhatsappQueue from "./AssociateWhatsappQueue"
 
 interface Request {
-  name: string;
-  companyId: number;
-  queueIds?: number[];
-  greetingMessage?: string;
-  complationMessage?: string;
-  outOfHoursMessage?: string;
-  ratingMessage?: string;
-  status?: string;
-  isDefault?: boolean;
-  token?: string;
-  provider?: string;
+  name: string
+  companyId: number
+  queueIds?: number[]
+  greetingMessage?: string
+  complationMessage?: string
+  outOfHoursMessage?: string
+  ratingMessage?: string
+  status?: string
+  isDefault?: boolean
+  token?: string
+  provider?: string
 }
 
 interface Response {
-  whatsapp: Whatsapp;
-  oldDefaultWhatsapp: Whatsapp | null;
+  whatsapp: Whatsapp
+  oldDefaultWhatsapp: Whatsapp | null
 }
 
 const CreateWhatsAppService = async ({
@@ -43,19 +43,19 @@ const CreateWhatsAppService = async ({
       id: companyId
     },
     include: [{ model: Plan, as: "plan" }]
-  });
+  })
 
   if (company !== null) {
     const whatsappCount = await Whatsapp.count({
       where: {
         companyId
       }
-    });
+    })
 
     if (whatsappCount >= company.plan.connections) {
       throw new AppError(
         `Número máximo de conexões já alcançado: ${whatsappCount}`
-      );
+      )
     }
   }
 
@@ -66,40 +66,40 @@ const CreateWhatsAppService = async ({
       .test(
         "Check-name",
         "Esse nome já está sendo utilizado por outra conexão",
-        async value => {
-          if (!value) return false;
+        async (value) => {
+          if (!value) return false
           const nameExists = await Whatsapp.findOne({
             where: { name: value }
-          });
-          return !nameExists;
+          })
+          return !nameExists
         }
       ),
     isDefault: Yup.boolean().required()
-  });
+  })
 
   try {
-    await schema.validate({ name, status, isDefault });
+    await schema.validate({ name, status, isDefault })
   } catch (err: any) {
-    throw new AppError(err.message);
+    throw new AppError(err.message)
   }
 
-  const whatsappFound = await Whatsapp.findOne({ where: { companyId } });
+  const whatsappFound = await Whatsapp.findOne({ where: { companyId } })
 
-  isDefault = !whatsappFound;
+  isDefault = !whatsappFound
 
-  let oldDefaultWhatsapp: Whatsapp | null = null;
+  let oldDefaultWhatsapp: Whatsapp | null = null
 
   if (isDefault) {
     oldDefaultWhatsapp = await Whatsapp.findOne({
       where: { isDefault: true, companyId }
-    });
+    })
     if (oldDefaultWhatsapp) {
-      await oldDefaultWhatsapp.update({ isDefault: false, companyId });
+      await oldDefaultWhatsapp.update({ isDefault: false, companyId })
     }
   }
 
   if (queueIds.length > 1 && !greetingMessage) {
-    throw new AppError("ERR_WAPP_GREETING_REQUIRED");
+    throw new AppError("ERR_WAPP_GREETING_REQUIRED")
   }
 
   if (token !== null && token !== "") {
@@ -110,20 +110,20 @@ const CreateWhatsAppService = async ({
         .test(
           "Check-token",
           "This whatsapp token is already used.",
-          async value => {
-            if (!value) return false;
+          async (value) => {
+            if (!value) return false
             const tokenExists = await Whatsapp.findOne({
               where: { token: value }
-            });
-            return !tokenExists;
+            })
+            return !tokenExists
           }
         )
-    });
+    })
 
     try {
-      await tokenSchema.validate({ token });
+      await tokenSchema.validate({ token })
     } catch (err: any) {
-      throw new AppError(err.message);
+      throw new AppError(err.message)
     }
   }
 
@@ -141,11 +141,11 @@ const CreateWhatsAppService = async ({
       provider
     },
     { include: ["queues"] }
-  );
+  )
 
-  await AssociateWhatsappQueue(whatsapp, queueIds);
+  await AssociateWhatsappQueue(whatsapp, queueIds)
 
-  return { whatsapp, oldDefaultWhatsapp };
-};
+  return { whatsapp, oldDefaultWhatsapp }
+}
 
-export default CreateWhatsAppService;
+export default CreateWhatsAppService

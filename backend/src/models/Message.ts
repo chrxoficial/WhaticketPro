@@ -9,101 +9,101 @@ import {
   Default,
   BelongsTo,
   ForeignKey
-} from "sequelize-typescript";
-import Contact from "./Contact";
-import Ticket from "./Ticket";
-import Company from "./Company";
-import Queue from "./Queue";
+} from "sequelize-typescript"
+import Contact from "./Contact"
+import Ticket from "./Ticket"
+import Company from "./Company"
+import Queue from "./Queue"
 
 @Table
 class Message extends Model<Message> {
   @PrimaryKey
   @Column
-  id: string;
+  id: string
 
   @Column(DataType.STRING)
-  remoteJid: string;
+  remoteJid: string
 
   @Column(DataType.STRING)
-  participant: string;
+  participant: string
 
   @Column(DataType.STRING)
-  dataJson: string;
+  dataJson: string
 
   @Default(0)
   @Column
-  ack: number;
+  ack: number
 
   @Default(false)
   @Column
-  read: boolean;
+  read: boolean
 
   @Default(false)
   @Column
-  fromMe: boolean;
+  fromMe: boolean
 
   @Column(DataType.TEXT)
-  body: string;
+  body: string
 
   @Column(DataType.STRING)
   get mediaUrl(): string | null {
     if (this.getDataValue("mediaUrl")) {
       return `${process.env.BACKEND_URL}/public/${this.getDataValue(
         "mediaUrl"
-      )}`;
+      )}`
     }
-    return null;
+    return null
   }
 
   @Column
-  mediaType: string;
+  mediaType: string
 
   @Default(false)
   @Column
-  isDeleted: boolean;
+  isDeleted: boolean
 
   @CreatedAt
   @Column(DataType.DATE(6))
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
   @Column(DataType.DATE(6))
-  updatedAt: Date;
+  updatedAt: Date
 
   @ForeignKey(() => Message)
   @Column
-  quotedMsgId: string;
+  quotedMsgId: string
 
   @BelongsTo(() => Message, "quotedMsgId")
-  quotedMsg: Message;
+  quotedMsg: Message
 
   @ForeignKey(() => Ticket)
   @Column
-  ticketId: number;
+  ticketId: number
 
   @BelongsTo(() => Ticket)
-  ticket: Ticket;
+  ticket: Ticket
 
   @ForeignKey(() => Contact)
   @Column
-  contactId: number;
+  contactId: number
 
   @BelongsTo(() => Contact, "contactId")
-  contact: Contact;
+  contact: Contact
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @ForeignKey(() => Queue)
   @Column
-  queueId: number;
+  queueId: number
 
   @BelongsTo(() => Queue)
-  queue: Queue;
+  queue: Queue
 }
 
-export default Message;
+export default Message

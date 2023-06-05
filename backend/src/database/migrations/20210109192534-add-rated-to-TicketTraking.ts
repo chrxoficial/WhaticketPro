@@ -1,4 +1,4 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -12,13 +12,13 @@ module.exports = {
         type: DataTypes.BOOLEAN,
         defaultValue: false
       })
-    ]);
+    ])
   },
 
   down: (queryInterface: QueryInterface) => {
     return Promise.all([
       queryInterface.removeColumn("TicketTraking", "ratingAt"),
       queryInterface.removeColumn("TicketTraking", "rated")
-    ]);
+    ])
   }
-};
+}

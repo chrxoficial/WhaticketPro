@@ -1,11 +1,11 @@
-import Chat from "../../models/Chat";
-import Company from "../../models/Company";
-import User from "../../models/User";
+import Chat from "../../models/Chat"
+import Company from "../../models/Company"
+import User from "../../models/User"
 
 type Params = {
-  companyId: number;
-  ownerId?: number;
-};
+  companyId: number
+  ownerId?: number
+}
 
 const FindService = async ({ ownerId, companyId }: Params): Promise<Chat[]> => {
   const chats: Chat[] = await Chat.findAll({
@@ -18,9 +18,9 @@ const FindService = async ({ ownerId, companyId }: Params): Promise<Chat[]> => {
       { model: User, as: "owner", attributes: ["id", "name"] }
     ],
     order: [["createdAt", "DESC"]]
-  });
+  })
 
-  return chats;
-};
+  return chats
+}
 
-export default FindService;
+export default FindService

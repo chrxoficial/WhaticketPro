@@ -1,10 +1,10 @@
-import AppError from "../../errors/AppError";
-import Setting from "../../models/Setting";
+import AppError from "../../errors/AppError"
+import Setting from "../../models/Setting"
 
 interface Request {
-  key: string;
-  value: string;
-  companyId: number;
+  key: string
+  value: string
+  companyId: number
 }
 
 const UpdateSettingService = async ({
@@ -16,25 +16,25 @@ const UpdateSettingService = async ({
     where: {
       key,
       companyId
-    }, 
+    },
     defaults: {
       key,
       value,
       companyId
     }
-  });
+  })
 
   if (setting != null && setting?.companyId !== companyId) {
-    throw new AppError("Não é possível consultar registros de outra empresa");
+    throw new AppError("Não é possível consultar registros de outra empresa")
   }
 
   if (!setting) {
-    throw new AppError("ERR_NO_SETTING_FOUND", 404);
+    throw new AppError("ERR_NO_SETTING_FOUND", 404)
   }
 
-  await setting.update({ value });
+  await setting.update({ value })
 
-  return setting;
-};
+  return setting
+}
 
-export default UpdateSettingService;
+export default UpdateSettingService

@@ -1,10 +1,10 @@
-import Chat from "../../models/Chat";
+import Chat from "../../models/Chat"
 
 const FindAllService = async (): Promise<Chat[]> => {
   const records: Chat[] = await Chat.findAll({
     order: [["createdAt", "DESC"]]
-  });
-  return records;
-};
+  })
+  return records
+}
 
-export default FindAllService;
+export default FindAllService

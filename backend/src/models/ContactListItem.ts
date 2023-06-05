@@ -10,52 +10,52 @@ import {
   Default,
   ForeignKey,
   BelongsTo
-} from "sequelize-typescript";
-import Company from "./Company";
-import ContactList from "./ContactList";
+} from "sequelize-typescript"
+import Company from "./Company"
+import ContactList from "./ContactList"
 
 @Table({ tableName: "ContactListItems" })
 class ContactListItem extends Model<ContactListItem> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @AllowNull(false)
   @Column
-  name: string;
+  name: string
 
   @AllowNull(false)
   @Column
-  number: string;
+  number: string
 
   @AllowNull(false)
   @Default("")
   @Column
-  email: string;
+  email: string
 
   @Column
-  isWhatsappValid: boolean;
+  isWhatsappValid: boolean
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @ForeignKey(() => ContactList)
   @Column
-  contactListId: number;
+  contactListId: number
 
   @BelongsTo(() => ContactList)
-  contactList: ContactList;
+  contactList: ContactList
 }
 
-export default ContactListItem;
+export default ContactListItem

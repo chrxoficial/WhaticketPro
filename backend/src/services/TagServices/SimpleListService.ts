@@ -1,18 +1,18 @@
-import { Op, Sequelize } from "sequelize";
-import Tag from "../../models/Tag";
-import Ticket from "../../models/Ticket";
-import TicketTag from "../../models/TicketTag";
+import { Op, Sequelize } from "sequelize"
+import Tag from "../../models/Tag"
+import Ticket from "../../models/Ticket"
+import TicketTag from "../../models/TicketTag"
 
 interface Request {
-  companyId: number;
-  searchParam?: string;
+  companyId: number
+  searchParam?: string
 }
 
 const ListService = async ({
   companyId,
   searchParam
 }: Request): Promise<Tag[]> => {
-  let whereCondition = {};
+  let whereCondition = {}
 
   if (searchParam) {
     whereCondition = {
@@ -20,15 +20,15 @@ const ListService = async ({
         { name: { [Op.like]: `%${searchParam}%` } },
         { color: { [Op.like]: `%${searchParam}%` } }
       ]
-    };
+    }
   }
 
   const tags = await Tag.findAll({
     where: { ...whereCondition, companyId },
     order: [["name", "ASC"]]
-  });
+  })
 
-  return tags;
-};
+  return tags
+}
 
-export default ListService;
+export default ListService

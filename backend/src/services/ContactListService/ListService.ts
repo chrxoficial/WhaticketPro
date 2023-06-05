@@ -1,18 +1,18 @@
-import { Op, fn, col, where } from "sequelize";
-import ContactList from "../../models/ContactList";
-import ContactListItem from "../../models/ContactListItem";
-import { isEmpty } from "lodash";
+import { Op, fn, col, where } from "sequelize"
+import ContactList from "../../models/ContactList"
+import ContactListItem from "../../models/ContactListItem"
+import { isEmpty } from "lodash"
 
 interface Request {
-  companyId: number | string;
-  searchParam?: string;
-  pageNumber?: string;
+  companyId: number | string
+  searchParam?: string
+  pageNumber?: string
 }
 
 interface Response {
-  records: ContactList[];
-  count: number;
-  hasMore: boolean;
+  records: ContactList[]
+  count: number
+  hasMore: boolean
 }
 
 const ListService = async ({
@@ -22,7 +22,7 @@ const ListService = async ({
 }: Request): Promise<Response> => {
   let whereCondition: any = {
     companyId
-  };
+  }
 
   if (!isEmpty(searchParam)) {
     whereCondition = {
@@ -36,11 +36,11 @@ const ListService = async ({
           )
         }
       ]
-    };
+    }
   }
 
-  const limit = 20;
-  const offset = limit * (+pageNumber - 1);
+  const limit = 20
+  const offset = limit * (+pageNumber - 1)
 
   const { count, rows: records } = await ContactList.findAndCountAll({
     where: whereCondition,
@@ -62,15 +62,15 @@ const ListService = async ({
       [fn("count", col("contacts.id")), "contactsCount"]
     ],
     group: ["ContactList.id"]
-  });
+  })
 
-  const hasMore = count > offset + records.length;
+  const hasMore = count > offset + records.length
 
   return {
     records,
     count,
     hasMore
-  };
-};
+  }
+}
 
-export default ListService;
+export default ListService

@@ -10,42 +10,42 @@ import {
   ForeignKey,
   BelongsTo,
   HasMany
-} from "sequelize-typescript";
-import Company from "./Company";
-import Ticket from "./Ticket";
-import TicketTag from "./TicketTag";
+} from "sequelize-typescript"
+import Company from "./Company"
+import Ticket from "./Ticket"
+import TicketTag from "./TicketTag"
 
 @Table
 class Tag extends Model<Tag> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  name: string;
+  name: string
 
   @Column
-  color: string;
+  color: string
 
   @HasMany(() => TicketTag)
-  ticketTags: TicketTag[];
+  ticketTags: TicketTag[]
 
   @BelongsToMany(() => Ticket, () => TicketTag)
-  tickets: Ticket[];
+  tickets: Ticket[]
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 }
 
-export default Tag;
+export default Tag

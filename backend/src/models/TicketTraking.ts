@@ -8,12 +8,12 @@ import {
   ForeignKey,
   BelongsTo,
   AutoIncrement
-} from "sequelize-typescript";
+} from "sequelize-typescript"
 
-import Company from "./Company";
-import User from "./User";
-import Ticket from "./Ticket";
-import Whatsapp from "./Whatsapp";
+import Company from "./Company"
+import User from "./User"
+import Ticket from "./Ticket"
+import Whatsapp from "./Whatsapp"
 
 @Table({
   tableName: "TicketTraking"
@@ -22,56 +22,56 @@ class TicketTraking extends Model<TicketTraking> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @ForeignKey(() => Ticket)
   @Column
-  ticketId: number;
+  ticketId: number
 
   @BelongsTo(() => Ticket)
-  ticket: Ticket;
+  ticket: Ticket
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @ForeignKey(() => Whatsapp)
   @Column
-  whatsappId: number;
+  whatsappId: number
 
   @BelongsTo(() => Whatsapp)
-  whatsapp: Whatsapp;
+  whatsapp: Whatsapp
 
   @ForeignKey(() => User)
   @Column
-  userId: number;
+  userId: number
 
   @Column
-  rated: boolean;
+  rated: boolean
 
   @BelongsTo(() => User)
-  user: User;
+  user: User
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @Column
-  startedAt: Date;
+  startedAt: Date
 
   @Column
-  queuedAt: Date;
+  queuedAt: Date
 
   @Column
-  finishedAt: Date;
+  finishedAt: Date
 
   @Column
-  ratingAt: Date;
+  ratingAt: Date
 }
 
-export default TicketTraking;
+export default TicketTraking

@@ -1,4 +1,4 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -11,7 +11,7 @@ module.exports = {
         primaryKey: true,
         allowNull: false
       })
-    ]);
+    ])
   },
 
   down: (queryInterface: QueryInterface) => {
@@ -22,6 +22,6 @@ module.exports = {
         type: "primary key",
         name: "Settings_pkey"
       })
-    ]);
+    ])
   }
-};
+}

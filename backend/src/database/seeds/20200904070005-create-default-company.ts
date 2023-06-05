@@ -1,8 +1,8 @@
-import { QueryInterface } from "sequelize";
+import { QueryInterface } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
-    return queryInterface.sequelize.transaction(t => {
+    return queryInterface.sequelize.transaction((t) => {
       return Promise.all([
         queryInterface.bulkInsert(
           "Plans",
@@ -32,14 +32,14 @@ module.exports = {
           ],
           { transaction: t }
         )
-      ]);
-    });
+      ])
+    })
   },
 
   down: async (queryInterface: QueryInterface) => {
     return Promise.all([
       queryInterface.bulkDelete("Companies", {}),
       queryInterface.bulkDelete("Plans", {})
-    ]);
+    ])
   }
-};
+}

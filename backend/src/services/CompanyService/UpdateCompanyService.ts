@@ -1,23 +1,23 @@
-import AppError from "../../errors/AppError";
-import Company from "../../models/Company";
-import Setting from "../../models/Setting";
+import AppError from "../../errors/AppError"
+import Company from "../../models/Company"
+import Setting from "../../models/Setting"
 
 interface CompanyData {
-  name: string;
-  id?: number | string;
-  phone?: string;
-  email?: string;
-  status?: boolean;
-  planId?: number;
-  campaignsEnabled?: boolean;
-  dueDate?: string;
-  recurrence?: string;
+  name: string
+  id?: number | string
+  phone?: string
+  email?: string
+  status?: boolean
+  planId?: number
+  campaignsEnabled?: boolean
+  dueDate?: string
+  recurrence?: string
 }
 
 const UpdateCompanyService = async (
   companyData: CompanyData
 ): Promise<Company> => {
-  const company = await Company.findByPk(companyData.id);
+  const company = await Company.findByPk(companyData.id)
   const {
     name,
     phone,
@@ -27,10 +27,10 @@ const UpdateCompanyService = async (
     campaignsEnabled,
     dueDate,
     recurrence
-  } = companyData;
+  } = companyData
 
   if (!company) {
-    throw new AppError("ERR_NO_COMPANY_FOUND", 404);
+    throw new AppError("ERR_NO_COMPANY_FOUND", 404)
   }
 
   await company.update({
@@ -41,7 +41,7 @@ const UpdateCompanyService = async (
     planId,
     dueDate,
     recurrence
-  });
+  })
 
   if (companyData.campaignsEnabled !== undefined) {
     const [setting, created] = await Setting.findOrCreate({
@@ -54,13 +54,13 @@ const UpdateCompanyService = async (
         key: "campaignsEnabled",
         value: `${campaignsEnabled}`
       }
-    });
+    })
     if (!created) {
-      await setting.update({ value: `${campaignsEnabled}` });
+      await setting.update({ value: `${campaignsEnabled}` })
     }
   }
 
-  return company;
-};
+  return company
+}
 
-export default UpdateCompanyService;
+export default UpdateCompanyService

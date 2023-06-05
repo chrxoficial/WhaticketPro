@@ -1,21 +1,21 @@
-import { Op, Sequelize } from "sequelize";
-import Contact from "../../models/Contact";
-import Schedule from "../../models/Schedule";
-import User from "../../models/User";
+import { Op, Sequelize } from "sequelize"
+import Contact from "../../models/Contact"
+import Schedule from "../../models/Schedule"
+import User from "../../models/User"
 
 interface Request {
-  searchParam?: string;
-  contactId?: number | string;
-  userId?: number | string;
-  companyId?: number;
-  pageNumber?: string | number;
-  recorrency?: boolean; 
+  searchParam?: string
+  contactId?: number | string
+  userId?: number | string
+  companyId?: number
+  pageNumber?: string | number
+  recorrency?: boolean
 }
 
 interface Response {
-  schedules: Schedule[];
-  count: number;
-  hasMore: boolean;
+  schedules: Schedule[]
+  count: number
+  hasMore: boolean
 }
 
 const ListService = async ({
@@ -26,9 +26,9 @@ const ListService = async ({
   companyId,
   recorrency
 }: Request): Promise<Response> => {
-  let whereCondition = {};
-  const limit = 20;
-  const offset = limit * (+pageNumber - 1);
+  let whereCondition = {}
+  const limit = 20
+  const offset = limit * (+pageNumber - 1)
 
   if (searchParam) {
     whereCondition = {
@@ -46,8 +46,8 @@ const ListService = async ({
             "LIKE",
             `%${searchParam.toLowerCase()}%`
           )
-        },
-      ],
+        }
+      ]
     }
   }
 
@@ -79,17 +79,17 @@ const ListService = async ({
     order: [["createdAt", "DESC"]],
     include: [
       { model: Contact, as: "contact", attributes: ["id", "name"] },
-      { model: User, as: "user", attributes: ["id", "name"] },
+      { model: User, as: "user", attributes: ["id", "name"] }
     ]
-  });
+  })
 
-  const hasMore = count > offset + schedules.length;
+  const hasMore = count > offset + schedules.length
 
   return {
     schedules,
     count,
     hasMore
-  };
-};
+  }
+}
 
-export default ListService;
+export default ListService

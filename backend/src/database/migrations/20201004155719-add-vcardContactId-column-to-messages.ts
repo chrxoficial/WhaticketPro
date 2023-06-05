@@ -1,4 +1,4 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -7,10 +7,10 @@ module.exports = {
       references: { model: "Contacts", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "CASCADE"
-    });
+    })
   },
 
   down: (queryInterface: QueryInterface) => {
-    return queryInterface.removeColumn("Messages", "vcardContactId");
+    return queryInterface.removeColumn("Messages", "vcardContactId")
   }
-};
+}

@@ -1,44 +1,43 @@
-import { proto } from "@adiwajshing/baileys";
+import { proto } from "@adiwajshing/baileys"
 import WALegacySocket from "@adiwajshing/baileys"
-import Ticket from "../models/Ticket";
-import GetTicketWbot from "./GetTicketWbot";
-import AppError from "../errors/AppError";
-import GetMessageService from "../services/MessageServices/GetMessagesService";
-import Message from "../models/Message";
+import Ticket from "../models/Ticket"
+import GetTicketWbot from "./GetTicketWbot"
+import AppError from "../errors/AppError"
+import GetMessageService from "../services/MessageServices/GetMessagesService"
+import Message from "../models/Message"
 
 export const GetWbotMessage = async (
   ticket: Ticket,
   messageId: string
 ): Promise<proto.WebMessageInfo | Message> => {
-  const getSock = await GetTicketWbot(ticket);
+  const getSock = await GetTicketWbot(ticket)
 
-  let limit = 20;
+  let limit = 20
 
   const fetchWbotMessagesGradually = async (): Promise<
     proto.WebMessageInfo | Message | null | undefined
   > => {
-      const msgFound = await GetMessageService({
-        id: messageId
-      });
+    const msgFound = await GetMessageService({
+      id: messageId
+    })
 
-      return msgFound;
-    
+    return msgFound
 
-    return null;
-  };
+    return null
+  }
 
   try {
-    const msgFound = await fetchWbotMessagesGradually();
+    const msgFound = await fetchWbotMessagesGradually()
 
     if (!msgFound) {
-      throw new Error("Cannot found message within 100 last messages");
+      throw new Error("Cannot found message within 100 last messages")
     }
 
-    return msgFound;
+    return msgFound
   } catch (err) {
-    console.log(err);
-    throw new AppError("ERR_FETCH_WAPP_MSG");
+    console.log(err)
+    throw new AppError("ERR_FETCH_WAPP_MSG")
   }
-};
+}
 
-export default GetWbotMessage;
+export default GetWbotMessage

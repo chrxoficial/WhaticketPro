@@ -9,67 +9,67 @@ import {
   DataType,
   BelongsTo,
   ForeignKey
-} from "sequelize-typescript";
-import Company from "./Company";
-import Contact from "./Contact";
-import Ticket from "./Ticket";
-import User from "./User";
+} from "sequelize-typescript"
+import Company from "./Company"
+import Contact from "./Contact"
+import Ticket from "./Ticket"
+import User from "./User"
 
 @Table
 class Schedule extends Model<Schedule> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column(DataType.TEXT)
-  body: string;
+  body: string
 
   @Column
-  sendAt: Date;
+  sendAt: Date
 
   @Column
-  sentAt: Date;
+  sentAt: Date
 
   @ForeignKey(() => Contact)
   @Column
-  contactId: number;
+  contactId: number
 
   @ForeignKey(() => Ticket)
   @Column
-  ticketId: number;
+  ticketId: number
 
   @ForeignKey(() => User)
   @Column
-  userId: number;
+  userId: number
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @Column(DataType.STRING)
-  status: string;
+  status: string
 
   @Column
-  recorrency: boolean;
+  recorrency: boolean
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @BelongsTo(() => Contact, "contactId")
-  contact: Contact;
+  contact: Contact
 
   @BelongsTo(() => Ticket)
-  ticket: Ticket;
+  ticket: Ticket
 
   @BelongsTo(() => User)
-  user: User;
+  user: User
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 }
 
-export default Schedule;
+export default Schedule

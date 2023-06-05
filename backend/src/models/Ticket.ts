@@ -12,107 +12,107 @@ import {
   Default,
   BeforeCreate,
   BelongsToMany
-} from "sequelize-typescript";
-import { v4 as uuidv4 } from "uuid";
+} from "sequelize-typescript"
+import { v4 as uuidv4 } from "uuid"
 
-import Contact from "./Contact";
-import Message from "./Message";
-import Queue from "./Queue";
-import User from "./User";
-import Whatsapp from "./Whatsapp";
-import Company from "./Company";
-import QueueOption from "./QueueOption";
-import Tag from "./Tag";
-import TicketTag from "./TicketTag";
+import Contact from "./Contact"
+import Message from "./Message"
+import Queue from "./Queue"
+import User from "./User"
+import Whatsapp from "./Whatsapp"
+import Company from "./Company"
+import QueueOption from "./QueueOption"
+import Tag from "./Tag"
+import TicketTag from "./TicketTag"
 
 @Table
 class Ticket extends Model<Ticket> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column({ defaultValue: "pending" })
-  status: string;
+  status: string
 
   @Column
-  unreadMessages: number;
+  unreadMessages: number
 
   @Column
-  lastMessage: string;
+  lastMessage: string
 
   @Default(false)
   @Column
-  isGroup: boolean;
+  isGroup: boolean
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @ForeignKey(() => User)
   @Column
-  userId: number;
+  userId: number
 
   @BelongsTo(() => User)
-  user: User;
+  user: User
 
   @ForeignKey(() => Contact)
   @Column
-  contactId: number;
+  contactId: number
 
   @BelongsTo(() => Contact)
-  contact: Contact;
+  contact: Contact
 
   @ForeignKey(() => Whatsapp)
   @Column
-  whatsappId: number;
+  whatsappId: number
 
   @BelongsTo(() => Whatsapp)
-  whatsapp: Whatsapp;
+  whatsapp: Whatsapp
 
   @ForeignKey(() => Queue)
   @Column
-  queueId: number;
+  queueId: number
 
   @BelongsTo(() => Queue)
-  queue: Queue;
+  queue: Queue
 
   @Column
-  chatbot: boolean;
+  chatbot: boolean
 
   @ForeignKey(() => QueueOption)
   @Column
-  queueOptionId: number;
+  queueOptionId: number
 
   @BelongsTo(() => QueueOption)
-  queueOption: QueueOption;
+  queueOption: QueueOption
 
   @HasMany(() => Message)
-  messages: Message[];
+  messages: Message[]
 
   @HasMany(() => TicketTag)
-  ticketTags: TicketTag[];
+  ticketTags: TicketTag[]
 
   @BelongsToMany(() => Tag, () => TicketTag)
-  tags: Tag[];
+  tags: Tag[]
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @Default(uuidv4())
   @Column
-  uuid: string;
+  uuid: string
 
   @BeforeCreate
   static setUUID(ticket: Ticket) {
-    ticket.uuid = uuidv4();
+    ticket.uuid = uuidv4()
   }
 }
 
-export default Ticket;
+export default Ticket

@@ -1,18 +1,18 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable camelcase */
-import { QueryTypes } from "sequelize";
-import * as _ from "lodash";
-import sequelize from "../../database";
+import { QueryTypes } from "sequelize"
+import * as _ from "lodash"
+import sequelize from "../../database"
 
 export interface DashboardData {
-  counters: any;
-  attendants: [];
+  counters: any
+  attendants: []
 }
 
 export interface Params {
-  days?: number;
-  date_from?: string;
-  date_to?: string;
+  days?: number
+  date_from?: string
+  date_to?: string
 }
 
 export default async function DashboardDataService(
@@ -108,37 +108,37 @@ export default async function DashboardDataService(
     select
       (select coalesce(jsonb_build_object('counters', c.*)->>'counters', '{}')::jsonb from counters c) counters,
       (select coalesce(json_agg(a.*), '[]')::jsonb from attedants a) attendants;
-  `;
+  `
 
-  let where = 'where tt."companyId" = ?';
-  const replacements: any[] = [companyId];
+  let where = 'where tt."companyId" = ?'
+  const replacements: any[] = [companyId]
 
   if (_.has(params, "days")) {
-    where += ` and tt."queuedAt" >= (now() - '? days'::interval)`;
-    replacements.push(parseInt(`${params.days}`.replace(/\D/g, ""), 10));
+    where += ` and tt."queuedAt" >= (now() - '? days'::interval)`
+    replacements.push(parseInt(`${params.days}`.replace(/\D/g, ""), 10))
   }
 
   if (_.has(params, "date_from")) {
-    where += ` and tt."queuedAt" >= ?`;
-    replacements.push(`${params.date_from} 00:00:00`);
+    where += ` and tt."queuedAt" >= ?`
+    replacements.push(`${params.date_from} 00:00:00`)
   }
 
   if (_.has(params, "date_to")) {
-    where += ` and tt."finishedAt" <= ?`;
-    replacements.push(`${params.date_to} 23:59:59`);
+    where += ` and tt."finishedAt" <= ?`
+    replacements.push(`${params.date_to} 23:59:59`)
   }
 
-  replacements.push(companyId);
-  replacements.push(companyId);
-  replacements.push(companyId);
+  replacements.push(companyId)
+  replacements.push(companyId)
+  replacements.push(companyId)
 
-  const finalQuery = query.replace("-- filterPeriod", where);
+  const finalQuery = query.replace("-- filterPeriod", where)
 
   const responseData: DashboardData = await sequelize.query(finalQuery, {
     replacements,
     type: QueryTypes.SELECT,
     plain: true
-  });
+  })
 
-  return responseData;
+  return responseData
 }

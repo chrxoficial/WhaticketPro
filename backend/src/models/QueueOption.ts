@@ -9,46 +9,46 @@ import {
   ForeignKey,
   BelongsTo,
   AllowNull
-} from "sequelize-typescript";
-import Queue from "./Queue";
+} from "sequelize-typescript"
+import Queue from "./Queue"
 
 @Table
 class QueueOption extends Model<QueueOption> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  title: string;
-
-  @AllowNull
-  @Column
-  message: string;
+  title: string
 
   @AllowNull
   @Column
-  option: string;
+  message: string
+
+  @AllowNull
+  @Column
+  option: string
 
   @ForeignKey(() => Queue)
   @Column
-  queueId: number;
+  queueId: number
 
   @ForeignKey(() => QueueOption)
   @Column
-  parentId: number;
+  parentId: number
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @BelongsTo(() => Queue)
-  queue: Queue;
+  queue: Queue
 
-  @BelongsTo(() => QueueOption, { foreignKey: 'parentId' })
-  parent: QueueOption;
+  @BelongsTo(() => QueueOption, { foreignKey: "parentId" })
+  parent: QueueOption
 }
 
-export default QueueOption;
+export default QueueOption

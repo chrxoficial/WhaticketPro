@@ -9,39 +9,39 @@ import {
   ForeignKey,
   BelongsTo,
   HasMany
-} from "sequelize-typescript";
-import Company from "./Company";
-import ContactListItem from "./ContactListItem";
+} from "sequelize-typescript"
+import Company from "./Company"
+import ContactListItem from "./ContactListItem"
 
 @Table({ tableName: "ContactLists" })
 class ContactList extends Model<ContactList> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  name: string;
+  name: string
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @HasMany(() => ContactListItem, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  contacts: ContactListItem[];
+  contacts: ContactListItem[]
 }
 
-export default ContactList;
+export default ContactList

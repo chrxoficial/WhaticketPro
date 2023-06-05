@@ -14,94 +14,94 @@ import {
   BelongsToMany,
   ForeignKey,
   BelongsTo
-} from "sequelize-typescript";
-import Queue from "./Queue";
-import Ticket from "./Ticket";
-import WhatsappQueue from "./WhatsappQueue";
-import Company from "./Company";
+} from "sequelize-typescript"
+import Queue from "./Queue"
+import Ticket from "./Ticket"
+import WhatsappQueue from "./WhatsappQueue"
+import Company from "./Company"
 
 @Table
 class Whatsapp extends Model<Whatsapp> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @AllowNull
   @Unique
   @Column(DataType.TEXT)
-  name: string;
+  name: string
 
   @Column(DataType.TEXT)
-  session: string;
+  session: string
 
   @Column(DataType.TEXT)
-  qrcode: string;
+  qrcode: string
 
   @Column
-  status: string;
+  status: string
 
   @Column
-  battery: string;
+  battery: string
 
   @Column
-  plugged: boolean;
+  plugged: boolean
 
   @Column
-  retries: number;
+  retries: number
 
   @Default("")
   @Column(DataType.TEXT)
-  greetingMessage: string;
+  greetingMessage: string
 
   @Default("")
   @Column(DataType.TEXT)
-  farewellMessage: string;
+  farewellMessage: string
 
   @Default("")
   @Column(DataType.TEXT)
-  complationMessage: string;
+  complationMessage: string
 
   @Default("")
   @Column(DataType.TEXT)
-  outOfHoursMessage: string;
+  outOfHoursMessage: string
 
   @Default("")
   @Column(DataType.TEXT)
-  ratingMessage: string;
+  ratingMessage: string
 
   @Column({ defaultValue: "stable" })
-  provider: string;
+  provider: string
 
   @Default(false)
   @AllowNull
   @Column
-  isDefault: boolean;
+  isDefault: boolean
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @HasMany(() => Ticket)
-  tickets: Ticket[];
+  tickets: Ticket[]
 
   @BelongsToMany(() => Queue, () => WhatsappQueue)
-  queues: Array<Queue & { WhatsappQueue: WhatsappQueue }>;
+  queues: Array<Queue & { WhatsappQueue: WhatsappQueue }>
 
   @HasMany(() => WhatsappQueue)
-  whatsappQueues: WhatsappQueue[];
+  whatsappQueues: WhatsappQueue[]
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @Column
-  token: string;
+  token: string
 }
 
-export default Whatsapp;
+export default Whatsapp

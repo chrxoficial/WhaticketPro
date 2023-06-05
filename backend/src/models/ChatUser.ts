@@ -8,39 +8,39 @@ import {
   AutoIncrement,
   BelongsTo,
   ForeignKey
-} from "sequelize-typescript";
-import User from "./User";
-import Chat from "./Chat";
+} from "sequelize-typescript"
+import User from "./User"
+import Chat from "./Chat"
 
 @Table({ tableName: "ChatUsers" })
 class ChatUser extends Model<ChatUser> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @ForeignKey(() => Chat)
   @Column
-  chatId: number;
+  chatId: number
 
   @ForeignKey(() => User)
   @Column
-  userId: number;
+  userId: number
 
   @Column
-  unreads: number;
+  unreads: number
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @BelongsTo(() => Chat)
-  chat: Chat;
+  chat: Chat
 
   @BelongsTo(() => User)
-  user: User;
+  user: User
 }
 
-export default ChatUser;
+export default ChatUser

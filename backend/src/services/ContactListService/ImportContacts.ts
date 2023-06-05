@@ -1,9 +1,9 @@
-import { head } from "lodash";
-import XLSX from "xlsx";
-import { has } from "lodash";
-import ContactListItem from "../../models/ContactListItem";
-import CheckContactNumber from "../WbotServices/CheckNumber";
-import { logger } from "../../utils/logger";
+import { head } from "lodash"
+import XLSX from "xlsx"
+import { has } from "lodash"
+import ContactListItem from "../../models/ContactListItem"
+import CheckContactNumber from "../WbotServices/CheckNumber"
+import { logger } from "../../utils/logger"
 // import CheckContactNumber from "../WbotServices/CheckNumber";
 
 export async function ImportContacts(
@@ -11,16 +11,16 @@ export async function ImportContacts(
   companyId: number,
   file: Express.Multer.File | undefined
 ) {
-  const workbook = XLSX.readFile(file?.path as string);
-  const worksheet = head(Object.values(workbook.Sheets)) as any;
-  const rows: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 0 });
-  const contacts = rows.map(row => {
-    let name = "";
-    let number = "";
-    let email = "";
+  const workbook = XLSX.readFile(file?.path as string)
+  const worksheet = head(Object.values(workbook.Sheets)) as any
+  const rows: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 0 })
+  const contacts = rows.map((row) => {
+    let name = ""
+    let number = ""
+    let email = ""
 
     if (has(row, "nome") || has(row, "Nome")) {
-      name = row["nome"] || row["Nome"];
+      name = row["nome"] || row["Nome"]
     }
 
     if (
@@ -29,8 +29,8 @@ export async function ImportContacts(
       has(row, "Numero") ||
       has(row, "Número")
     ) {
-      number = row["numero"] || row["número"] || row["Numero"] || row["Número"];
-      number = `${number}`.replace(/\D/g, "");
+      number = row["numero"] || row["número"] || row["Numero"] || row["Número"]
+      number = `${number}`.replace(/\D/g, "")
     }
 
     if (
@@ -39,13 +39,13 @@ export async function ImportContacts(
       has(row, "Email") ||
       has(row, "E-mail")
     ) {
-      email = row["email"] || row["e-mail"] || row["Email"] || row["E-mail"];
+      email = row["email"] || row["e-mail"] || row["Email"] || row["E-mail"]
     }
 
-    return { name, number, email, contactListId, companyId };
-  });
+    return { name, number, email, contactListId, companyId }
+  })
 
-  const contactList: ContactListItem[] = [];
+  const contactList: ContactListItem[] = []
 
   for (const contact of contacts) {
     const [newContact, created] = await ContactListItem.findOrCreate({
@@ -55,25 +55,25 @@ export async function ImportContacts(
         companyId: contact.companyId
       },
       defaults: contact
-    });
+    })
     if (created) {
-      contactList.push(newContact);
+      contactList.push(newContact)
     }
   }
 
   if (contactList) {
     for (let newContact of contactList) {
       try {
-        const response = await CheckContactNumber(newContact.number, companyId);
-        newContact.isWhatsappValid = response.exists;
-        const number = response.jid.replace(/\D/g, "");
-        newContact.number = number;
-        await newContact.save();
+        const response = await CheckContactNumber(newContact.number, companyId)
+        newContact.isWhatsappValid = response.exists
+        const number = response.jid.replace(/\D/g, "")
+        newContact.number = number
+        await newContact.save()
       } catch (e) {
-        logger.error(`Número de contato inválido: ${newContact.number}`);
+        logger.error(`Número de contato inválido: ${newContact.number}`)
       }
     }
   }
 
-  return contactList;
+  return contactList
 }

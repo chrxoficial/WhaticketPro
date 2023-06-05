@@ -1,25 +1,25 @@
-import * as Yup from "yup";
+import * as Yup from "yup"
 
-import AppError from "../../errors/AppError";
-import Schedule from "../../models/Schedule";
-import ShowService from "./ShowService";
+import AppError from "../../errors/AppError"
+import Schedule from "../../models/Schedule"
+import ShowService from "./ShowService"
 
 interface ScheduleData {
-  id?: number;
-  body?: string;
-  sendAt?: string;
-  sentAt?: string;
-  contactId?: number;
-  companyId?: number;
-  ticketId?: number;
-  userId?: number;
-  recorrency?: boolean;
+  id?: number
+  body?: string
+  sendAt?: string
+  sentAt?: string
+  contactId?: number
+  companyId?: number
+  ticketId?: number
+  userId?: number
+  recorrency?: boolean
 }
 
 interface Request {
-  scheduleData: ScheduleData;
-  id: string | number;
-  companyId: number;
+  scheduleData: ScheduleData
+  id: string | number
+  companyId: number
 }
 
 const UpdateUserService = async ({
@@ -27,30 +27,23 @@ const UpdateUserService = async ({
   id,
   companyId
 }: Request): Promise<Schedule | undefined> => {
-  const schedule = await ShowService(id, companyId);
+  const schedule = await ShowService(id, companyId)
 
   if (schedule?.companyId !== companyId) {
-    throw new AppError("Não é possível alterar registros de outra empresa");
+    throw new AppError("Não é possível alterar registros de outra empresa")
   }
 
   const schema = Yup.object().shape({
     body: Yup.string().min(5)
-  });
+  })
 
-  const {
-    body,
-    sendAt,
-    sentAt,
-    contactId,
-    ticketId,
-    userId,
-    recorrency
-  } = scheduleData;
+  const { body, sendAt, sentAt, contactId, ticketId, userId, recorrency } =
+    scheduleData
 
   try {
-    await schema.validate({ body });
+    await schema.validate({ body })
   } catch (err: any) {
-    throw new AppError(err.message);
+    throw new AppError(err.message)
   }
 
   await schedule.update({
@@ -61,10 +54,10 @@ const UpdateUserService = async ({
     ticketId,
     userId,
     recorrency
-  });
+  })
 
-  await schedule.reload();
-  return schedule;
-};
+  await schedule.reload()
+  return schedule
+}
 
-export default UpdateUserService;
+export default UpdateUserService

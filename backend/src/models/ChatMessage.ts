@@ -8,45 +8,45 @@ import {
   AutoIncrement,
   BelongsTo,
   ForeignKey
-} from "sequelize-typescript";
-import User from "./User";
-import Chat from "./Chat";
+} from "sequelize-typescript"
+import User from "./User"
+import Chat from "./Chat"
 
 @Table({ tableName: "ChatMessages" })
 class ChatMessage extends Model<ChatMessage> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @ForeignKey(() => Chat)
   @Column
-  chatId: number;
+  chatId: number
 
   @ForeignKey(() => User)
   @Column
-  senderId: number;
+  senderId: number
 
   @Column({ defaultValue: "" })
-  message: string;
+  message: string
 
   @Column
-  mediaPath: string;
+  mediaPath: string
 
   @Column
-  mediaName: string;
+  mediaName: string
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @BelongsTo(() => Chat)
-  chat: Chat;
+  chat: Chat
 
   @BelongsTo(() => User)
-  sender: User;
+  sender: User
 }
 
-export default ChatMessage;
+export default ChatMessage

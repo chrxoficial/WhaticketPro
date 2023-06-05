@@ -8,33 +8,33 @@ import {
   AutoIncrement,
   Default,
   ForeignKey
-} from "sequelize-typescript";
-import Whatsapp from "./Whatsapp";
+} from "sequelize-typescript"
+import Whatsapp from "./Whatsapp"
 
 @Table
 class Baileys extends Model<Baileys> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Default(null)
   @Column
-  contacts: string;
+  contacts: string
 
   @Default(null)
   @Column
-  chats: string;
+  chats: string
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @ForeignKey(() => Whatsapp)
   @Column
-  whatsappId: number;
+  whatsappId: number
 }
 
-export default Baileys;
+export default Baileys

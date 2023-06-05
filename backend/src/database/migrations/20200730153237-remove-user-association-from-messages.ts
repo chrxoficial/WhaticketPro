@@ -1,8 +1,8 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
-    return queryInterface.removeColumn("Messages", "userId");
+    return queryInterface.removeColumn("Messages", "userId")
   },
 
   down: (queryInterface: QueryInterface) => {
@@ -11,6 +11,6 @@ module.exports = {
       references: { model: "Users", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "SET NULL"
-    });
+    })
   }
-};
+}

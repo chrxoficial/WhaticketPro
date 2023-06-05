@@ -1,4 +1,4 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -11,15 +11,15 @@ module.exports = {
       },
       title: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       message: {
         type: DataTypes.TEXT,
-        allowNull: true,
+        allowNull: true
       },
       option: {
         type: DataTypes.TEXT,
-        allowNull: true,
+        allowNull: true
       },
       queueId: {
         type: DataTypes.INTEGER,
@@ -42,10 +42,10 @@ module.exports = {
         type: DataTypes.DATE,
         allowNull: false
       }
-    });
+    })
   },
 
   down: (queryInterface: QueryInterface) => {
-    return queryInterface.dropTable("QueueOptions");
+    return queryInterface.dropTable("QueueOptions")
   }
-};
+}

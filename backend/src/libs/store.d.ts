@@ -10,107 +10,104 @@ import {
   WAMessageCursor,
   WAMessageKey,
   WALegacySocket
-} from "@adiwajshing/baileys";
-import KeyedDB from "@adiwajshing/keyed-db";
+} from "@adiwajshing/baileys"
+import KeyedDB from "@adiwajshing/keyed-db"
 
 export interface Store {
-  chats: KeyedDB<Chat, string>;
+  chats: KeyedDB<Chat, string>
   contacts: {
-    [_: string]: Contact;
-  };
+    [_: string]: Contact
+  }
   messages: {
     [_: string]: {
-      array: proto.IWebMessageInfo[];
-      get: (id: string) => proto.IWebMessageInfo;
-      upsert: (item: proto.IWebMessageInfo, mode: "append" | "prepend") => void;
-      update: (item: proto.IWebMessageInfo) => boolean;
-      remove: (item: proto.IWebMessageInfo) => boolean;
+      array: proto.IWebMessageInfo[]
+      get: (id: string) => proto.IWebMessageInfo
+      upsert: (item: proto.IWebMessageInfo, mode: "append" | "prepend") => void
+      update: (item: proto.IWebMessageInfo) => boolean
+      remove: (item: proto.IWebMessageInfo) => boolean
       updateAssign: (
         id: string,
         update: Partial<proto.IWebMessageInfo>
-      ) => boolean;
-      clear: () => void;
-      filter: (contain: (item: proto.IWebMessageInfo) => boolean) => void;
-      toJSON: () => proto.IWebMessageInfo[];
-      fromJSON: (newItems: proto.IWebMessageInfo[]) => void;
-    };
-  };
+      ) => boolean
+      clear: () => void
+      filter: (contain: (item: proto.IWebMessageInfo) => boolean) => void
+      toJSON: () => proto.IWebMessageInfo[]
+      fromJSON: (newItems: proto.IWebMessageInfo[]) => void
+    }
+  }
   groupMetadata: {
-    [_: string]: GroupMetadata;
-  };
-  state: ConnectionState;
+    [_: string]: GroupMetadata
+  }
+  state: ConnectionState
   presences: {
     [id: string]: {
-      [participant: string]: PresenceData;
-    };
-  };
-  bind: (ev: BaileysEventEmitter) => void;
+      [participant: string]: PresenceData
+    }
+  }
+  bind: (ev: BaileysEventEmitter) => void
   loadMessages: (
     jid: string,
     count: number,
     cursor: WAMessageCursor,
     sock: WALegacySocket | undefined
-  ) => Promise<proto.IWebMessageInfo[]>;
+  ) => Promise<proto.IWebMessageInfo[]>
   loadMessage: (
     jid: string,
     id: string,
     sock: WALegacySocket | undefined
-  ) => Promise<proto.IWebMessageInfo>;
+  ) => Promise<proto.IWebMessageInfo>
   mostRecentMessage: (
     jid: string,
     sock: WALegacySocket | undefined
-  ) => Promise<proto.IWebMessageInfo>;
-  fetchImageUrl: (
-    jid: string,
-    sock: AnyWASocket | undefined
-  ) => Promise<string>;
+  ) => Promise<proto.IWebMessageInfo>
+  fetchImageUrl: (jid: string, sock: AnyWASocket | undefined) => Promise<string>
   fetchGroupMetadata: (
     jid: string,
     sock: AnyWASocket | undefined
-  ) => Promise<GroupMetadata>;
+  ) => Promise<GroupMetadata>
   fetchBroadcastListInfo: (
     jid: string,
     sock: WALegacySocket | undefined
-  ) => Promise<GroupMetadata>;
+  ) => Promise<GroupMetadata>
   fetchMessageReceipts: (
     { remoteJid, id }: WAMessageKey,
     sock: WALegacySocket | undefined
-  ) => Promise<proto.IUserReceipt[]>;
+  ) => Promise<proto.IUserReceipt[]>
   toJSON: () => {
-    chats: KeyedDB<Chat, string>;
+    chats: KeyedDB<Chat, string>
     contacts: {
-      [_: string]: Contact;
-    };
+      [_: string]: Contact
+    }
     messages: {
       [_: string]: {
-        array: proto.IWebMessageInfo[];
-        get: (id: string) => proto.IWebMessageInfo;
+        array: proto.IWebMessageInfo[]
+        get: (id: string) => proto.IWebMessageInfo
         upsert: (
           item: proto.IWebMessageInfo,
           mode: "append" | "prepend"
-        ) => void;
-        update: (item: proto.IWebMessageInfo) => boolean;
-        remove: (item: proto.IWebMessageInfo) => boolean;
+        ) => void
+        update: (item: proto.IWebMessageInfo) => boolean
+        remove: (item: proto.IWebMessageInfo) => boolean
         updateAssign: (
           id: string,
           update: Partial<proto.IWebMessageInfo>
-        ) => boolean;
-        clear: () => void;
-        filter: (contain: (item: proto.IWebMessageInfo) => boolean) => void;
-        toJSON: () => proto.IWebMessageInfo[];
-        fromJSON: (newItems: proto.IWebMessageInfo[]) => void;
-      };
-    };
-  };
+        ) => boolean
+        clear: () => void
+        filter: (contain: (item: proto.IWebMessageInfo) => boolean) => void
+        toJSON: () => proto.IWebMessageInfo[]
+        fromJSON: (newItems: proto.IWebMessageInfo[]) => void
+      }
+    }
+  }
   fromJSON: (json: {
-    chats: Chat[];
+    chats: Chat[]
     contacts: {
-      [id: string]: Contact;
-    };
+      [id: string]: Contact
+    }
     messages: {
-      [id: string]: proto.IWebMessageInfo[];
-    };
-  }) => void;
-  writeToFile: (path: string) => void;
-  readFromFile: (path: string) => void;
+      [id: string]: proto.IWebMessageInfo[]
+    }
+  }) => void
+  writeToFile: (path: string) => void
+  readFromFile: (path: string) => void
 }

@@ -1,10 +1,10 @@
-import QuickMessage from "../../models/QuickMessage";
+import QuickMessage from "../../models/QuickMessage"
 
 const FindAllService = async (): Promise<QuickMessage[]> => {
   const records: QuickMessage[] = await QuickMessage.findAll({
     order: [["shortcode", "ASC"]]
-  });
-  return records;
-};
+  })
+  return records
+}
 
-export default FindAllService;
+export default FindAllService

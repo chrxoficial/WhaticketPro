@@ -1,4 +1,4 @@
-import "../bootstrap";
+import "../bootstrap"
 
 module.exports = {
   define: {
@@ -13,4 +13,4 @@ module.exports = {
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   logging: process.env.DB_DEBUG === "true"
-};
+}

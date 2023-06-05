@@ -14,84 +14,84 @@ import {
   BelongsToMany,
   ForeignKey,
   BelongsTo
-} from "sequelize-typescript";
-import { hash, compare } from "bcryptjs";
-import Ticket from "./Ticket";
-import Queue from "./Queue";
-import UserQueue from "./UserQueue";
-import Company from "./Company";
-import QuickMessage from "./QuickMessage";
+} from "sequelize-typescript"
+import { hash, compare } from "bcryptjs"
+import Ticket from "./Ticket"
+import Queue from "./Queue"
+import UserQueue from "./UserQueue"
+import Company from "./Company"
+import QuickMessage from "./QuickMessage"
 
 @Table
 class User extends Model<User> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  name: string;
+  name: string
 
   @Column
-  email: string;
+  email: string
 
   @Column(DataType.VIRTUAL)
-  password: string;
+  password: string
 
   @Column
-  passwordHash: string;
+  passwordHash: string
 
   @Default(0)
   @Column
-  tokenVersion: number;
+  tokenVersion: number
 
   @Default("admin")
   @Column
-  profile: string;
+  profile: string
 
   @Column
-  super: boolean;
+  super: boolean
 
   @Column
-  online: boolean;
+  online: boolean
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @HasMany(() => Ticket)
-  tickets: Ticket[];
+  tickets: Ticket[]
 
   @BelongsToMany(() => Queue, () => UserQueue)
-  queues: Queue[];
+  queues: Queue[]
 
   @HasMany(() => QuickMessage, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  quickMessages: QuickMessage[];
+  quickMessages: QuickMessage[]
 
   @BeforeUpdate
   @BeforeCreate
   static hashPassword = async (instance: User): Promise<void> => {
     if (instance.password) {
-      instance.passwordHash = await hash(instance.password, 8);
+      instance.passwordHash = await hash(instance.password, 8)
     }
-  };
+  }
 
   public checkPassword = async (password: string): Promise<boolean> => {
-    return compare(password, this.getDataValue("passwordHash"));
-  };
+    return compare(password, this.getDataValue("passwordHash"))
+  }
 }
 
-export default User;
+export default User

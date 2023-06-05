@@ -6,7 +6,7 @@ import {
   Model,
   PrimaryKey,
   AutoIncrement
-} from "sequelize-typescript";
+} from "sequelize-typescript"
 
 @Table({
   tableName: "Helps"
@@ -15,25 +15,25 @@ class Help extends Model<Help> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  title: string;
+  title: string
 
   @Column
-  description: string;
+  description: string
 
   @Column
-  video: string;
+  video: string
 
   @Column
-  link: string;
+  link: string
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 }
 
-export default Help;
+export default Help

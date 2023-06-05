@@ -11,62 +11,62 @@ import {
   ForeignKey,
   BeforeCreate,
   Default
-} from "sequelize-typescript";
+} from "sequelize-typescript"
 
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid"
 
-import ChatMessage from "./ChatMessage";
-import ChatUser from "./ChatUser";
-import Company from "./Company";
-import User from "./User";
+import ChatMessage from "./ChatMessage"
+import ChatUser from "./ChatUser"
+import Company from "./Company"
+import User from "./User"
 
 @Table({ tableName: "Chats" })
 class Chat extends Model<Chat> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Default(uuidv4())
   @Column
-  uuid: string;
+  uuid: string
 
   @Column({ defaultValue: "" })
-  title: string;
+  title: string
 
   @ForeignKey(() => User)
   @Column
-  ownerId: number;
+  ownerId: number
 
   @Column({ defaultValue: "" })
-  lastMessage: string;
+  lastMessage: string
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @BelongsTo(() => User)
-  owner: User;
+  owner: User
 
   @HasMany(() => ChatUser)
-  users: ChatUser[];
+  users: ChatUser[]
 
   @HasMany(() => ChatMessage)
-  messages: ChatMessage[];
+  messages: ChatMessage[]
 
   @BeforeCreate
   static setUUID(chat: Chat) {
-    chat.uuid = uuidv4();
+    chat.uuid = uuidv4()
   }
 }
 
-export default Chat;
+export default Chat

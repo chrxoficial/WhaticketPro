@@ -1,4 +1,4 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -21,7 +21,7 @@ module.exports = {
       queryInterface.addIndex("ContactListItems", ["contactListId"], {
         name: "idx_ctli_contact_list_id"
       })
-    ]);
+    ])
   },
 
   down: (queryInterface: QueryInterface) => {
@@ -32,6 +32,6 @@ module.exports = {
       queryInterface.removeIndex("Messages", "idx_ms_company_id_ticket_id"),
       queryInterface.removeIndex("CampaignShipping", "idx_cpsh_campaign_id"),
       queryInterface.removeIndex("ContactListItems", "idx_ctli_contact_list_id")
-    ]);
+    ])
   }
-};
+}

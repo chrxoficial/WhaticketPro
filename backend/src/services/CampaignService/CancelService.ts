@@ -1,11 +1,11 @@
-import { Op } from "sequelize";
-import Campaign from "../../models/Campaign";
-import CampaignShipping from "../../models/CampaignShipping";
-import { campaignQueue } from "../../queues";
+import { Op } from "sequelize"
+import Campaign from "../../models/Campaign"
+import CampaignShipping from "../../models/CampaignShipping"
+import { campaignQueue } from "../../queues"
 
 export async function CancelService(id: number) {
-  const campaign = await Campaign.findByPk(id);
-  await campaign.update({ status: "CANCELADA" });
+  const campaign = await Campaign.findByPk(id)
+  await campaign.update({ status: "CANCELADA" })
 
   const recordsToCancel = await CampaignShipping.findAll({
     where: {
@@ -13,14 +13,14 @@ export async function CancelService(id: number) {
       jobId: { [Op.not]: null },
       deliveredAt: null
     }
-  });
+  })
 
-  const promises = [];
+  const promises = []
 
   for (let record of recordsToCancel) {
-    const job = await campaignQueue.getJob(+record.jobId);
-    promises.push(job.remove());
+    const job = await campaignQueue.getJob(+record.jobId)
+    promises.push(job.remove())
   }
 
-  await Promise.all(promises);
+  await Promise.all(promises)
 }

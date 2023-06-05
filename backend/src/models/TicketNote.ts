@@ -8,48 +8,48 @@ import {
   ForeignKey,
   BelongsTo,
   AutoIncrement
-} from "sequelize-typescript";
+} from "sequelize-typescript"
 
-import Contact from "./Contact";
-import User from "./User";
-import Ticket from "./Ticket";
+import Contact from "./Contact"
+import User from "./User"
+import Ticket from "./Ticket"
 
 @Table
 class TicketNote extends Model<TicketNote> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  note: string;
+  note: string
 
   @ForeignKey(() => User)
   @Column
-  userId: number;
+  userId: number
 
   @BelongsTo(() => User)
-  user: User;
+  user: User
 
   @ForeignKey(() => Contact)
   @Column
-  contactId: number;
+  contactId: number
 
   @BelongsTo(() => Contact)
-  contact: Contact;
+  contact: Contact
 
   @ForeignKey(() => Ticket)
   @Column
-  ticketId: number;
+  ticketId: number
 
   @BelongsTo(() => Ticket)
-  ticket: Ticket;
+  ticket: Ticket
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 }
 
-export default TicketNote;
+export default TicketNote

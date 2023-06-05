@@ -1,16 +1,16 @@
-import { proto, WASocket } from "@adiwajshing/baileys";
+import { proto, WASocket } from "@adiwajshing/baileys"
 import WALegacySocket from "@adiwajshing/baileys"
-import { getIO } from "../libs/socket";
-import Message from "../models/Message";
-import Ticket from "../models/Ticket";
-import { logger } from "../utils/logger";
-import GetTicketWbot from "./GetTicketWbot";
+import { getIO } from "../libs/socket"
+import Message from "../models/Message"
+import Ticket from "../models/Ticket"
+import { logger } from "../utils/logger"
+import GetTicketWbot from "./GetTicketWbot"
 
 const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
-  await ticket.update({ unreadMessages: 0 });
+  await ticket.update({ unreadMessages: 0 })
 
   try {
-    const wbot = await GetTicketWbot(ticket);
+    const wbot = await GetTicketWbot(ticket)
     // no baileys temos que marcar cada mensagem como lida
     // não o chat inteiro como é feito no legacy
     const getJsonMessage = await Message.findAll({
@@ -20,20 +20,20 @@ const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
         read: false
       },
       order: [["createdAt", "DESC"]]
-    });
+    })
 
     if (getJsonMessage.length > 0) {
       const lastMessages: proto.IWebMessageInfo = JSON.parse(
         JSON.stringify(getJsonMessage[0].dataJson)
-      );
+      )
 
       const key = {
         remoteJid: getJsonMessage[0].remoteJid,
         id: getJsonMessage[0].id
       }
 
-      await (wbot as WASocket).readMessages([key]);
-      await ticket.update({ unreadMessages: 0 });
+      await (wbot as WASocket).readMessages([key])
+      await ticket.update({ unreadMessages: 0 })
 
       /*         if (lastMessages.key && lastMessages.key.fromMe === false) {
                 await (wbot as WASocket).chatModify(
@@ -57,7 +57,6 @@ const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
               }); */
     }
 
-
     await Message.update(
       { read: true },
       {
@@ -66,19 +65,19 @@ const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
           read: false
         }
       }
-    );
+    )
   } catch (err) {
-    console.log(err);
+    console.log(err)
     logger.warn(
       `Could not mark messages as read. Maybe whatsapp session disconnected? Err: ${err}`
-    );
+    )
   }
 
-  const io = getIO();
+  const io = getIO()
   io.to(ticket.status).to("notification").emit("ticket", {
     action: "updateUnread",
     ticketId: ticket.id
-  });
-};
+  })
+}
 
-export default SetTicketMessagesAsRead;
+export default SetTicketMessagesAsRead

@@ -1,11 +1,11 @@
-import TicketNote from "../../models/TicketNote";
-import User from "../../models/User";
-import Contact from "../../models/Contact";
-import Ticket from "../../models/Ticket";
+import TicketNote from "../../models/TicketNote"
+import User from "../../models/User"
+import Contact from "../../models/Contact"
+import Ticket from "../../models/Ticket"
 
 interface Params {
-  contactId: number | string;
-  ticketId: number | string;
+  contactId: number | string
+  ticketId: number | string
 }
 
 const FindNotesByContactIdAndTicketId = async ({
@@ -23,9 +23,9 @@ const FindNotesByContactIdAndTicketId = async ({
       { model: Ticket, as: "ticket", attributes: ["id", "status", "createdAt"] }
     ],
     order: [["createdAt", "DESC"]]
-  });
+  })
 
-  return notes;
-};
+  return notes
+}
 
-export default FindNotesByContactIdAndTicketId;
+export default FindNotesByContactIdAndTicketId

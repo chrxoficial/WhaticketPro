@@ -1,33 +1,33 @@
-import * as Yup from "yup";
-import { Op } from "sequelize";
+import * as Yup from "yup"
+import { Op } from "sequelize"
 
-import AppError from "../../errors/AppError";
-import Whatsapp from "../../models/Whatsapp";
-import ShowWhatsAppService from "./ShowWhatsAppService";
-import AssociateWhatsappQueue from "./AssociateWhatsappQueue";
+import AppError from "../../errors/AppError"
+import Whatsapp from "../../models/Whatsapp"
+import ShowWhatsAppService from "./ShowWhatsAppService"
+import AssociateWhatsappQueue from "./AssociateWhatsappQueue"
 
 interface WhatsappData {
-  name?: string;
-  status?: string;
-  session?: string;
-  isDefault?: boolean;
-  greetingMessage?: string;
-  complationMessage?: string;
-  outOfHoursMessage?: string;
-  ratingMessage?: string;
-  queueIds?: number[];
-  token?: string;
+  name?: string
+  status?: string
+  session?: string
+  isDefault?: boolean
+  greetingMessage?: string
+  complationMessage?: string
+  outOfHoursMessage?: string
+  ratingMessage?: string
+  queueIds?: number[]
+  token?: string
 }
 
 interface Request {
-  whatsappData: WhatsappData;
-  whatsappId: string;
-  companyId: number;
+  whatsappData: WhatsappData
+  whatsappId: string
+  companyId: number
 }
 
 interface Response {
-  whatsapp: Whatsapp;
-  oldDefaultWhatsapp: Whatsapp | null;
+  whatsapp: Whatsapp
+  oldDefaultWhatsapp: Whatsapp | null
 }
 
 const UpdateWhatsAppService = async ({
@@ -39,7 +39,7 @@ const UpdateWhatsAppService = async ({
     name: Yup.string().min(2),
     status: Yup.string(),
     isDefault: Yup.boolean()
-  });
+  })
 
   const {
     name,
@@ -52,19 +52,19 @@ const UpdateWhatsAppService = async ({
     ratingMessage,
     queueIds = [],
     token
-  } = whatsappData;
+  } = whatsappData
 
   try {
-    await schema.validate({ name, status, isDefault });
+    await schema.validate({ name, status, isDefault })
   } catch (err: any) {
-    throw new AppError(err.message);
+    throw new AppError(err.message)
   }
 
   if (queueIds.length > 1 && !greetingMessage) {
-    throw new AppError("ERR_WAPP_GREETING_REQUIRED");
+    throw new AppError("ERR_WAPP_GREETING_REQUIRED")
   }
 
-  let oldDefaultWhatsapp: Whatsapp | null = null;
+  let oldDefaultWhatsapp: Whatsapp | null = null
 
   if (isDefault) {
     oldDefaultWhatsapp = await Whatsapp.findOne({
@@ -73,13 +73,13 @@ const UpdateWhatsAppService = async ({
         id: { [Op.not]: whatsappId },
         companyId
       }
-    });
+    })
     if (oldDefaultWhatsapp) {
-      await oldDefaultWhatsapp.update({ isDefault: false });
+      await oldDefaultWhatsapp.update({ isDefault: false })
     }
   }
 
-  const whatsapp = await ShowWhatsAppService(whatsappId, companyId);
+  const whatsapp = await ShowWhatsAppService(whatsappId, companyId)
 
   await whatsapp.update({
     name,
@@ -92,11 +92,11 @@ const UpdateWhatsAppService = async ({
     isDefault,
     companyId,
     token
-  });
+  })
 
-  await AssociateWhatsappQueue(whatsapp, queueIds);
+  await AssociateWhatsappQueue(whatsapp, queueIds)
 
-  return { whatsapp, oldDefaultWhatsapp };
-};
+  return { whatsapp, oldDefaultWhatsapp }
+}
 
-export default UpdateWhatsAppService;
+export default UpdateWhatsAppService

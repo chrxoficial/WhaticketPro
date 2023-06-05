@@ -1,7 +1,7 @@
-import Setting from "../../models/Setting";
+import Setting from "../../models/Setting"
 
 interface Request {
-  companyId: number;
+  companyId: number
 }
 
 const ListSettingsService = async ({
@@ -11,9 +11,9 @@ const ListSettingsService = async ({
     where: {
       companyId
     }
-  });
+  })
 
-  return settings;
-};
+  return settings
+}
 
-export default ListSettingsService;
+export default ListSettingsService

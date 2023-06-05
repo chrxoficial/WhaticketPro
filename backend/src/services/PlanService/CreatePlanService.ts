@@ -1,17 +1,17 @@
-import * as Yup from "yup";
-import AppError from "../../errors/AppError";
-import Plan from "../../models/Plan";
+import * as Yup from "yup"
+import AppError from "../../errors/AppError"
+import Plan from "../../models/Plan"
 
 interface PlanData {
-  name: string;
-  users: number;
-  connections: number;
-  queues: number;
-  value: number;
+  name: string
+  users: number
+  connections: number
+  queues: number
+  value: number
 }
 
 const CreatePlanService = async (planData: PlanData): Promise<Plan> => {
-  const { name } = planData;
+  const { name } = planData
 
   const planSchema = Yup.object().shape({
     name: Yup.string()
@@ -20,29 +20,28 @@ const CreatePlanService = async (planData: PlanData): Promise<Plan> => {
       .test(
         "Check-unique-name",
         "ERR_PLAN_NAME_ALREADY_EXISTS",
-        async value => {
+        async (value) => {
           if (value) {
             const planWithSameName = await Plan.findOne({
               where: { name: value }
-            });
+            })
 
-            return !planWithSameName;
+            return !planWithSameName
           }
-          return false;
+          return false
         }
       )
-  });
+  })
 
   try {
-    await planSchema.validate({ name });
-    
+    await planSchema.validate({ name })
   } catch (err) {
-    throw new AppError(err.message);
+    throw new AppError(err.message)
   }
 
-  const plan = await Plan.create(planData);
+  const plan = await Plan.create(planData)
 
-  return plan;
-};
+  return plan
+}
 
-export default CreatePlanService;
+export default CreatePlanService

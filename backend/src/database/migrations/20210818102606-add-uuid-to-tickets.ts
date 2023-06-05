@@ -1,4 +1,4 @@
-import { QueryInterface, DataTypes, Sequelize } from "sequelize";
+import { QueryInterface, DataTypes, Sequelize } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -6,12 +6,12 @@ module.exports = {
       queryInterface.addColumn("Tickets", "uuid", {
         type: DataTypes.UUID,
         allowNull: true,
-        defaultValue: Sequelize.literal('uuid_generate_v4()')
+        defaultValue: Sequelize.literal("uuid_generate_v4()")
       })
-    ]);
+    ])
   },
 
   down: (queryInterface: QueryInterface) => {
-    return queryInterface.removeColumn("Tickets", "uuid");
+    return queryInterface.removeColumn("Tickets", "uuid")
   }
-};
+}

@@ -1,4 +1,4 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -11,13 +11,13 @@ module.exports = {
         type: DataTypes.JSONB,
         defaultValue: []
       })
-    ]);
+    ])
   },
 
   down: (queryInterface: QueryInterface) => {
     return Promise.all([
       queryInterface.removeColumn("Companies", "schedules"),
       queryInterface.removeColumn("Companies", "status")
-    ]);
+    ])
   }
-};
+}

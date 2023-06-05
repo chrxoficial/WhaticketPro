@@ -8,37 +8,37 @@ import {
   AutoIncrement,
   AllowNull,
   Unique
-} from "sequelize-typescript";
+} from "sequelize-typescript"
 
 @Table
 class Plan extends Model<Plan> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @AllowNull(false)
   @Unique
   @Column
-  name: string;
+  name: string
 
   @Column
-  users: number;
+  users: number
 
   @Column
-  connections: number;
+  connections: number
 
   @Column
-  queues: number;
+  queues: number
 
   @Column
-  value: number;
+  value: number
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 }
 
-export default Plan;
+export default Plan

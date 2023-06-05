@@ -1,15 +1,15 @@
-import { Sequelize, Op } from "sequelize";
-import Help from "../../models/Help";
+import { Sequelize, Op } from "sequelize"
+import Help from "../../models/Help"
 
 interface Request {
-  searchParam?: string;
-  pageNumber?: string;
+  searchParam?: string
+  pageNumber?: string
 }
 
 interface Response {
-  records: Help[];
-  count: number;
-  hasMore: boolean;
+  records: Help[]
+  count: number
+  hasMore: boolean
 }
 
 const ListService = async ({
@@ -26,24 +26,24 @@ const ListService = async ({
         )
       }
     ]
-  };
-  const limit = 20;
-  const offset = limit * (+pageNumber - 1);
+  }
+  const limit = 20
+  const offset = limit * (+pageNumber - 1)
 
   const { count, rows: records } = await Help.findAndCountAll({
     where: whereCondition,
     limit,
     offset,
     order: [["title", "ASC"]]
-  });
+  })
 
-  const hasMore = count > offset + records.length;
+  const hasMore = count > offset + records.length
 
   return {
     records,
     count,
     hasMore
-  };
-};
+  }
+}
 
-export default ListService;
+export default ListService

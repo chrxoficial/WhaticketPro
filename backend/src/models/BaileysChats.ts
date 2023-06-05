@@ -10,36 +10,36 @@ import {
   DataType,
   AllowNull,
   AutoIncrement
-} from "sequelize-typescript";
-import Company from "./Company";
-import Whatsapp from "./Whatsapp";
+} from "sequelize-typescript"
+import Company from "./Company"
+import Whatsapp from "./Whatsapp"
 
 @Table
 class BaileysChats extends Model<BaileysChats> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  jid: string;
+  jid: string
 
   @Column
-  conversationTimestamp: number;
+  conversationTimestamp: number
 
   @Default(0)
   @Column
-  unreadCount: number;
+  unreadCount: number
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @ForeignKey(() => Whatsapp)
   @Column(DataType.INTEGER)
-  whatsappId: string;
+  whatsappId: string
 }
 
-export default BaileysChats;
+export default BaileysChats

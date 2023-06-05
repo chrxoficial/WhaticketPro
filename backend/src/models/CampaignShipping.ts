@@ -8,60 +8,60 @@ import {
   AutoIncrement,
   ForeignKey,
   BelongsTo
-} from "sequelize-typescript";
-import Campaign from "./Campaign";
-import ContactListItem from "./ContactListItem";
+} from "sequelize-typescript"
+import Campaign from "./Campaign"
+import ContactListItem from "./ContactListItem"
 
 @Table({ tableName: "CampaignShipping" })
 class CampaignShipping extends Model<CampaignShipping> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  jobId: string;
+  jobId: string
 
   @Column
-  number: string;
+  number: string
 
   @Column
-  message: string;
+  message: string
 
   @Column
-  confirmationMessage: string;
+  confirmationMessage: string
 
   @Column
-  confirmation: boolean;
+  confirmation: boolean
 
   @ForeignKey(() => ContactListItem)
   @Column
-  contactId: number;
+  contactId: number
 
   @ForeignKey(() => Campaign)
   @Column
-  campaignId: number;
+  campaignId: number
 
   @Column
-  confirmationRequestedAt: Date;
+  confirmationRequestedAt: Date
 
   @Column
-  confirmedAt: Date;
+  confirmedAt: Date
 
   @Column
-  deliveredAt: Date;
+  deliveredAt: Date
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @BelongsTo(() => ContactListItem)
-  contact: ContactListItem;
+  contact: ContactListItem
 
   @BelongsTo(() => Campaign)
-  campaign: Campaign;
+  campaign: Campaign
 }
 
-export default CampaignShipping;
+export default CampaignShipping

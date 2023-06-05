@@ -1,9 +1,9 @@
-import User from "../../models/User";
-import AppError from "../../errors/AppError";
-import Queue from "../../models/Queue";
+import User from "../../models/User"
+import AppError from "../../errors/AppError"
+import Queue from "../../models/Queue"
 
 interface Params {
-  companyId: string | number;
+  companyId: string | number
 }
 
 const SimpleListService = async ({ companyId }: Params): Promise<User[]> => {
@@ -12,17 +12,15 @@ const SimpleListService = async ({ companyId }: Params): Promise<User[]> => {
       companyId
     },
     attributes: ["name", "id", "email"],
-    include: [
-      { model: Queue, as: 'queues' }
-    ],
+    include: [{ model: Queue, as: "queues" }],
     order: [["id", "ASC"]]
-  });
+  })
 
   if (!users) {
-    throw new AppError("ERR_NO_USER_FOUND", 404);
+    throw new AppError("ERR_NO_USER_FOUND", 404)
   }
 
-  return users;
-};
+  return users
+}
 
-export default SimpleListService;
+export default SimpleListService

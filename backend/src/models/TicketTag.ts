@@ -6,33 +6,33 @@ import {
   Model,
   ForeignKey,
   BelongsTo
-} from "sequelize-typescript";
-import Tag from "./Tag";
-import Ticket from "./Ticket";
+} from "sequelize-typescript"
+import Tag from "./Tag"
+import Ticket from "./Ticket"
 
 @Table({
-  tableName: 'TicketTags'
+  tableName: "TicketTags"
 })
 class TicketTag extends Model<TicketTag> {
   @ForeignKey(() => Ticket)
   @Column
-  ticketId: number;
+  ticketId: number
 
   @ForeignKey(() => Tag)
   @Column
-  tagId: number;
+  tagId: number
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @BelongsTo(() => Ticket)
-  ticket: Ticket;
+  ticket: Ticket
 
   @BelongsTo(() => Tag)
-  tag: Tag;
+  tag: Tag
 }
 
-export default TicketTag;
+export default TicketTag

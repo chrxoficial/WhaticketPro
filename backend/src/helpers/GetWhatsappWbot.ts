@@ -1,9 +1,9 @@
-import { getWbot } from "../libs/wbot";
-import Whatsapp from "../models/Whatsapp";
+import { getWbot } from "../libs/wbot"
+import Whatsapp from "../models/Whatsapp"
 
 const GetWhatsappWbot = async (whatsapp: Whatsapp) => {
-  const wbot = await getWbot(whatsapp.id);
-  return wbot;
-};
+  const wbot = await getWbot(whatsapp.id)
+  return wbot
+}
 
-export default GetWhatsappWbot;
+export default GetWhatsappWbot

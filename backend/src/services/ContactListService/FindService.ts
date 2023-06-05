@@ -1,9 +1,9 @@
-import ContactList from "../../models/ContactList";
-import Company from "../../models/Company";
+import ContactList from "../../models/ContactList"
+import Company from "../../models/Company"
 
 type Params = {
-  companyId: string;
-};
+  companyId: string
+}
 
 const FindService = async ({ companyId }: Params): Promise<ContactList[]> => {
   const notes: ContactList[] = await ContactList.findAll({
@@ -12,9 +12,9 @@ const FindService = async ({ companyId }: Params): Promise<ContactList[]> => {
     },
     include: [{ model: Company, as: "company", attributes: ["id", "name"] }],
     order: [["name", "ASC"]]
-  });
+  })
 
-  return notes;
-};
+  return notes
+}
 
-export default FindService;
+export default FindService

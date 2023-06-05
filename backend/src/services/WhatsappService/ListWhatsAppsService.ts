@@ -1,10 +1,10 @@
-import { FindOptions } from "sequelize/types";
-import Queue from "../../models/Queue";
-import Whatsapp from "../../models/Whatsapp";
+import { FindOptions } from "sequelize/types"
+import Queue from "../../models/Queue"
+import Whatsapp from "../../models/Whatsapp"
 
 interface Request {
-  companyId: number;
-  session?: number | string;
+  companyId: number
+  session?: number | string
 }
 
 const ListWhatsAppsService = async ({
@@ -22,15 +22,15 @@ const ListWhatsAppsService = async ({
         attributes: ["id", "name", "color", "greetingMessage"]
       }
     ]
-  };
-
-  if (session !== undefined && session == 0) {
-    options.attributes = { exclude: ["session"] };
   }
 
-  const whatsapps = await Whatsapp.findAll(options);
+  if (session !== undefined && session == 0) {
+    options.attributes = { exclude: ["session"] }
+  }
 
-  return whatsapps;
-};
+  const whatsapps = await Whatsapp.findAll(options)
 
-export default ListWhatsAppsService;
+  return whatsapps
+}
+
+export default ListWhatsAppsService

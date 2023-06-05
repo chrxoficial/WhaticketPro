@@ -1,4 +1,4 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -44,10 +44,10 @@ module.exports = {
         type: DataTypes.DATE,
         allowNull: false
       }
-    });
+    })
   },
 
   down: (queryInterface: QueryInterface) => {
-    return queryInterface.dropTable("ChatMessages");
+    return queryInterface.dropTable("ChatMessages")
   }
-};
+}

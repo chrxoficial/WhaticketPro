@@ -1,10 +1,10 @@
-import AppError from "../../errors/AppError";
-import BaileysChats from "../../models/BaileysChats";
+import AppError from "../../errors/AppError"
+import BaileysChats from "../../models/BaileysChats"
 
 interface Data {
-  id?: string;
-  conversationTimestamp?: number;
-  unreadCount?: number;
+  id?: string
+  conversationTimestamp?: number
+  unreadCount?: number
 }
 
 export const UpdateBaileysChatServices = async (
@@ -17,14 +17,14 @@ export const UpdateBaileysChatServices = async (
       whatsappId,
       jid
     }
-  });
+  })
 
   if (baileysChat) {
     await baileysChat.update({
       conversationTimestamp: data.conversationTimestamp,
       unreadCount: data.unreadCount
-    });
+    })
 
-    return baileysChat;
+    return baileysChat
   }
-};
+}

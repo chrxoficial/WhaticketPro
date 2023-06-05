@@ -1,13 +1,13 @@
-import { QueryTypes } from "sequelize";
-import sequelize from "../../database";
+import { QueryTypes } from "sequelize"
+import sequelize from "../../database"
 
 type Result = {
-  id: number;
-  currentSchedule: [];
-  startTime: string;
-  endTime: string;
-  inActivity: boolean;
-};
+  id: number
+  currentSchedule: []
+  startTime: string
+  endTime: string
+  inActivity: boolean
+}
 
 const VerifyCurrentSchedule = async (id: string | number): Promise<Result> => {
   const sql = `
@@ -31,15 +31,15 @@ const VerifyCurrentSchedule = async (id: string | number): Promise<Result> => {
       GROUP BY 1, 2
     ) s
     where s.currentSchedule->>'startTime' not like '' and s.currentSchedule->>'endTime' not like '';
-  `;
+  `
 
   const result: Result = await sequelize.query(sql, {
     replacements: { id },
     type: QueryTypes.SELECT,
     plain: true
-  });
+  })
 
-  return result;
-};
+  return result
+}
 
-export default VerifyCurrentSchedule;
+export default VerifyCurrentSchedule

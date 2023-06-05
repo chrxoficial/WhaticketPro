@@ -1,9 +1,9 @@
-import ShowService from "./ShowService";
+import ShowService from "./ShowService"
 
 const DeleteService = async (queueOptionId: number | string): Promise<void> => {
-  const queueOption = await ShowService(queueOptionId);
+  const queueOption = await ShowService(queueOptionId)
 
-  await queueOption.destroy();
-};
+  await queueOption.destroy()
+}
 
-export default DeleteService;
+export default DeleteService

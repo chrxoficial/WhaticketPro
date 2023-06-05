@@ -1,14 +1,14 @@
-import ContactList from "../../models/ContactList";
-import AppError from "../../errors/AppError";
+import ContactList from "../../models/ContactList"
+import AppError from "../../errors/AppError"
 
 const ShowService = async (id: string | number): Promise<ContactList> => {
-  const record = await ContactList.findByPk(id);
+  const record = await ContactList.findByPk(id)
 
   if (!record) {
-    throw new AppError("ERR_NO_TICKETNOTE_FOUND", 404);
+    throw new AppError("ERR_NO_TICKETNOTE_FOUND", 404)
   }
 
-  return record;
-};
+  return record
+}
 
-export default ShowService;
+export default ShowService

@@ -9,36 +9,35 @@ import {
   AllowNull,
   HasMany,
   Unique
-} from "sequelize-typescript";
+} from "sequelize-typescript"
 
 @Table({ tableName: "Invoices" })
 class Invoices extends Model<Invoices> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  detail: string;
+  detail: string
 
   @Column
-  status: string;
+  status: string
 
   @Column
-  value: number;
+  value: number
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @Column
-  dueDate: string;
+  dueDate: string
 
   @Column
-  companyId: number;
-
+  companyId: number
 }
 
-export default Invoices;
+export default Invoices

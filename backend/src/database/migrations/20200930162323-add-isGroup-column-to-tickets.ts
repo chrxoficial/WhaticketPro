@@ -1,4 +1,4 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -6,10 +6,10 @@ module.exports = {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
-    });
+    })
   },
 
   down: (queryInterface: QueryInterface) => {
-    return queryInterface.removeColumn("Tickets", "isGroup");
+    return queryInterface.removeColumn("Tickets", "isGroup")
   }
-};
+}

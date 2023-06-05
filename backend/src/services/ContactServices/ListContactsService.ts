@@ -1,16 +1,16 @@
-import { Sequelize, Op } from "sequelize";
-import Contact from "../../models/Contact";
+import { Sequelize, Op } from "sequelize"
+import Contact from "../../models/Contact"
 
 interface Request {
-  searchParam?: string;
-  pageNumber?: string;
-  companyId: number;
+  searchParam?: string
+  pageNumber?: string
+  companyId: number
 }
 
 interface Response {
-  contacts: Contact[];
-  count: number;
-  hasMore: boolean;
+  contacts: Contact[]
+  count: number
+  hasMore: boolean
 }
 
 const ListContactsService = async ({
@@ -32,24 +32,24 @@ const ListContactsService = async ({
     companyId: {
       [Op.eq]: companyId
     }
-  };
-  const limit = 20;
-  const offset = limit * (+pageNumber - 1);
+  }
+  const limit = 20
+  const offset = limit * (+pageNumber - 1)
 
   const { count, rows: contacts } = await Contact.findAndCountAll({
     where: whereCondition,
     limit,
     offset,
     order: [["name", "ASC"]]
-  });
+  })
 
-  const hasMore = count > offset + contacts.length;
+  const hasMore = count > offset + contacts.length
 
   return {
     contacts,
     count,
     hasMore
-  };
-};
+  }
+}
 
-export default ListContactsService;
+export default ListContactsService

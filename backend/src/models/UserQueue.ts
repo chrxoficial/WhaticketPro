@@ -5,25 +5,25 @@ import {
   UpdatedAt,
   Model,
   ForeignKey
-} from "sequelize-typescript";
-import Queue from "./Queue";
-import User from "./User";
+} from "sequelize-typescript"
+import Queue from "./Queue"
+import User from "./User"
 
 @Table
 class UserQueue extends Model<UserQueue> {
   @ForeignKey(() => User)
   @Column
-  userId: number;
+  userId: number
 
   @ForeignKey(() => Queue)
   @Column
-  queueId: number;
+  queueId: number
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 }
 
-export default UserQueue;
+export default UserQueue

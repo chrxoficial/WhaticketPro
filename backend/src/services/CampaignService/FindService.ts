@@ -1,9 +1,9 @@
-import Campaign from "../../models/Campaign";
-import Company from "../../models/Company";
+import Campaign from "../../models/Campaign"
+import Company from "../../models/Company"
 
 type Params = {
-  companyId: string;
-};
+  companyId: string
+}
 
 const FindService = async ({ companyId }: Params): Promise<Campaign[]> => {
   const notes: Campaign[] = await Campaign.findAll({
@@ -12,9 +12,9 @@ const FindService = async ({ companyId }: Params): Promise<Campaign[]> => {
     },
     include: [{ model: Company, as: "company", attributes: ["id", "name"] }],
     order: [["name", "ASC"]]
-  });
+  })
 
-  return notes;
-};
+  return notes
+}
 
-export default FindService;
+export default FindService

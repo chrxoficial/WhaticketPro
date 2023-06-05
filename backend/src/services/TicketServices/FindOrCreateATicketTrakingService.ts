@@ -1,11 +1,11 @@
-import { Op } from "sequelize";
-import TicketTraking from "../../models/TicketTraking";
+import { Op } from "sequelize"
+import TicketTraking from "../../models/TicketTraking"
 
 interface Params {
-  ticketId: string | number;
-  companyId: string | number;
-  whatsappId?: string | number;
-  userId?: string | number;
+  ticketId: string | number
+  companyId: string | number
+  whatsappId?: string | number
+  userId?: string | number
 }
 
 const FindOrCreateATicketTrakingService = async ({
@@ -21,10 +21,10 @@ const FindOrCreateATicketTrakingService = async ({
         [Op.is]: null
       }
     }
-  });
+  })
 
   if (ticketTraking) {
-    return ticketTraking;
+    return ticketTraking
   }
 
   const newRecord = await TicketTraking.create({
@@ -32,9 +32,9 @@ const FindOrCreateATicketTrakingService = async ({
     companyId,
     whatsappId,
     userId
-  });
+  })
 
-  return newRecord;
-};
+  return newRecord
+}
 
-export default FindOrCreateATicketTrakingService;
+export default FindOrCreateATicketTrakingService

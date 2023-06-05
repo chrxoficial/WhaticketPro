@@ -8,43 +8,43 @@ import {
   ForeignKey,
   BelongsTo,
   AutoIncrement
-} from "sequelize-typescript";
+} from "sequelize-typescript"
 
-import Company from "./Company";
-import User from "./User";
+import Company from "./Company"
+import User from "./User"
 
 @Table
 class QuickMessage extends Model<QuickMessage> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  shortcode: string;
+  shortcode: string
 
   @Column
-  message: string;
+  message: string
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @ForeignKey(() => User)
   @Column
-  userId: number;
+  userId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @BelongsTo(() => User)
-  user: User;
+  user: User
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 }
 
-export default QuickMessage;
+export default QuickMessage

@@ -9,46 +9,46 @@ import {
   DataType,
   BelongsTo,
   ForeignKey
-} from "sequelize-typescript";
-import Company from "./Company";
+} from "sequelize-typescript"
+import Company from "./Company"
 
 @Table
 class Announcement extends Model<Announcement> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  priority: number; //1 - alta, 2 - média, 3 - baixa
+  priority: number //1 - alta, 2 - média, 3 - baixa
 
   @Column
-  title: string;
+  title: string
 
   @Column(DataType.TEXT)
-  text: string;
+  text: string
 
   @Column
-  mediaPath: string;
+  mediaPath: string
 
   @Column
-  mediaName: string;
+  mediaName: string
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @Column
-  status: boolean;
+  status: boolean
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 }
 
-export default Announcement;
+export default Announcement

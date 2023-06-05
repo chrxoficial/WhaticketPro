@@ -12,65 +12,65 @@ import {
   HasMany,
   ForeignKey,
   BelongsTo
-} from "sequelize-typescript";
-import ContactCustomField from "./ContactCustomField";
-import Ticket from "./Ticket";
-import Company from "./Company";
-import Schedule from "./Schedule";
+} from "sequelize-typescript"
+import ContactCustomField from "./ContactCustomField"
+import Ticket from "./Ticket"
+import Company from "./Company"
+import Schedule from "./Schedule"
 
 @Table
 class Contact extends Model<Contact> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  name: string;
+  name: string
 
   @AllowNull(false)
   @Unique
   @Column
-  number: string;
+  number: string
 
   @AllowNull(false)
   @Default("")
   @Column
-  email: string;
+  email: string
 
   @Default("")
   @Column
-  profilePicUrl: string;
+  profilePicUrl: string
 
   @Default(false)
   @Column
-  isGroup: boolean;
+  isGroup: boolean
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @HasMany(() => Ticket)
-  tickets: Ticket[];
+  tickets: Ticket[]
 
   @HasMany(() => ContactCustomField)
-  extraInfo: ContactCustomField[];
+  extraInfo: ContactCustomField[]
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @HasMany(() => Schedule, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  schedules: Schedule[];
+  schedules: Schedule[]
 }
 
-export default Contact;
+export default Contact

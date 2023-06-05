@@ -14,70 +14,70 @@ import {
   HasMany,
   DataType,
   Default
-} from "sequelize-typescript";
-import User from "./User";
-import UserQueue from "./UserQueue";
-import Company from "./Company";
+} from "sequelize-typescript"
+import User from "./User"
+import UserQueue from "./UserQueue"
+import Company from "./Company"
 
-import Whatsapp from "./Whatsapp";
-import WhatsappQueue from "./WhatsappQueue";
-import QueueOption from "./QueueOption";
+import Whatsapp from "./Whatsapp"
+import WhatsappQueue from "./WhatsappQueue"
+import QueueOption from "./QueueOption"
 
 @Table
 class Queue extends Model<Queue> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @AllowNull(false)
   @Unique
   @Column
-  name: string;
+  name: string
 
   @AllowNull(false)
   @Unique
   @Column
-  color: string;
+  color: string
 
   @Default("")
   @Column
-  greetingMessage: string;
+  greetingMessage: string
 
   @Default("")
   @Column
-  outOfHoursMessage: string;
+  outOfHoursMessage: string
 
   @Column({
     type: DataType.JSONB
   })
-  schedules: [];
+  schedules: []
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 
   @BelongsToMany(() => Whatsapp, () => WhatsappQueue)
-  whatsapps: Array<Whatsapp & { WhatsappQueue: WhatsappQueue }>;
+  whatsapps: Array<Whatsapp & { WhatsappQueue: WhatsappQueue }>
 
   @BelongsToMany(() => User, () => UserQueue)
-  users: Array<User & { UserQueue: UserQueue }>;
+  users: Array<User & { UserQueue: UserQueue }>
 
   @HasMany(() => QueueOption, {
     onDelete: "DELETE",
     onUpdate: "DELETE",
     hooks: true
   })
-  options: QueueOption[];
+  options: QueueOption[]
 }
 
-export default Queue;
+export default Queue

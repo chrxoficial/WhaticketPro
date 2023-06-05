@@ -1,4 +1,4 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes } from "sequelize"
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -11,13 +11,13 @@ module.exports = {
         type: DataTypes.TEXT,
         allowNull: true
       })
-    ]);
+    ])
   },
 
   down: (queryInterface: QueryInterface) => {
     return Promise.all([
       queryInterface.removeColumn("Queues", "schedules"),
       queryInterface.removeColumn("Queues", "outOfHoursMessage")
-    ]);
+    ])
   }
-};
+}

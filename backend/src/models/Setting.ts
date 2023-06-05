@@ -8,35 +8,35 @@ import {
   ForeignKey,
   BelongsTo,
   AutoIncrement
-} from "sequelize-typescript";
+} from "sequelize-typescript"
 
-import Company from "./Company";
+import Company from "./Company"
 
 @Table
 class Setting extends Model<Setting> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  key: string;
+  key: string
 
   @Column
-  value: string;
+  value: string
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number
 
   @BelongsTo(() => Company)
-  company: Company;
+  company: Company
 }
 
-export default Setting;
+export default Setting

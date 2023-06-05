@@ -1,10 +1,10 @@
-import ContactList from "../../models/ContactList";
+import ContactList from "../../models/ContactList"
 
 const FindAllService = async (): Promise<ContactList[]> => {
   const records: ContactList[] = await ContactList.findAll({
     order: [["name", "ASC"]]
-  });
-  return records;
-};
+  })
+  return records
+}
 
-export default FindAllService;
+export default FindAllService

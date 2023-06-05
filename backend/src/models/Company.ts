@@ -10,124 +10,124 @@ import {
   BelongsTo,
   DataType,
   HasMany
-} from "sequelize-typescript";
-import Contact from "./Contact";
-import Message from "./Message";
+} from "sequelize-typescript"
+import Contact from "./Contact"
+import Message from "./Message"
 
-import Plan from "./Plan";
-import Queue from "./Queue";
-import Setting from "./Setting";
-import Ticket from "./Ticket";
-import TicketTraking from "./TicketTraking";
-import User from "./User";
-import UserRating from "./UserRating";
-import Whatsapp from "./Whatsapp";
+import Plan from "./Plan"
+import Queue from "./Queue"
+import Setting from "./Setting"
+import Ticket from "./Ticket"
+import TicketTraking from "./TicketTraking"
+import User from "./User"
+import UserRating from "./UserRating"
+import Whatsapp from "./Whatsapp"
 
 @Table
 class Company extends Model<Company> {
   @PrimaryKey
   @AutoIncrement
   @Column
-  id: number;
+  id: number
 
   @Column
-  name: string;
+  name: string
 
   @Column
-  phone: string;
+  phone: string
 
   @Column
-  email: string;
+  email: string
 
   @Column
-  status: boolean;
+  status: boolean
 
   @Column
-  dueDate: string;
+  dueDate: string
 
   @Column
-  recurrence: string;
+  recurrence: string
 
   @Column({
     type: DataType.JSONB
   })
-  schedules: [];
+  schedules: []
 
   @ForeignKey(() => Plan)
   @Column
-  planId: number;
+  planId: number
 
   @BelongsTo(() => Plan)
-  plan: Plan;
+  plan: Plan
 
   @CreatedAt
-  createdAt: Date;
+  createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date;
+  updatedAt: Date
 
   @HasMany(() => User, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  users: User[];
+  users: User[]
 
   @HasMany(() => UserRating, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  userRatings: UserRating[];
+  userRatings: UserRating[]
 
   @HasMany(() => Queue, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  queues: Queue[];
+  queues: Queue[]
 
   @HasMany(() => Whatsapp, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  whatsapps: Whatsapp[];
+  whatsapps: Whatsapp[]
 
   @HasMany(() => Message, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  messages: Message[];
+  messages: Message[]
 
   @HasMany(() => Contact, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  contacts: Contact[];
+  contacts: Contact[]
 
   @HasMany(() => Setting, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  settings: Setting[];
+  settings: Setting[]
 
   @HasMany(() => Ticket, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  tickets: Ticket[];
+  tickets: Ticket[]
 
   @HasMany(() => TicketTraking, {
     onUpdate: "CASCADE",
     onDelete: "CASCADE",
     hooks: true
   })
-  ticketTrankins: TicketTraking[];
+  ticketTrankins: TicketTraking[]
 }
 
-export default Company;
+export default Company

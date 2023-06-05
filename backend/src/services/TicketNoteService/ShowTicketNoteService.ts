@@ -1,16 +1,16 @@
-import TicketNote from "../../models/TicketNote";
-import AppError from "../../errors/AppError";
+import TicketNote from "../../models/TicketNote"
+import AppError from "../../errors/AppError"
 
 const ShowTicketNoteService = async (
   id: string | number
 ): Promise<TicketNote> => {
-  const ticketNote = await TicketNote.findByPk(id);
+  const ticketNote = await TicketNote.findByPk(id)
 
   if (!ticketNote) {
-    throw new AppError("ERR_NO_TICKETNOTE_FOUND", 404);
+    throw new AppError("ERR_NO_TICKETNOTE_FOUND", 404)
   }
 
-  return ticketNote;
-};
+  return ticketNote
+}
 
-export default ShowTicketNoteService;
+export default ShowTicketNoteService

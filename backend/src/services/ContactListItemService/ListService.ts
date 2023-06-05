@@ -1,17 +1,17 @@
-import { Sequelize, Op } from "sequelize";
-import ContactListItem from "../../models/ContactListItem";
+import { Sequelize, Op } from "sequelize"
+import ContactListItem from "../../models/ContactListItem"
 
 interface Request {
-  searchParam?: string;
-  pageNumber?: string;
-  companyId: number | string;
-  contactListId: number | string;
+  searchParam?: string
+  pageNumber?: string
+  companyId: number | string
+  contactListId: number | string
 }
 
 interface Response {
-  contacts: ContactListItem[];
-  count: number;
-  hasMore: boolean;
+  contacts: ContactListItem[]
+  count: number
+  hasMore: boolean
 }
 
 const ListService = async ({
@@ -33,25 +33,25 @@ const ListService = async ({
     ],
     companyId,
     contactListId
-  };
+  }
 
-  const limit = 20;
-  const offset = limit * (+pageNumber - 1);
+  const limit = 20
+  const offset = limit * (+pageNumber - 1)
 
   const { count, rows: contacts } = await ContactListItem.findAndCountAll({
     where: whereCondition,
     limit,
     offset,
     order: [["name", "ASC"]]
-  });
+  })
 
-  const hasMore = count > offset + contacts.length;
+  const hasMore = count > offset + contacts.length
 
   return {
     contacts,
     count,
     hasMore
-  };
-};
+  }
+}
 
-export default ListService;
+export default ListService

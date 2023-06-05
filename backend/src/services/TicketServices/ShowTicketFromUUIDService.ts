@@ -1,10 +1,10 @@
-import Ticket from "../../models/Ticket";
-import AppError from "../../errors/AppError";
-import Contact from "../../models/Contact";
-import User from "../../models/User";
-import Queue from "../../models/Queue";
-import Tag from "../../models/Tag";
-import Whatsapp from "../../models/Whatsapp";
+import Ticket from "../../models/Ticket"
+import AppError from "../../errors/AppError"
+import Contact from "../../models/Contact"
+import User from "../../models/User"
+import Queue from "../../models/Queue"
+import Tag from "../../models/Tag"
+import Whatsapp from "../../models/Whatsapp"
 
 const ShowTicketUUIDService = async (uuid: string): Promise<Ticket> => {
   const ticket = await Ticket.findOne({
@@ -39,13 +39,13 @@ const ShowTicketUUIDService = async (uuid: string): Promise<Ticket> => {
         attributes: ["id", "name", "color"]
       }
     ]
-  }); 
+  })
 
   if (!ticket) {
-    throw new AppError("ERR_NO_TICKET_FOUND", 404);
+    throw new AppError("ERR_NO_TICKET_FOUND", 404)
   }
 
-  return ticket;
-};
+  return ticket
+}
 
-export default ShowTicketUUIDService;
+export default ShowTicketUUIDService
