@@ -4,9 +4,6 @@ import { Link as RouterLink } from "react-router-dom"
 import Button from "@material-ui/core/Button"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import TextField from "@material-ui/core/TextField"
-import Link from "@material-ui/core/Link"
-import Grid from "@material-ui/core/Grid"
-import Box from "@material-ui/core/Box"
 import Typography from "@material-ui/core/Typography"
 import { makeStyles } from "@material-ui/core/styles"
 import Container from "@material-ui/core/Container"
@@ -14,30 +11,13 @@ import Container from "@material-ui/core/Container"
 import { i18n } from "../../translate/i18n"
 
 import { AuthContext } from "../../context/Auth/AuthContext"
-import logo from "../../assets/zapsimples.png"
-
-// const Copyright = () => {
-// 	return (
-// 		<Typography variant="body2" color="textSecondary" align="center">
-// 			{"Copyleft "}
-// 			<Link color="inherit" href="https://github.com/canove">
-// 				Canove
-// 			</Link>{" "}
-// 			{new Date().getFullYear()}
-// 			{"."}
-// 		</Typography>
-// 	);
-// };
+import logo from "../../assets/BuddyPurpleLogo.png"
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100vw",
     height: "100vh",
-    backgroundImage:
-      "url(https://th.bing.com/th/id/OIP.YRbnvsV4zu-8RejDYPrlKwHaDt?pid=ImgDet&rs=1)",
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "100% 100%",
-    backgroundPosition: "center",
+    backgroundColor: theme.palette.primary.main,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -49,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "55px 30px",
-    borderRadius: "12.5px"
+    padding: "30px 30px",
+    borderRadius: "8px"
   },
   avatar: {
     margin: theme.spacing(1),
@@ -91,7 +71,7 @@ const Login = () => {
         <div className={classes.paper}>
           <div>
             <img
-              style={{ margin: "0 auto", height: "80px", width: "100%" }}
+              style={{ margin: "0 auto", height: "60px", width: "100%" }}
               src={logo}
               alt="Whats"
             />
@@ -148,13 +128,9 @@ const Login = () => {
 						</Grid>
 					</Grid> */}
           </form>
-          <span className={classes.rodape}>
-            Experimente nossa versão mobile
-          </span>
         </div>
         <br />
-        <span className={classes.powered}>@Powered by Proxigma(2023).</span>
-        <Box mt={8}>{/* <Copyright /> */}</Box>
+        {/* <span className={classes.powered}>@Powered by Proxigma(2023).</span> */}
       </Container>
     </div>
   )

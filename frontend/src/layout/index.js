@@ -29,10 +29,9 @@ import { i18n } from "../translate/i18n"
 import toastError from "../errors/toastError"
 import AnnouncementsPopover from "../components/AnnouncementsPopover"
 
-import logo from "../assets/zapsimples.png"
+import logo from "../assets/BuddyPurpleLogin.png"
 import { socketConnection } from "../services/socket"
 import ChatPopover from "../pages/Chat/ChatPopover"
-import notificationIcon from "./../assets/icons/profile.png"
 
 const drawerWidth = 300
 
@@ -52,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "0 8px",
+    padding: "0 10px 0 25px",
     minHeight: "48px"
   },
   appBar: {
@@ -228,11 +227,7 @@ const LoggedInLayout = ({ children }) => {
         open={drawerOpen}
       >
         <div className={classes.toolbarIcon}>
-          <img
-            src={logo}
-            style={{ margin: "0 auto", height: "50px", width: "100%" }}
-            alt="logo"
-          />
+          <img src={logo} style={{ margin: "0", height: "40px" }} alt="logo" />
           <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
             <ChevronLeftIcon />
           </IconButton>
